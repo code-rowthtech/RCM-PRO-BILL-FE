@@ -1,7 +1,7 @@
 import { Children } from "react";
 
 const MENU_ITEMS = [
-    { key: 'navigation', label: 'Navigation', isTitle: true },
+    // { key: 'navigation', label: 'Navigation', isTitle: true },
     {
         key: 'dashboards',
         label: 'Dashboard',

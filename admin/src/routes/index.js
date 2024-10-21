@@ -20,6 +20,7 @@ const Logout = React.lazy(() => import('../pages/account/Logout'));
 const Register = React.lazy(() => import('../pages/account/Register'));
 const Confirm = React.lazy(() => import('../pages/account/Confirm'));
 const ForgetPassword = React.lazy(() => import('../pages/account/ForgetPassword'));
+const ResetPassword = React.lazy(() => import('../pages/account/ResetPassword'));
 const LockScreen = React.lazy(() => import('../pages/account/LockScreen'));
 
 const Login2 = React.lazy(() => import('../pages/account2/Login2'));
@@ -163,6 +164,7 @@ const AllRoutes = () => {
                         { path: 'register', element: <LoadComponent component={Register} /> },
                         { path: 'confirm', element: <LoadComponent component={Confirm} /> },
                         { path: 'forget-password', element: <LoadComponent component={ForgetPassword} /> },
+                        { path: 'reset-password/:token', element: <LoadComponent component={ResetPassword} /> },
                         { path: 'lock-screen', element: <LoadComponent component={LockScreen} /> },
                         { path: 'logout', element: <LoadComponent component={Logout} /> },
                         { path: 'login2', element: <LoadComponent component={Login2} /> },
@@ -192,15 +194,6 @@ const AllRoutes = () => {
             path: '/',
             element: <PrivateRoute roles={'Admin'} component={Layout} />,
             children: [
-                {
-                    path: 'dashboard',
-                    children: [
-                        {
-                            path: 'project',
-                            element: <LoadComponent component={ProjectDashboard} />,
-                        },
-                    ],
-                },
                 {
                     path: 'dashboard',
                     children: [

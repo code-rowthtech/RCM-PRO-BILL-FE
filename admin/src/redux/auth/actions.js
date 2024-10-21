@@ -14,9 +14,9 @@ export const authApiResponseError = (actionType: string, error: string): AuthAct
     payload: { actionType, error },
 });
 
-export const loginUser = (username: string, password: string): AuthAction => ({
+export const loginUser = (data): AuthAction => ({
     type: AuthActionTypes.LOGIN_USER,
-    payload: { username, password },
+    payload: data,
 });
 
 export const logoutUser = (): AuthAction => ({
@@ -29,14 +29,14 @@ export const signupUser = (fullname: string, email: string, password: string): A
     payload: { fullname, email, password },
 });
 
-export const forgotPassword = (username: string): AuthAction => ({
+export const forgotPassword = (data): AuthAction => ({
     type: AuthActionTypes.FORGOT_PASSWORD,
-    payload: { username },
+    payload: data,
 });
 
-export const forgotPasswordChange = (username: string): AuthAction => ({
+export const forgotPasswordChange = (data): AuthAction => ({
     type: AuthActionTypes.FORGOT_PASSWORD_CHANGE,
-    payload: { username },
+    payload: data,
 });
 
 export const resetAuth = (): AuthAction => ({

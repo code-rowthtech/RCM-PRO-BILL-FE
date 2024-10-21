@@ -94,7 +94,7 @@ const TasksChart = (): React$Element<any> => {
             <Card.Body>
                 <CardTitle
                     containerClass="d-flex align-items-center justify-content-between mb-2"
-                    title="Tasks Overview"
+                    title="Growth"
                     menuItems={[
                         { label: 'Weekly Report' },
                         { label: 'Monthly Report' },

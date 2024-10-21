@@ -31,12 +31,12 @@ const OrderDetails = () => {
         <Table responsive className="table-centered table-nowrap mb-0">
             <thead className="table-light">
                 <tr>
-                    <th>Order ID</th>
-                    <th>Customers</th>
-                    <th>Project</th>
+                    <th>Clinic ID</th>
+                    <th>Clinic Name</th>
+                    <th>Active hours</th>
                     <th>Address</th>
-                    <th>Date Order</th>
-                    <th>Order Status</th>
+                    <th>Doctors vailable</th>
+                    <th>Success Rate</th>
                     <th style={{ width: '125px' }}>Action</th>
                 </tr>
             </thead>

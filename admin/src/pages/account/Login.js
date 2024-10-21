@@ -14,6 +14,8 @@ import { resetAuth, loginUser } from '../../redux/actions';
 import { VerticalForm, FormInput } from '../../components/';
 
 import AccountLayout from './AccountLayout';
+import { decryptMessage, encryptMessage } from '../../cryptoUtils';
+import Loader from '../../components/Loader';
 
 /* bottom link of account pages */
 const BottomLink = () => {
@@ -38,7 +40,7 @@ const Login = (): React$Element<any> => {
     const dispatch = useDispatch();
 
     const location = useLocation();
-    const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/';
+    const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/dashboard/project';
 
     useEffect(() => {
         dispatch(resetAuth());
@@ -50,7 +52,6 @@ const Login = (): React$Element<any> => {
         error: state.Auth.error,
         userLoggedIn: state.Auth.userLoggedIn,
     }));
-
     /*
     form validation schema
     */
@@ -61,11 +62,12 @@ const Login = (): React$Element<any> => {
         })
     );
 
+
     /*
     handle form submission
     */
     const onSubmit = (formData) => {
-        dispatch(loginUser(formData['username'], formData['password']));
+        dispatch(loginUser({ email: formData.username, password: formData.password }));
     };
 
     return (
@@ -80,11 +82,11 @@ const Login = (): React$Element<any> => {
                     </p>
                 </div>
 
-                {error && (
+                {/* {error && (
                     <Alert variant="danger" className="my-2">
-                        {error}
+                        {error ? 'Please try again' : ''}
                     </Alert>
-                )}
+                )} */}
 
                 <VerticalForm
                     onSubmit={onSubmit}

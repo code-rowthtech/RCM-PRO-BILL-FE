@@ -16,7 +16,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                         <h3>
                                             <span>29</span>
                                         </h3>
-                                        <p className="text-muted font-15 mb-0">Total Projects</p>
+                                        <p className="text-muted font-15 mb-0">Registered Clinics</p>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -28,7 +28,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                         <h3>
                                             <span>715</span>
                                         </h3>
-                                        <p className="text-muted font-15 mb-0">Total Tasks</p>
+                                        <p className="text-muted font-15 mb-0">Registered Doctors</p>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -40,7 +40,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                         <h3>
                                             <span>31</span>
                                         </h3>
-                                        <p className="text-muted font-15 mb-0">Members</p>
+                                        <p className="text-muted font-15 mb-0">Registered Patients</p>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -52,7 +52,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                         <h3>
                                             <span>93%</span> <i className="mdi mdi-arrow-up text-success"></i>
                                         </h3>
-                                        <p className="text-muted font-15 mb-0">Productivity</p>
+                                        <p className="text-muted font-15 mb-0">Earnings</p>
                                     </Card.Body>
                                 </Card>
                             </Col>
