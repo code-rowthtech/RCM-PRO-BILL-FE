@@ -38,13 +38,13 @@ const Activity = (): React$Element<any> => {
                                             Soren Drouin
                                             <small className="fw-normal ms-3">18 Jan 2019 11:28 pm</small>
                                         </h5>
-                                        <span className="font-13">Completed "Design new idea"...</span>
+                                        <span className="font-13">Issue sent to AR...</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span className="text-muted font-13">Project</span> <br />
-                                <p className="mb-0">Hyper Mockup</p>
+                                <span className="text-muted font-13">Issue</span> <br />
+                                <p className="mb-0">Details</p>
                             </td>
                             <td className="table-action" style={{ width: '50px' }}>
                                 <Dropdown className="float-end" align="end">
@@ -68,13 +68,13 @@ const Activity = (): React$Element<any> => {
                                             Anne Simard
                                             <small className="fw-normal ms-3">18 Jan 2019 11:09 pm</small>
                                         </h5>
-                                        <span className="font-13">Assigned task "Poster illustation design"...</span>
+                                        <span className="font-13">Assigned task</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span className="text-muted font-13">Project</span> <br />
-                                <p className="mb-0">Hyper Mockup</p>
+                                <span className="text-muted font-13">Issue</span> <br />
+                                <p className="mb-0">Details</p>
                             </td>
                             <td className="table-action" style={{ width: '50px' }}>
                                 <Dropdown className="float-end" align="end">
@@ -98,13 +98,13 @@ const Activity = (): React$Element<any> => {
                                             Nicolas Chartier
                                             <small className="fw-normal ms-3">15 Jan 2019 09:29 pm</small>
                                         </h5>
-                                        <span className="font-13">Completed "Drinking bottle graphics"...</span>
+                                        <span className="font-13">Completed a payment...</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span className="text-muted font-13">Project</span> <br />
-                                <p className="mb-0">Web UI Design</p>
+                                <span className="text-muted font-13">Issue</span> <br />
+                                <p className="mb-0">Details</p>
                             </td>
                             <td className="table-action" style={{ width: '50px' }}>
                                 <Dropdown className="float-end" align="end">
@@ -128,13 +128,13 @@ const Activity = (): React$Element<any> => {
                                             Gano Cloutier
                                             <small className="fw-normal ms-3">10 Jan 2019 08:36 pm</small>
                                         </h5>
-                                        <span className="font-13">Completed "Design new idea"...</span>
+                                        <span className="font-13">Completed...</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span className="text-muted font-13">Project</span> <br />
-                                <p className="mb-0">UBold Admin</p>
+                                <span className="text-muted font-13">Issue</span> <br />
+                                <p className="mb-0">Details</p>
                             </td>
                             <td className="table-action" style={{ width: '50px' }}>
                                 <Dropdown className="float-end" align="end">
@@ -158,13 +158,13 @@ const Activity = (): React$Element<any> => {
                                             Francis Achin
                                             <small className="fw-normal ms-3">08 Jan 2019 12:28 pm</small>
                                         </h5>
-                                        <span className="font-13">Assigned task "Hyper app design"...</span>
+                                        <span className="font-13">Payment processing...</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span className="text-muted font-13">Project</span> <br />
-                                <p className="mb-0">Website Mockup</p>
+                                <span className="text-muted font-13">Issue</span> <br />
+                                <p className="mb-0">Details</p>
                             </td>
                             <td className="table-action" style={{ width: '50px' }}>
                                 <Dropdown className="float-end" align="end">

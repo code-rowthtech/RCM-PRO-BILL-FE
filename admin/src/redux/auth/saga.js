@@ -12,27 +12,39 @@ import {
 import { APICore, setAuthorization } from '../../helpers/api/apiCore';
 import { authApiResponseSuccess, authApiResponseError } from './actions';
 import { AuthActionTypes } from './constants';
-
+import { decryptMessage, encryptMessage } from '../../cryptoUtils';
 const api = new APICore();
 
 /**
  * Login the user
  * @param {*} payload - username and password
  */
-function* login({ payload: { username, password } }) {
+function* login({ payload }) {
     try {
-        const response = yield call(loginApi, { username, password });
-        const user = response.data;
+        const encryptedPayload = {
+            key: encryptMessage(payload)
+        }
+        const response = yield call(loginApi, encryptedPayload);
+        const user = JSON.parse(decryptMessage(response?.data?.data));
+        const userData = {
+            name: user?.name,
+            email: user?.email,
+            token: user?.accessToken,
+            role: user?.role,
+            _id: user?._id
+        }
         // NOTE - You can change this according to response format from your api
-        api.setLoggedInUser(user);
+        api.setLoggedInUser(userData);
         setAuthorization(user['token']);
-        yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, user));
+        yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, userData));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.LOGIN_USER, error));
         api.setLoggedInUser(null);
         setAuthorization(null);
     }
 }
+
+
 
 /**
  * Logout the user
@@ -62,23 +74,45 @@ function* signup({ payload: { fullname, email, password } }) {
     }
 }
 
-function* forgotPassword({ payload: { username } }) {
+function* forgotPassword({ payload }) {
+    console.log(payload, 'dhsfnvdhfsdhfbvhd')
     try {
-        const response = yield call(forgotPasswordApi, { username });
-        yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD, response.data));
+        const encryptedPayload = {
+            key: encryptMessage(payload)
+        }
+        const response = yield call(forgotPasswordApi, encryptedPayload);
+        yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD, decryptMessage(response?.data?.data)));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD, error));
     }
 }
-
-function* forgotPasswordChange({ payload: { data } }) {
+function* forgotPasswordChange({ payload }) {
+    console.log(payload, 'jnasndjasndjasdjhasd')
     try {
-        const response = yield call(forgotPasswordConfirm, data);
+        const changePasswordPayload = {
+            key: encryptMessage(payload)
+        }
+        const response = yield call(forgotPasswordConfirm, changePasswordPayload);
         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD_CHANGE, response.data));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD_CHANGE, error));
     }
 }
+// function* forgotPasswordChange({ payload }) {
+//     const { token, newPassword } = payload;
+
+//     const headers = {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//     };
+
+//     try {
+//         const response = yield call(forgotPasswordConfirm, { newPassword }, { headers });
+//         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD_CHANGE, response.data));
+//     } catch (error) {
+//         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD_CHANGE, error));
+//     }
+// }
 
 export function* watchLoginUser(): any {
     yield takeEvery(AuthActionTypes.LOGIN_USER, login);

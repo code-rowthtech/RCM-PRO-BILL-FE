@@ -37,15 +37,18 @@ const ProjectDashboardPage = (): React$Element<React$FragmentType> => {
                 <Col xs={12}>
                     <TasksChart />
                 </Col>
+                {/* <Col xl={4}>
+                    <Activity />
+                </Col> */}
             </Row>
 
             <Row>
-                <Col xl={5}>
+                <Col>
                     <Activity />
                 </Col>
-                <Col xl={7}>
+                {/* <Col xl={7}>
                     <Calendar />
-                </Col>
+                </Col> */}
             </Row>
         </>
     );

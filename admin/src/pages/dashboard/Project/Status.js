@@ -12,7 +12,7 @@ const Status = (): React$Element<any> => {
     const colors = ['#0acf97', '#727cf5', '#fa5c7c'];
 
     const donutChartData = {
-        labels: ['Completed', 'In-progress', 'Behind'],
+        labels: ['Resolved', 'In-progress', 'Pending'],
         datasets: [
             {
                 data: [64, 26, 10],
@@ -38,7 +38,7 @@ const Status = (): React$Element<any> => {
             <Card.Body>
                 <CardTitle
                     containerClass="d-flex align-items-center justify-content-between"
-                    title="Project Status"
+                    title="Appointments Status"
                     menuItems={[
                         { label: 'Weekly Report' },
                         { label: 'Monthly Report' },
@@ -58,7 +58,7 @@ const Status = (): React$Element<any> => {
                             <h3 className="fw-normal">
                                 <span>64%</span>
                             </h3>
-                            <p className="text-muted mb-0">Completed</p>
+                            <p className="text-muted mb-0">Resolved</p>
                         </div>
                     </Col>
 
@@ -78,7 +78,7 @@ const Status = (): React$Element<any> => {
                             <h3 className="fw-normal">
                                 <span>10%</span>
                             </h3>
-                            <p className="text-muted mb-0"> Behind</p>
+                            <p className="text-muted mb-0"> Pending</p>
                         </div>
                     </Col>
                 </Row>

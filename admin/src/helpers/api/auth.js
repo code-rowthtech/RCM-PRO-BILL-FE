@@ -5,7 +5,7 @@ const api = new APICore();
 
 // account
 function login(params: any): any {
-    const baseUrl = '/login/';
+    const baseUrl = '/api/v1/admin/users/signIn';
     return api.create(`${baseUrl}`, params);
 }
 
@@ -20,12 +20,12 @@ function signup(params: any): any {
 }
 
 function forgotPassword(params: any): any {
-    const baseUrl = '/forget-password/';
+    const baseUrl = '/api/v1/admin/users/forgotPassword';
     return api.create(`${baseUrl}`, params);
 }
 
 function forgotPasswordConfirm(params: any): any {
-    const baseUrl = '/password/reset/confirm/';
+    const baseUrl = '/api/v1/admin/users/resetPassword';
     return api.create(`${baseUrl}`, params);
 }
 

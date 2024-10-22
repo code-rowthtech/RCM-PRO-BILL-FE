@@ -28,11 +28,11 @@ const AppointmentsList = ({ orderData }: OrderListProps): React$Element<React$Fr
         <Table responsive className="table-centered table-nowrap mb-0">
             <thead className="table-light">
                 <tr key={''}>
-                    <th style={{ width: '20px' }}>
+                    {/* <th style={{ width: '20px' }}>
                         <Form>
                             <Form.Check type="checkbox" id="all" />
                         </Form>
-                    </th>
+                    </th> */}
                     <th>Description</th>
                     <th>Client Name</th>
                     <th>Attendant Name</th>
@@ -45,11 +45,11 @@ const AppointmentsList = ({ orderData }: OrderListProps): React$Element<React$Fr
             <tbody>
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                     <tr key={index}>
-                        <td>
+                        {/* <td>
                             <Form>
                                 <Form.Check type="checkbox" id={`#`} />
                             </Form>
-                        </td>
+                        </td> */}
                         <td>
                             <Link to="#" className="text-body fw-bold">
                                 Appointment description
@@ -90,7 +90,7 @@ const Appointments = ({ orderData }: { orderData: Array<OrderListItems> }): Reac
         <>
             <PageTitle
                 breadCrumbItems={[
-                    { label: 'Appointments', path: '/apps/appointments/list' },
+                    { label: 'Appointments', path: '/apps/appointments/list', active: true },
                 ]}
                 title={'Appointment List'}
             />

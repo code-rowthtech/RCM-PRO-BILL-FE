@@ -12,7 +12,7 @@ const Tasks = (): React$Element<any> => {
             <Card.Body>
                 <CardTitle
                     containerClass="d-flex align-items-center justify-content-between mb-2"
-                    title="Tasks"
+                    title="Transactions"
                     menuItems={[
                         { label: 'Weekly Report' },
                         { label: 'Monthly Report' },
@@ -31,7 +31,7 @@ const Tasks = (): React$Element<any> => {
                             <td>
                                 <h5 className="font-14 my-1">
                                     <Link to="#" className="text-body">
-                                        Coffee detail page - Main Page
+                                        Transaction ID
                                     </Link>
                                 </h5>
                                 <span className="text-muted font-13">Due in 3 days</span>
@@ -63,7 +63,7 @@ const Tasks = (): React$Element<any> => {
                             <td>
                                 <h5 className="font-14 my-1">
                                     <Link to="#" className="text-body">
-                                        Drinking bottle graphics
+                                        Transaction ID
                                     </Link>
                                 </h5>
                                 <span className="text-muted font-13">Due in 27 days</span>
@@ -95,7 +95,7 @@ const Tasks = (): React$Element<any> => {
                             <td>
                                 <h5 className="font-14 my-1">
                                     <Link to="#" className="text-body">
-                                        App design and development
+                                        Transaction ID
                                     </Link>
                                 </h5>
                                 <span className="text-muted font-13">Due in 7 days</span>
@@ -127,7 +127,7 @@ const Tasks = (): React$Element<any> => {
                             <td>
                                 <h5 className="font-14 my-1">
                                     <Link to="#" className="text-body">
-                                        Poster illustation design
+                                        Transaction ID
                                     </Link>
                                 </h5>
                                 <span className="text-muted font-13">Due in 5 days</span>

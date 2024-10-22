@@ -48,7 +48,6 @@ const ForgetPassword = (): React$Element<any> => {
         passwordReset: state.Auth.passwordReset,
         resetPasswordSuccess: state.Auth.resetPasswordSuccess,
     }));
-
     /*
      * form validation schema
      */
@@ -62,7 +61,7 @@ const ForgetPassword = (): React$Element<any> => {
      * handle form submission
      */
     const onSubmit = (formData) => {
-        dispatch(forgotPassword(formData['username']));
+        dispatch(forgotPassword({ email: formData['username'] }));
     };
 
     return (
@@ -77,7 +76,7 @@ const ForgetPassword = (): React$Element<any> => {
                     </p>
                 </div>
 
-                {resetPasswordSuccess && <Alert variant="success">{resetPasswordSuccess.message}</Alert>}
+                {resetPasswordSuccess && <Alert variant="success">{resetPasswordSuccess?.massage}</Alert>}
 
                 {error && (
                     <Alert variant="danger" className="my-2">
@@ -88,7 +87,7 @@ const ForgetPassword = (): React$Element<any> => {
                 {!passwordReset && (
                     <VerticalForm onSubmit={onSubmit} resolver={schemaResolver}>
                         <FormInput
-                            label={t('Username')}
+                            label='E-mail'
                             type="text"
                             name="username"
                             placeholder={t('Enter your Username')}
