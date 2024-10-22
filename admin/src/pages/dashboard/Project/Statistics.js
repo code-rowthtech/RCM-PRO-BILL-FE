@@ -26,7 +26,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                     <Card.Body className="text-center">
                                         <i className="dripicons-checklist text-muted font-24"></i>
                                         <h3>
-                                            <span>715</span>
+                                            <span>70</span>
                                         </h3>
                                         <p className="text-muted font-15 mb-0">Registered Doctors</p>
                                     </Card.Body>
@@ -38,7 +38,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                     <Card.Body className="text-center">
                                         <i className="dripicons-user-group text-muted font-24"></i>
                                         <h3>
-                                            <span>31</span>
+                                            <span>281</span>
                                         </h3>
                                         <p className="text-muted font-15 mb-0">Registered Patients</p>
                                     </Card.Body>
@@ -52,7 +52,7 @@ const Statistics = (): React$Element<React$FragmentType> => {
                                         <h3>
                                             <span>93%</span> <i className="mdi mdi-arrow-up text-success"></i>
                                         </h3>
-                                        <p className="text-muted font-15 mb-0">Earnings</p>
+                                        <p className="text-muted font-15 mb-0">Cases Resolved</p>
                                     </Card.Body>
                                 </Card>
                             </Col>
