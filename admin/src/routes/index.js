@@ -37,7 +37,8 @@ const AddClinics = React.lazy(() => import('../pages/apps/Clinic/AddClinic/index
 const AppointmentsList = React.lazy(() => import('../pages/apps/Appointments/index'));
 const Doctors = React.lazy(() => import('../pages/apps/Doctors/index'));
 const Patients = React.lazy(() => import('../pages/apps/Patients/index'));
-
+const Permissions = React.lazy(() => import('../pages/apps/Permissions/index'))
+const Roles = React.lazy(() => import('../pages/apps/Roles/index'))
 
 // pages
 
@@ -192,7 +193,7 @@ const AllRoutes = () => {
         {
             // auth protected routes
             path: '/',
-            element: <PrivateRoute roles={'Admin'} component={Layout} />,
+            element: <PrivateRoute component={Layout} />,
             children: [
                 {
                     path: 'dashboard',
@@ -244,6 +245,24 @@ const AllRoutes = () => {
                                 {
                                     path: 'list',
                                     element: <LoadComponent component={Patients} />,
+                                },
+                            ],
+                        },
+                        {
+                            path: 'permissions',
+                            children: [
+                                {
+                                    path: 'list',
+                                    element: <LoadComponent component={Permissions} />,
+                                },
+                            ],
+                        },
+                        {
+                            path: 'roles',
+                            children: [
+                                {
+                                    path: 'list',
+                                    element: <LoadComponent component={Roles} />,
                                 },
                             ],
                         },

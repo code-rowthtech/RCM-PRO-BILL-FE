@@ -2,6 +2,7 @@ import jwtDecode from 'jwt-decode';
 import axios from 'axios';
 
 import config from '../../config';
+import { encryptMessage } from '../../cryptoUtils';
 
 // content type
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -19,7 +20,7 @@ axios.interceptors.response.use(
         if (error && error.response && error.response.status === 404) {
             // window.location.href = '/not-found';
         } else if (error && error.response && error.response.status === 403) {
-            window.location.href = '/access-denied';
+            // window.location.href = '/access-denied';
         } else {
             switch (error.response.status) {
                 case 401:
@@ -48,7 +49,8 @@ const AUTH_SESSION_KEY = 'hyper_user';
  * @param {*} token
  */
 const setAuthorization = (token) => {
-    if (token) axios.defaults.headers.common['Authorization'] = 'JWT ' + token;
+    // console.log({ token })
+    if (token) axios.defaults.headers.common['Authorization'] = `${encryptMessage(token)}`;
     else delete axios.defaults.headers.common['Authorization'];
 };
 

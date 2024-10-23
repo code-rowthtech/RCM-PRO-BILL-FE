@@ -4,7 +4,7 @@ import { Row, Col, Card, Button } from 'react-bootstrap';
 
 // components
 import PageTitle from '../../components/PageTitle';
-import Spinner from '../../components/Spinner';
+import Spinner from '../../constants/Spinner';
 
 const colors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
 
