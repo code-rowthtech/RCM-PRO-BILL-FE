@@ -15,7 +15,6 @@ const PrivateRoute = ({ component: RouteComponent, roles, ...rest }: PrivateRout
     let location = useLocation();
     const api = new APICore();
     const loggedInUser = api.getLoggedInUser();
-
     /**
      * not logged in so redirect to login page with the return url
      */

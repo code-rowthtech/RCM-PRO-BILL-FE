@@ -16,6 +16,7 @@ import { VerticalForm, FormInput } from '../../components/';
 import AccountLayout from './AccountLayout';
 import { decryptMessage, encryptMessage } from '../../cryptoUtils';
 import Loader from '../../components/Loader';
+import Spinner from '../../constants/Spinner';
 
 /* bottom link of account pages */
 const BottomLink = () => {
@@ -38,7 +39,6 @@ const BottomLink = () => {
 const Login = (): React$Element<any> => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
     const location = useLocation();
     const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/dashboard/project';
 
@@ -113,7 +113,11 @@ const Login = (): React$Element<any> => {
 
                     <div className="mb-3 mb-0 text-center">
                         <Button className='grayish-buttons' type="submit" disabled={loading}>
-                            {t('Log In')}
+                            {loading ?
+                                <Spinner className="spinner-border-sm " />
+                                :
+                                `${t('Log In')}`
+                            }
                         </Button>
                     </div>
                 </VerticalForm>

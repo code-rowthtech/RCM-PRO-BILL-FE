@@ -49,6 +49,18 @@ const MENU_ITEMS = [
         icon: 'uil-schedule',
         url: '/apps/appointments/list',
     },
+    {
+        key: 'permissions',
+        label: 'Permissions',
+        icon: 'uil-lock-open-alt',
+        url: '/apps/permissions/list',
+    },
+    {
+        key: 'roles',
+        label: 'Roles',
+        icon: 'uil-user-circle',
+        url: '/apps/roles/list',
+    },
 
     // {
     //     key: 'pages',

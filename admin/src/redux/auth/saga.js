@@ -44,8 +44,6 @@ function* login({ payload }) {
     }
 }
 
-
-
 /**
  * Logout the user
  */
@@ -75,7 +73,7 @@ function* signup({ payload: { fullname, email, password } }) {
 }
 
 function* forgotPassword({ payload }) {
-    console.log(payload, 'dhsfnvdhfsdhfbvhd')
+    // console.log(payload, 'dhsfnvdhfsdhfbvhd')
     try {
         const encryptedPayload = {
             key: encryptMessage(payload)
@@ -86,33 +84,31 @@ function* forgotPassword({ payload }) {
         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD, error));
     }
 }
+
 function* forgotPasswordChange({ payload }) {
-    console.log(payload, 'jnasndjasndjasdjhasd')
+    const { token, newPassword } = payload;
+    const encryptedToken = {
+        token: encryptMessage(token)
+    }
+    const headers = {
+        'Authorization': `${encryptedToken}`,
+        'Content-Type': 'application/json'
+    };
+
+    const passwordPayload = {
+        newPassword: newPassword
+    }
+    const encryptedNewPassword = {
+        key: encryptMessage(passwordPayload)
+    }
+
     try {
-        const changePasswordPayload = {
-            key: encryptMessage(payload)
-        }
-        const response = yield call(forgotPasswordConfirm, changePasswordPayload);
+        const response = yield call(forgotPasswordConfirm, encryptedNewPassword, headers);
         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD_CHANGE, response.data));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD_CHANGE, error));
     }
 }
-// function* forgotPasswordChange({ payload }) {
-//     const { token, newPassword } = payload;
-
-//     const headers = {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'application/json'
-//     };
-
-//     try {
-//         const response = yield call(forgotPasswordConfirm, { newPassword }, { headers });
-//         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD_CHANGE, response.data));
-//     } catch (error) {
-//         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD_CHANGE, error));
-//     }
-// }
 
 export function* watchLoginUser(): any {
     yield takeEvery(AuthActionTypes.LOGIN_USER, login);
