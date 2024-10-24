@@ -13,3 +13,7 @@ export const getRolesAction = (data): AuthAction => ({
     data
 });
 
+export const stateEmptydAction = (): LayoutAction => ({
+    type: RolesActionTypes.STATE_EMPTY_INTIAL_STATE,
+
+});

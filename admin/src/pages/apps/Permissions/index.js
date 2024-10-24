@@ -5,7 +5,7 @@ import { FormInput } from '../../../components';
 import { Link } from 'react-router-dom';
 import AddPermissions from './Modal/addPermissions';
 import { useDispatch, useSelector } from 'react-redux';
-import { deletePermissionAction, getPermissionAction } from '../../../redux/actions';
+import { deletePermissionAction, getPermissionAction, stateEmptydAction, updatePermissionAction } from '../../../redux/actions';
 import { decryptMessage, encryptMessage } from '../../../cryptoUtils';
 import Loader from '../../../components/Loader';
 import Spinner from '../../../constants/Spinner';
@@ -16,6 +16,8 @@ const Permissions = () => {
     const [selected, setSelected] = useState(null);
     const store = useSelector((state) => state);
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data;
+    const deleteSuccess = store?.deletePermissionsDataReducer?.data?.success;
+    const updateSuccess = store?.updatePermissionsDataReducer?.data?.success;
     const handleClosemodal = () => {
         setShowModal(false);
     };
@@ -23,9 +25,19 @@ const Permissions = () => {
     useEffect(() => {
         dispatch(getPermissionAction());
         if (store?.createPermissionsDataReducer?.data?.success === true) {
-            dispatch(getPermissionAction())
+            dispatch(getPermissionAction());
+            dispatch(stateEmptydAction())
         }
-    }, [dispatch, store?.createPermissionsDataReducer?.data?.success])
+        if (deleteSuccess === true) {
+            dispatch(getPermissionAction());
+            closeDeleteModal();
+            dispatch(stateEmptydAction())
+        }
+        if (updateSuccess === true) {
+            dispatch(getPermissionAction());
+            dispatch(stateEmptydAction())
+        }
+    }, [dispatch, store?.createPermissionsDataReducer?.data?.success, deleteSuccess, updateSuccess])
 
     const closeDeleteModal = () => {
         setDeleteModal(false);
@@ -41,6 +53,18 @@ const Permissions = () => {
         }
         dispatch(deletePermissionAction({ key: encryptMessage(JSON.stringify(payload)) }));
     }
+
+    const handleToggleUpdate = (data) => {
+        if (!data) return;
+
+        const payload = {
+            id: data._id,
+            status: data.status === 'active' ? 'inactive' : 'active',
+        };
+
+        dispatch(updatePermissionAction({ key: `${encryptMessage(payload)}` }));
+    }
+
     return (
         <div>
             <PageTitle
@@ -103,7 +127,7 @@ const Permissions = () => {
                                                             {data?.createdById?.name}
                                                         </td>
                                                         <td>
-                                                            <Form.Switch checked={data?.status === 'active'} />
+                                                            <Form.Switch onClick={() => handleToggleUpdate(data)} checked={data?.status === 'active'} />
                                                         </td>
                                                         <td>
                                                             <Link to="#" className="action-icon">
@@ -140,8 +164,12 @@ const Permissions = () => {
                     <Button onClick={closeDeleteModal} className='grayish-buttons'>
                         Cancel
                     </Button>
-                    <Button onClick={handleDelete} className='grayish-buttons'>
-                        Delete
+                    <Button onClick={handleDelete} className='grayish-buttons' disabled={store?.deletePermissionsDataReducer?.loading}>
+                        {store?.deletePermissionsDataReducer?.loading ?
+                            <Spinner className="spinner-border-sm " />
+                            :
+                            'Delete'
+                        }
                     </Button>
                 </Modal.Footer>
             </Modal>

@@ -13,6 +13,10 @@ export function getPermissionsApi(params: any): any {
 }
 export function deletePermissionsApi(params: any): any {
     const { data } = params;
-    console.log(params)
     return api.create(URL.deletePermissions, data);
+}
+
+export function updatePermissionsApi(params: any): any {
+    const { data } = params;
+    return api.update(URL.updatePermissions, data);
 }

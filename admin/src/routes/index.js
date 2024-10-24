@@ -72,7 +72,7 @@ const ListGroups = React.lazy(() => import('../pages/uikit/ListGroups'));
 const Modals = React.lazy(() => import('../pages/uikit/Modals'));
 const Notifications = React.lazy(() => import('../pages/uikit/Notifications'));
 const Offcanvases = React.lazy(() => import('../pages/uikit/Offcanvas'));
-const Paginations = React.lazy(() => import('../pages/uikit/Paginations'));
+const Paginations = React.lazy(() => import('../helpers/Paginations'));
 const Popovers = React.lazy(() => import('../pages/uikit/Popovers'));
 const Progress = React.lazy(() => import('../pages/uikit/Progress'));
 const Ribbons = React.lazy(() => import('../pages/uikit/Ribbons'));

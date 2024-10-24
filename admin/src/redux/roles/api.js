@@ -10,5 +10,5 @@ export function createRolesApi(params: any): any {
 
 export function getRolesApi(params: any): any {
     const { data } = params;
-    return api.get(URL.createRoles, data);
+    return api.get(URL.getRoles, data);
 }
