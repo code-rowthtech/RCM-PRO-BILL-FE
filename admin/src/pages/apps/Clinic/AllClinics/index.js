@@ -121,7 +121,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td><Form.Switch checked={data?.status === true} /></td>
                                                         <td>
-                                                            <Link to="#" className="action-icon">
+                                                            <Link to={`/apps/crm/updateclinic?id=${data?._id}`} className="action-icon">
                                                                 <i className="mdi mdi-square-edit-outline"></i>
                                                             </Link>
                                                         </td>
@@ -132,7 +132,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                     )}
                                 </tbody>
                             </Table>
-
                         </Card.Body>
                     </Card>
                 </Col>

@@ -43,7 +43,7 @@ const Doctors = () => {
                                                 <th>E-mail</th>
                                                 <th>Experience</th>
                                                 <th>Status</th>
-                                                <th style={{ width: '125px' }}>Action</th>
+                                                {/* <th style={{ width: '125px' }}>Action</th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -75,14 +75,14 @@ const Doctors = () => {
                                                     <td>
                                                         <Form.Switch checked />
                                                     </td>
-                                                    <td>
+                                                    {/* <td>
                                                         <Link to="#" className="action-icon">
                                                             <i className="mdi mdi-square-edit-outline"></i>
                                                         </Link>
                                                         <Link to="#" className="action-icon">
                                                             <i className="mdi mdi-delete"></i>
                                                         </Link>
-                                                    </td>
+                                                    </td> */}
                                                 </tr>
                                             ))}
 

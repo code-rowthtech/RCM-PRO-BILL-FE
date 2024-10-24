@@ -34,6 +34,7 @@ const LockScreen2 = React.lazy(() => import('../pages/account2/LockScreen2'));
 const ProjectDashboard = React.lazy(() => import('../pages/dashboard/Project'));
 const AllClinics = React.lazy(() => import('../pages/apps/Clinic/AllClinics'));
 const AddClinics = React.lazy(() => import('../pages/apps/Clinic/AddClinic/index'));
+const UpdateClinic = React.lazy(() => import('../pages/apps/Clinic/AllClinics/updateClinic'));
 const AppointmentsList = React.lazy(() => import('../pages/apps/Appointments/index'));
 const Doctors = React.lazy(() => import('../pages/apps/Doctors/index'));
 const Patients = React.lazy(() => import('../pages/apps/Patients/index'));
@@ -217,6 +218,10 @@ const AllRoutes = () => {
                                 {
                                     path: 'addclinic',
                                     element: <LoadComponent component={AddClinics} />,
+                                },
+                                {
+                                    path: 'updateclinic',
+                                    element: <LoadComponent component={UpdateClinic} />,
                                 },
                             ],
                         },
