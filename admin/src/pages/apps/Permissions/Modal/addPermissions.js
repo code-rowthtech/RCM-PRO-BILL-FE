@@ -13,6 +13,7 @@ const AddPermissions = ({ show, closeModal }) => {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm();
     const store = useSelector((state) => state)
     const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
@@ -23,7 +24,7 @@ const AddPermissions = ({ show, closeModal }) => {
     useEffect(() => {
         if (store?.createPermissionsDataReducer?.data?.success === true) {
             closeModal();
-
+            reset();
         }
     }, [store?.createPermissionsDataReducer?.data?.success])
     return (

@@ -16,3 +16,12 @@ export const deletePermissionAction = (data): AuthAction => ({
     type: PermissionsActionTypes.DELETE_PERMISSIONS,
     data
 });
+export const updatePermissionAction = (data): AuthAction => ({
+    type: PermissionsActionTypes.UPDATE_PERMISSIONS,
+    data
+});
+
+export const stateEmptydAction = (): LayoutAction => ({
+    type: PermissionsActionTypes.STATE_EMPTY_INTIAL_STATE,
+
+});

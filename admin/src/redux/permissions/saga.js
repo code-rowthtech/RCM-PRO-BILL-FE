@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { PermissionsActionTypes } from './constants';
-import { createPermissionsApi, getPermissionsApi, deletePermissionsApi } from './api';
+import { createPermissionsApi, getPermissionsApi, deletePermissionsApi, updatePermissionsApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 /**
  * Login the user
@@ -71,7 +71,7 @@ function* getPermissionsFunction(data) {
 }
 
 function* deletePermissionsFunction(data) {
-    console.log(data, 'sattaaaat')
+    // console.log(data, 'sattaaaat')
     try {
         yield put({
             type: PermissionsActionTypes.DELETE_PERMISSIONS_LOADING,
@@ -99,6 +99,40 @@ function* deletePermissionsFunction(data) {
     }
 }
 
+function* updatePermissionsFunction(data) {
+    try {
+        yield put({
+            type: PermissionsActionTypes.UPDATE_PERMISSIONS_LOADING,
+            payload: {},
+        });
+        const response = yield call(updatePermissionsApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        if (response.status === 200) {
+            yield put({
+                type: PermissionsActionTypes.UPDATE_PERMISSIONS_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: PermissionsActionTypes.UPDATE_PERMISSIONS_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        yield put({
+            type: PermissionsActionTypes.UPDATE_PERMISSIONS_ERROR,
+            payload: error,
+        });
+    }
+}
+
+export function* callStateEmpty() {
+    put({
+        type: PermissionsActionTypes.STATE_EMPTY_INTIAL_STATE,
+        payload: {},
+    });
+
+}
 
 
 export function* watchpermissionsDataCreate() {
@@ -110,12 +144,20 @@ export function* watchpermissionsDataGet() {
 export function* watchpermissionsDataDelete() {
     yield takeEvery(PermissionsActionTypes.DELETE_PERMISSIONS, deletePermissionsFunction);
 }
+export function* watchpermissionsDataUpdate() {
+    yield takeEvery(PermissionsActionTypes.UPDATE_PERMISSIONS, updatePermissionsFunction);
+}
+export function* watchresetState() {
+    yield takeEvery(PermissionsActionTypes.STATE_EMPTY_INTIAL_STATE, callStateEmpty);
+}
 
 function* permissionsSaga() {
     yield all([
         fork(watchpermissionsDataCreate),
         fork(watchpermissionsDataGet),
         fork(watchpermissionsDataDelete),
+        fork(watchpermissionsDataUpdate),
+        fork(watchresetState),
     ]);
 }
 export default permissionsSaga;
