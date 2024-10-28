@@ -1,0 +1,13 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+.headers {
+    background-color: #010101 !important;
+}
+.grayish-buttons {
+    background-color: #2a3040 !important;
+    border: none !important;
+}
+.light-border-bottom {
+    border-bottom: 1px solid #313a4615 !important;
+}
