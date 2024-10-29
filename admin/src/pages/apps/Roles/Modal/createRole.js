@@ -102,7 +102,7 @@ const AddRoles = ({ show, closeModal }) => {
 
                     </Row>
                     <Modal.Footer>
-                        <Button type='submit' className='grayish-buttons'>
+                        <Button type='submit' className='custom-buttons'>
                             Create role
                         </Button>
                     </Modal.Footer>

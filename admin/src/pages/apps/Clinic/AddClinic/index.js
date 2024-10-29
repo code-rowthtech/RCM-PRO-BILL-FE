@@ -119,7 +119,7 @@ const Index = () => {
                                             </div>
                                             {uploadedImage && (
                                                 <div className="text-center">
-                                                    <button className="btn grayish-buttons text-light" onClick={handleDeleteImage}>
+                                                    <button className="btn custom-buttons text-light" onClick={handleDeleteImage}>
                                                         Delete Image
                                                     </button>
                                                 </div>
@@ -291,7 +291,7 @@ const Index = () => {
 
                                     </Col>
                                     <Col md={12} className='mt-2 text-end'>
-                                        <Button variant="primary" type="submit" disabled={store?.createClinicsReducer?.loading} className='grayish-buttons'>
+                                        <Button variant="primary" type="submit" disabled={store?.createClinicsReducer?.loading} className='custom-buttons'>
                                             {store?.createClinicsReducer?.loading ?
                                                 <Spinner className="spinner-border-sm" />
                                                 :

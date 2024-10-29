@@ -61,6 +61,12 @@ const MENU_ITEMS = [
         icon: 'uil-user-circle',
         url: '/apps/roles/list',
     },
+    {
+        key: 'subscriptions',
+        label: 'Subscriptions',
+        icon: 'uil-money-withdrawal',
+        url: '/apps/subscriptions/list',
+    },
 
     // {
     //     key: 'pages',

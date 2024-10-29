@@ -88,7 +88,7 @@ const Permissions = () => {
                                     <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
                                 </Col>
                                 <Col xs='auto'>
-                                    <Button className='grayish-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button>
+                                    <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button>
                                 </Col>
                                 <AddPermissions show={showModal} closeModal={handleClosemodal} />
                             </Row>
@@ -177,10 +177,10 @@ const Permissions = () => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={closeDeleteModal} className='grayish-buttons'>
+                    <Button onClick={closeDeleteModal} className='custom-buttons'>
                         Cancel
                     </Button>
-                    <Button onClick={handleDelete} className='grayish-buttons' disabled={store?.deletePermissionsDataReducer?.loading}>
+                    <Button onClick={handleDelete} className='custom-buttons' disabled={store?.deletePermissionsDataReducer?.loading}>
                         {store?.deletePermissionsDataReducer?.loading ?
                             <Spinner className="spinner-border-sm " />
                             :

@@ -9,6 +9,7 @@ import { createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateCl
 import { getDoctorsReducer } from './doctors/reducers';
 import { getAnalyticsReducer } from './dashboard/reducers';
 import { getPatientsReducer } from './patients/reducers';
+import { getSubscriptionsReducer } from './subscriptions/reducers';
 export default (combineReducers({
     Auth,
     Layout,
@@ -18,4 +19,5 @@ export default (combineReducers({
     getAnalyticsReducer,
     getDoctorsReducer,
     getPatientsReducer,
+    getSubscriptionsReducer,
 }): any);

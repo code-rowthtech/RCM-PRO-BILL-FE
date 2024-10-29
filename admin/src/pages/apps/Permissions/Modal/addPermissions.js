@@ -65,7 +65,7 @@ const AddPermissions = ({ show, closeModal }) => {
 
                     </Row>
                     <Modal.Footer>
-                        <Button type='submit' className='grayish-buttons' disabled={store?.createPermissionsDataReducer?.loading}>
+                        <Button type='submit' className='custom-buttons' disabled={store?.createPermissionsDataReducer?.loading}>
                             {store?.createPermissionsDataReducer?.loading ?
                                 <Spinner className="spinner-border-sm" />
                                 :

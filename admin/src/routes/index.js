@@ -36,6 +36,8 @@ const AllClinics = React.lazy(() => import('../pages/apps/Clinic/AllClinics'));
 const AddClinics = React.lazy(() => import('../pages/apps/Clinic/AddClinic/index'));
 const UpdateClinic = React.lazy(() => import('../pages/apps/Clinic/AllClinics/updateClinic'));
 const AppointmentsList = React.lazy(() => import('../pages/apps/Appointments/index'));
+const Subscriptions = React.lazy(() => import('../pages/apps/Subscriptions/index'));
+const AddSubscriptions = React.lazy(() => import('../pages/apps/Subscriptions/Addsubscriptions/index'));
 const Doctors = React.lazy(() => import('../pages/apps/Doctors/index'));
 const Patients = React.lazy(() => import('../pages/apps/Patients/index'));
 const Permissions = React.lazy(() => import('../pages/apps/Permissions/index'))
@@ -241,6 +243,24 @@ const AllRoutes = () => {
                                 {
                                     path: 'list',
                                     element: <LoadComponent component={Doctors} />,
+                                },
+                            ],
+                        },
+                        {
+                            path: 'subscriptions',
+                            children: [
+                                {
+                                    path: 'list',
+                                    element: <LoadComponent component={Subscriptions} />,
+                                },
+                            ],
+                        },
+                        {
+                            path: 'subscriptions',
+                            children: [
+                                {
+                                    path: 'add',
+                                    element: <LoadComponent component={AddSubscriptions} />,
                                 },
                             ],
                         },

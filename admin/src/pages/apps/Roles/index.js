@@ -67,7 +67,7 @@ const Roles = () => {
                                     <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
                                 </Col>
                                 <Col xs='auto'>
-                                    <Button className='grayish-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Roles</Button>
+                                    <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Roles</Button>
                                 </Col>
                                 <AddRoles show={showModal} closeModal={handleClosemodal} />
                             </Row>

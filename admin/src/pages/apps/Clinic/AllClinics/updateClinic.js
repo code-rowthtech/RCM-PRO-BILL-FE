@@ -132,7 +132,7 @@ const UpdateClinic = () => {
                                             </Form.Group>
                                         </Col>
                                         <Col md={12} className="mt-2 text-end">
-                                            <Button variant="primary" type="submit" disabled={updateLoading} className="grayish-buttons">
+                                            <Button variant="primary" type="submit" disabled={updateLoading} className="custom-buttons">
                                                 {updateLoading ? <Spinner className="spinner-border-sm" /> : 'Update'}
                                             </Button>
                                         </Col>

@@ -118,7 +118,7 @@ const Login = (): React$Element<any> => {
                     </FormInput>
 
                     <div className="mb-3 mb-0 text-center">
-                        <Button className='grayish-buttons' type="submit" disabled={loading}>
+                        <Button className='custom-buttons' type="submit" disabled={loading}>
                             {loading ?
                                 <Spinner className="spinner-border-sm " />
                                 :

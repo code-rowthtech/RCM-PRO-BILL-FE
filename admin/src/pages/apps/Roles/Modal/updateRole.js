@@ -109,7 +109,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
                         </Col>
                     </Row>
                     <Modal.Footer>
-                        <Button type='submit' className='grayish-buttons' disabled={store?.updateRolesReducer?.loading}>
+                        <Button type='submit' className='custom-buttons' disabled={store?.updateRolesReducer?.loading}>
                             {store?.updateRolesReducer?.loading ?
                                 <Spinner className="spinner-border-sm" />
                                 :

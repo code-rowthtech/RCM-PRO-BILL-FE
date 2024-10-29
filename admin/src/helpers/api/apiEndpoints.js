@@ -20,3 +20,5 @@ export const getDoctor = '/api/v1/admin/getAllDoctors';
 export const getPatients = '/api/v1/admin/getAllPatients';
 // DASHBOARD
 export const getAnalytics = '/api/v1/admin/analytics';
+// SUBSCRIPTIONS
+export const getSubscriptions = '/api/v1/admin/subscription/all'

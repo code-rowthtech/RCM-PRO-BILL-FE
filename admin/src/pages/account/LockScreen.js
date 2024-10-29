@@ -70,7 +70,7 @@ const LockScreen = (): React$Element<any> => {
                     />
 
                     <div className="mb-0 text-center">
-                        <Button variant="primary" className='grayish-buttons' type="submit">
+                        <Button variant="primary" className='custom-buttons' type="submit">
                             {t('Log In')}
                         </Button>
                     </div>
