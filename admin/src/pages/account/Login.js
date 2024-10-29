@@ -17,6 +17,7 @@ import AccountLayout from './AccountLayout';
 import { decryptMessage, encryptMessage } from '../../cryptoUtils';
 import Loader from '../../components/Loader';
 import Spinner from '../../constants/Spinner';
+import ToastHandle from '../../helpers/ToastMessage';
 
 /* bottom link of account pages */
 const BottomLink = () => {
@@ -52,6 +53,11 @@ const Login = (): React$Element<any> => {
         error: state.Auth.error,
         userLoggedIn: state.Auth.userLoggedIn,
     }));
+    useEffect(() => {
+        if (error) {
+            ToastHandle(error, 'danger')
+        }
+    }, [error])
     /*
     form validation schema
     */

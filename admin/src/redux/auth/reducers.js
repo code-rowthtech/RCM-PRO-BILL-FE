@@ -54,7 +54,7 @@ const Auth = (state: State = INIT_STATE, action: AuthAction): any => {
                 case AuthActionTypes.FORGOT_PASSWORD_CHANGE: {
                     return {
                         ...state,
-                        changePasswordSuccess: JSON.parse(action.payload.data),
+                        changePasswordSuccess: action?.payload?.data,
                         loading: false,
                         passwordChange: true,
                     };
@@ -66,6 +66,7 @@ const Auth = (state: State = INIT_STATE, action: AuthAction): any => {
         case AuthActionTypes.API_RESPONSE_ERROR:
             switch (action.payload.actionType) {
                 case AuthActionTypes.LOGIN_USER: {
+                    // console.log(action.payload.error, 'action.payload')
                     return {
                         ...state,
                         error: action.payload.error,
