@@ -35,7 +35,9 @@ function* login({ payload }) {
         }
         // NOTE - You can change this according to response format from your api
         api.setLoggedInUser(userData);
-        setAuthorization(user['token']);
+        // setAuthorization(user['token']);
+        setAuthorization(userData.token); // Corrected to use userData.token
+
         yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, userData));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.LOGIN_USER, error));
