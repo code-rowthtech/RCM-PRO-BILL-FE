@@ -16,7 +16,6 @@ const Patients = () => {
     const [search, setSearch] = useState('');
     const [detailsModal, setDetailsModal] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
-    console.log(selectedDetails)
     const decrytedPatientsData = store?.getPatientsReducer?.data?.patients;
     useEffect(() => {
         const payload = {

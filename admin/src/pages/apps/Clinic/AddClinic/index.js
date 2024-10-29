@@ -64,7 +64,7 @@ const Index = () => {
             });
             return;
         }
-        console.log(data, 'ssssssssssss')
+        // console.log(data, 'ssssssssssss')
         const clinicRoleId = decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id;
         const payload = {
             email: data?.email,

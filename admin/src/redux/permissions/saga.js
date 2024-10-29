@@ -17,7 +17,7 @@ function* addPermissionsFunction(data) {
             payload: {},
         });
         const response = yield call(createPermissionsApi, data);
-        console.log(response, "response")
+        // console.log(response, "response")
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         // console.log(decryptedData, 'decryptedData')
         if (response.status === 201) {
@@ -34,7 +34,6 @@ function* addPermissionsFunction(data) {
         }
 
     } catch (error) {
-        console.log(error, 'errrrrrrr')
         yield put({
             type: PermissionsActionTypes.CREATE_PERMISSIONS_ERROR,
             payload: error,

@@ -36,7 +36,7 @@ function* login({ payload }) {
         // NOTE - You can change this according to response format from your api
         api.setLoggedInUser(userData);
         // setAuthorization(user['token']);
-        setAuthorization(userData.token); // Corrected to use userData.token
+        setAuthorization(userData?.token); // Corrected to use userData.token
 
         yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, userData));
     } catch (error) {
@@ -89,13 +89,6 @@ function* forgotPassword({ payload }) {
 
 function* forgotPasswordChange({ payload }) {
     const { token, newPassword } = payload;
-    const encryptedToken = {
-        token: encryptMessage(token)
-    }
-    const headers = {
-        'Authorization': `${encryptedToken}`,
-        'Content-Type': 'application/json'
-    };
 
     const passwordPayload = {
         newPassword: newPassword
@@ -105,7 +98,8 @@ function* forgotPasswordChange({ payload }) {
     }
 
     try {
-        const response = yield call(forgotPasswordConfirm, encryptedNewPassword, headers);
+        setAuthorization(token)
+        const response = yield call(forgotPasswordConfirm, encryptedNewPassword);
         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD_CHANGE, response.data));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD_CHANGE, error));

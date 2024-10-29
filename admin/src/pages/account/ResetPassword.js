@@ -1,12 +1,12 @@
 // @flow
 import React, { useEffect, useState } from 'react';
 import { Button, Alert, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-
+import ToastHandle from '../../helpers/ToastMessage';
 //actions
 import { resetAuth, forgotPasswordChange } from '../../redux/actions';
 
@@ -14,6 +14,7 @@ import { resetAuth, forgotPasswordChange } from '../../redux/actions';
 import { VerticalForm, FormInput } from '../../components/';
 
 import AccountLayout from './AccountLayout';
+import { decryptMessage } from '../../cryptoUtils';
 
 /* bottom link */
 const BottomLink = () => {
@@ -51,6 +52,7 @@ const ResetPassword = (): React$Element<any> => {
         dispatch(resetAuth());
     }, [dispatch]);
 
+    const store = useSelector((state) => state);
     const { loading, passwordChange, changePasswordSuccess } = useSelector((state) => ({
         loading: state.Auth.loading,
         passwordChange: state.Auth.passwordChange,
@@ -74,9 +76,23 @@ const ResetPassword = (): React$Element<any> => {
      * handle form submission
      */
     const onSubmit = (formData) => {
+        // console.log(formData['password'])
         dispatch(forgotPasswordChange({ token: token, newPassword: formData['password'] }));
     };
+    const navigate = useNavigate();
 
+    // console.log(decryptMessage(changePasswordSuccess), '34567977568768')
+    // console.log(changePasswordSuccess, 'changePasswordSuccesschangePasswordSuccesschangePasswordSuccesschangePasswordSuccesschangePasswordSuccess')
+    useEffect(() => {
+
+        if (changePasswordSuccess) {
+            const successReset = JSON.parse(decryptMessage(changePasswordSuccess?.data));
+            if (successReset?.status === 200) {
+                ToastHandle(successReset?.massage, 'success');
+                navigate('/account/login');
+            }
+        }
+    }, [changePasswordSuccess])
     return (
         <>
             <AccountLayout bottomLinks={<BottomLink />}>
