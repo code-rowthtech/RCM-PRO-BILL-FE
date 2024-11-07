@@ -52,13 +52,13 @@ const Roles = () => {
     }
     return (
         <div>
-            <PageTitle
+            {/* <PageTitle
                 breadCrumbItems={[
                     { label: 'Roles', path: '/apps/Roles/list', active: true },
                 ]}
                 title={'Roles'}
-            />
-            <Row>
+            /> */}
+            <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body>
@@ -74,7 +74,7 @@ const Roles = () => {
                             <Row>
                                 <Col>
                                     <Table responsive className="table-centered table-nowrap mb-0">
-                                        <thead className="table-light">
+                                        <thead className="">
                                             <tr key={''}>
                                                 <th>
                                                     S.no

@@ -8,3 +8,13 @@ export function getSubscriptionsApi(params: any): any {
     return api.get(URL.getSubscriptions, data);
 }
 
+export function createSubscriptionsApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.createSubscriptions, data);
+}
+
+export function updateSubscriptionsApi(params: any): any {
+    const { data } = params;
+    return api.update(URL.updateSubscriptions, data);
+}
+

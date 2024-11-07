@@ -26,7 +26,7 @@ type OrderListProps = {
 const AppointmentsList = ({ orderData }: OrderListProps): React$Element<React$FragmentType> => {
     return (
         <Table responsive className="table-centered table-nowrap mb-0">
-            <thead className="table-light">
+            <thead>
                 <tr key={''}>
                     {/* <th style={{ width: '20px' }}>
                         <Form>
@@ -88,14 +88,14 @@ const AppointmentsList = ({ orderData }: OrderListProps): React$Element<React$Fr
 const Appointments = ({ orderData }: { orderData: Array<OrderListItems> }): React$Element<React$FragmentType> => {
     return (
         <>
-            <PageTitle
+            {/* <PageTitle
                 breadCrumbItems={[
                     { label: 'Appointments', path: '/apps/appointments/list', active: true },
                 ]}
                 title={'Appointment List'}
-            />
+            /> */}
 
-            <Row>
+            <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body>

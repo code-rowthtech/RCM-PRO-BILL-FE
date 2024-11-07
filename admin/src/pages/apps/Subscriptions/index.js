@@ -6,52 +6,64 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Paginations from '../../../helpers/Paginations'
 import Spinner from '../../../constants/Spinner'
-import { getSubscriptionsAction } from '../../../redux/subscriptions/actions'
+import { getSubscriptionsAction, stateEmptydAction, updateSubscriptionsAction } from '../../../redux/subscriptions/actions'
+import AddSubscriptions from './Modal/createPlan'
+import { encryptMessage } from '../../../cryptoUtils'
+import UpdateSubscriptions from './Modal/updatePlan'
 const Subscriptions = () => {
     const [skip, setSkip] = useState(1);
     const [search, setSearch] = useState('');
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
+    const [showModal, setShowModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [dataToUpdate, setDataToUpdate] = useState(null);
     const subscriptionsResponse = store?.getSubscriptionsReducer?.data;
-    const map = []
-    console.log(subscriptionsResponse, 'subscriptionsResponse')
+    const createSuccess = store?.createSubscriptionsReducer?.data?.status;
+    const updateSuccess = store?.updateSubscriptionsReducer?.data?.status;
     useEffect(() => {
         dispatch(getSubscriptionsAction());
-    }, [dispatch])
+        if (createSuccess === 201 || updateSuccess === 200) {
+            dispatch(stateEmptydAction())
+            dispatch(getSubscriptionsAction());
+        }
+    }, [dispatch, createSuccess, updateSuccess])
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber);
     };
 
+    const handleCloseModal = () => {
+        setShowModal(false);
+    }
+
+    const handleCloseUpdateModal = () => {
+        setShowUpdateModal(false);
+        setDataToUpdate(null);
+    }
+
+    const handleStatusUpdate = (data) => {
+        dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive }) }))
+    }
+
     return (
         <div>
-            <PageTitle
-                breadCrumbItems={[
-                    { label: 'Subscriptions', path: '/apps/subscriptions/list', active: true },
-                ]}
-                title={'Subscriptions'}
-            />
-            <Row>
+            <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body>
                             <Row className="mb-2">
-                                {/* <Col xs="auto">
-                                    <FormInput
-                                        type="text"
-                                        onChange={(e) => setSearch(e.target.value)}
-                                        placeholder="Search..." />
-                                </Col> */}
                                 <Col className='text-end'>
-                                    <Button as="a" href="/apps/subscriptions/add" className="custom-buttons">
+                                    <Button onClick={() => setShowModal(true)} className="custom-buttons">
                                         Add Subscriptions
                                     </Button>
+                                    <AddSubscriptions show={showModal} closeModal={handleCloseModal} />
 
                                 </Col>
                             </Row>
                             <Row>
                                 <Col>
                                     <Table responsive className="table-centered table-nowrap mb-0">
-                                        <thead className="table-light">
+                                        <thead className="">
                                             <tr key={''}>
                                                 <th>Plan name</th>
                                                 <th>Description</th>
@@ -59,6 +71,7 @@ const Subscriptions = () => {
                                                 <th>Billing</th>
                                                 <th>Doctor Limit</th>
                                                 <th>Patient Limit</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -86,8 +99,12 @@ const Subscriptions = () => {
                                                                 </Link>
                                                             </td>
                                                             <td>
-                                                                {data?.description}
-
+                                                                <span
+                                                                    data-bs-toggle="tooltip"
+                                                                    title={data?.description}
+                                                                    className="d-inline-block text-truncate text-capitalize cursor-pointer">
+                                                                    {data?.description.substring(0, 20) + '...'}
+                                                                </span>
                                                             </td>
                                                             <td className='text-capitalize'>{data?.price}</td>
                                                             <td className='text-capitalize'>
@@ -102,14 +119,16 @@ const Subscriptions = () => {
                                                                 {data?.patientLimit}
                                                             </td>
                                                             <td>
-                                                                <Link to="#" className="action-icon">
-                                                                    <i
-                                                                        onClick={() => {
-                                                                            // setDetailsModal(true);
-                                                                            // setSelectedDetails(data);
-                                                                        }}
-                                                                        className="mdi mdi-eye cursor-pointer"></i>
+                                                                <Form.Switch onClick={() => handleStatusUpdate(data)} checked={data?.isActive} />
+                                                            </td>
+                                                            <td>
+                                                                <Link to="#" className="action-icon" onClick={() => {
+                                                                    setShowUpdateModal(true);
+                                                                    setDataToUpdate(data);
+                                                                }}>
+                                                                    <i className="mdi mdi-square-edit-outline"></i>
                                                                 </Link>
+                                                                <UpdateSubscriptions show={showUpdateModal} data={dataToUpdate} closeModal={handleCloseUpdateModal} />
                                                             </td>
                                                         </tr>
                                                     ))

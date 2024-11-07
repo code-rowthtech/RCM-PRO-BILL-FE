@@ -8,9 +8,9 @@ const Statistics = (data): React$Element<React$FragmentType> => {
     const statisticsData = data?.data?.data;
     const store = useSelector((state) => state);
     return (
-        <Row>
+        <Row className='mt-2'>
             <Col xs={12}>
-                <Card className="widget-inline">
+                <Card className="widget-inline ">
                     <Card.Body className="p-0">
                         {store?.getAnalyticsReducer?.loading ?
                             <Row className="g-0 py-4">
@@ -21,7 +21,7 @@ const Statistics = (data): React$Element<React$FragmentType> => {
                             :
                             <Row className="g-0">
                                 <Col sm={6} lg={3}>
-                                    <Card className="shadow-none m-0">
+                                    <Card className="shadow-none box-shadow-none m-0">
                                         <Card.Body className="text-center">
                                             <i className="dripicons-briefcase text-muted font-24"></i>
                                             <h3>
@@ -33,7 +33,7 @@ const Statistics = (data): React$Element<React$FragmentType> => {
                                 </Col>
 
                                 <Col sm={6} lg={3}>
-                                    <Card className="shadow-none m-0 border-start">
+                                    <Card className="shadow-none box-shadow-none m-0 border-start">
                                         <Card.Body className="text-center">
                                             <i className="dripicons-checklist text-muted font-24"></i>
                                             <h3>
@@ -45,7 +45,7 @@ const Statistics = (data): React$Element<React$FragmentType> => {
                                 </Col>
 
                                 <Col sm={6} lg={3}>
-                                    <Card className="shadow-none m-0 border-start">
+                                    <Card className="shadow-none box-shadow-none m-0 border-start">
                                         <Card.Body className="text-center">
                                             <i className="dripicons-user-group text-muted font-24"></i>
                                             <h3>
@@ -57,7 +57,7 @@ const Statistics = (data): React$Element<React$FragmentType> => {
                                 </Col>
 
                                 <Col sm={6} lg={3}>
-                                    <Card className="shadow-none m-0 border-start">
+                                    <Card className="shadow-none box-shadow-none m-0 border-start">
                                         <Card.Body className="text-center">
                                             <i className="dripicons-graph-line text-muted font-24"></i>
                                             <h3>

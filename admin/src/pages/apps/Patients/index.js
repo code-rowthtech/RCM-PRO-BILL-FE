@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { getPatientsAction } from '../../../redux/patients/actions';
 import Spinner from '../../../constants/Spinner';
 import Paginations from '../../../helpers/Paginations';
+import { IoMdClose } from 'react-icons/io';
 const Patients = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -36,13 +37,13 @@ const Patients = () => {
 
     return (
         <>
-            <PageTitle
+            {/* <PageTitle
                 breadCrumbItems={[
                     { label: 'Patients', path: '/apps/patients/list', active: true },
                 ]}
                 title={'Patients'}
-            />
-            <Row>
+            /> */}
+            <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body>
@@ -54,7 +55,7 @@ const Patients = () => {
                             <Row>
                                 <Col>
                                     <Table responsive className="table-centered table-nowrap mb-0">
-                                        <thead className="table-light">
+                                        <thead className="tablelight">
                                             <tr key={''}>
                                                 <th>Full name</th>
                                                 <th>Insaurance Provider</th>
@@ -140,14 +141,23 @@ const Patients = () => {
                     </Card>
                 </Col>
             </Row>
-            <Modal show={detailsModal} onHide={closeDetailsModal}>
-                <Modal.Header
+            <Modal centered show={detailsModal} onHide={closeDetailsModal}>
+                {/* <Modal.Header
                     onHide={closeDetailsModal}
                     closeButton
                     className={'modal-colored-header pb-0 border-0 text-center'}>
-                </Modal.Header>
+                </Modal.Header> */}
                 <Modal.Body>
-                    <h4 className="mt-0 text-center">Patient Details</h4>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Patient Details</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={closeDetailsModal} />
+                        </Col>
+                    </Row>
+                    {/* <h4 className="mt-0 text-center">Patient Details</h4> */}
                     <Row>
                         <Col className='light-border-bottom d-flex justify-content-between align-items-center'>
                             <Col sm={6}>

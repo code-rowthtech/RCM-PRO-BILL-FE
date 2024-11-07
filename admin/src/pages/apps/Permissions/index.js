@@ -10,6 +10,7 @@ import { decryptMessage, encryptMessage } from '../../../cryptoUtils';
 import Loader from '../../../components/Loader';
 import Spinner from '../../../constants/Spinner';
 import Paginations from '../../../helpers/Paginations';
+import { IoMdClose } from 'react-icons/io';
 const Permissions = () => {
     const [showModal, setShowModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
@@ -73,13 +74,13 @@ const Permissions = () => {
     }
     return (
         <div>
-            <PageTitle
+            {/* <PageTitle
                 breadCrumbItems={[
                     { label: 'Permissions', path: '/apps/Permissions/list', active: true },
                 ]}
                 title={'Permissions'}
-            />
-            <Row>
+            /> */}
+            <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body>
@@ -95,7 +96,7 @@ const Permissions = () => {
                             <Row>
                                 <Col>
                                     <Table responsive className="table-centered table-nowrap mb-0">
-                                        <thead className="table-light">
+                                        <thead>
                                             <tr key={''}>
                                                 <th>Permission</th>
                                                 <th>Description</th>
@@ -163,14 +164,23 @@ const Permissions = () => {
                     </Card>
                 </Col>
             </Row>
-            <Modal show={deleteModal} onHide={closeDeleteModal}>
-                <Modal.Header
+            <Modal centered show={deleteModal} onHide={closeDeleteModal}>
+                {/* <Modal.Header
                     onHide={closeDeleteModal}
                     closeButton
                     className={'modal-colored-header pb-0 border-0 text-center'}>
-                </Modal.Header>
+                </Modal.Header> */}
                 <Modal.Body>
-                    <h4 className="mt-0 text-center">Delete Permission</h4>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Delete Permission</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={closeDeleteModal} />
+                        </Col>
+                    </Row>
+                    {/* <h4 className="mt-0 text-center">Delete Permission</h4> */}
                     <p>
                         Are you sure you want to remove the selected permissions?
                         This action cannot be undone.

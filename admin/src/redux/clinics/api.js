@@ -18,6 +18,16 @@ export function getClinicByIdApi(params: any): any {
     return api.create(URL.getClinicById, data);
 }
 
+export function getStateByCountry(params: any): any {
+    const { data } = params;
+    return api.get(URL.getStatedByCountry, data);
+}
+
+export function getCityByStateApi(params: any): any {
+    const { data } = params;
+    return api.get(`${URL.getCityByState}${data?.state_code}`);
+}
+
 export function getClinicApi(params: any): any {
     const { data } = params;
     return api.get(`${URL.getClinic}?name=${data?.payload?.name}&page=${data?.payload?.skip}&limit=${data?.payload?.limit}`);

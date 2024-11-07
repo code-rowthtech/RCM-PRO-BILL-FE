@@ -9,27 +9,26 @@ const MENU_ITEMS = [
         icon: 'uil-home-alt',
         url: '/dashboard/project',
     },
+    // {
+    //     key: 'apps-crm',
+    //     label: 'Clinics',
+    //     isTitle: false,
+    //     // badge: { variant: 'danger', text: 'New' },
+    //     icon: 'uil-ambulance',
+    //     children: [
+    //         {
+    //             key: 'add-clinic',
+    //             label: 'Add Clinics',
+    //             url: '/apps/crm/addclinic',
+    //             parentKey: 'apps-crm',
+    //         },
+    //     ]
+    // },
     {
-        key: 'apps-crm',
+        key: 'all-clinic',
         label: 'Clinics',
-        isTitle: false,
-        // badge: { variant: 'danger', text: 'New' },
-        icon: 'uil-ambulance',
-        children: [
-            {
-                key: 'add-clinic',
-                label: 'Add Clinics',
-                url: '/apps/crm/addclinic',
-                parentKey: 'apps-crm',
-            },
-            {
-                key: 'all-clinic',
-                label: 'All Clinics',
-                url: '/apps/crm/orders',
-                parentKey: 'apps-crm',
-            },
-
-        ]
+        url: '/apps/crm/orders',
+        icon: 'uil-map-pin',
     },
     {
         key: 'doctors',
@@ -67,70 +66,69 @@ const MENU_ITEMS = [
         icon: 'uil-money-withdrawal',
         url: '/apps/subscriptions/list',
     },
-
     // {
-    //     key: 'pages',
-    //     label: 'Pages',
-    //     isTitle: false,
-    //     icon: 'uil-copy-alt',
-    //     children: [
-    //         {
-    //             key: 'page-invoice',
-    //             label: 'Invoice',
-    //             url: '/pages/invoice',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-pricing',
-    //             label: 'Pricing',
-    //             url: '/pages/pricing',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-maintenance',
-    //             label: 'Maintenance',
-    //             url: '/maintenance',
-    //             target: '_blank',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-error-404',
-    //             label: 'Error - 404',
-    //             url: '/error-404',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-error-404-alt',
-    //             label: 'Error - 404-alt',
-    //             url: '/pages/error-404-alt',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-error-500',
-    //             label: 'Error - 500',
-    //             url: '/error-500',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-starter',
-    //             label: 'Starter Page',
-    //             url: '/pages/starter',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-preloader',
-    //             label: 'With Preloader',
-    //             url: '/pages/preloader',
-    //             parentKey: 'pages',
-    //         },
-    //         {
-    //             key: 'page-timeline',
-    //             label: 'Timeline',
-    //             url: '/pages/timeline',
-    //             parentKey: 'pages',
-    //         },
-    //     ],
+    //     key: 'settings',
+    //     label: 'Settings',
+    //     icon: 'bi-gear',
+    //     url: '/apps/subscriptions/list',
     // },
+
+    {
+        key: 'settings',
+        label: 'Settings',
+        isTitle: false,
+        icon: 'uil-copy-alt',
+        children: [
+            {
+                key: 'planname',
+                label: 'Plan Name',
+                url: '/settings/planName',
+                parentKey: 'settings',
+            },
+            {
+                key: 'speciality',
+                label: 'Speciality',
+                url: '/settings/speciality',
+                parentKey: 'settings',
+            },
+            {
+                key: 'department',
+                label: 'Departments',
+                url: '/settings/department',
+                parentKey: 'settings',
+            },
+            {
+                key: 'contractformat',
+                label: 'Contract Format',
+                url: '/settings/contractFormat',
+                parentKey: 'settings',
+            },
+            {
+                key: 'designation',
+                label: 'Designation',
+                url: '/settings/designation',
+                parentKey: 'settings',
+            },
+            {
+                key: 'bloodGroup',
+                label: 'Blood Group',
+                url: '/settings/bloodGroup',
+                parentKey: 'settings',
+            },
+            {
+                key: 'clinicType',
+                label: 'Clinic Type',
+                url: '/settings/clinicType',
+                parentKey: 'settings',
+            },
+            {
+                key: 'location',
+                label: 'Location',
+                url: '/settings/location',
+                parentKey: 'settings',
+            },
+        ],
+    },
     // { key: 'components', label: 'Components', isTitle: true },
     // {
     //     key: 'base-ui',

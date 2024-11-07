@@ -104,7 +104,7 @@ const DetachedLayout = ({ children }: VerticalLayoutProps, state: VerticalLayout
                 <Topbar
                     isMenuOpened={isMenuOpened}
                     openLeftMenuCallBack={openMenu}
-                    navCssClasses="topnav-navbar topnav-navbar-dark"
+                    navCssClasses="topnav-navbar topnav-navbar-dark "
                     topbarDark={true}
                 />
             </Suspense>

@@ -124,15 +124,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
 
                     <ul className="list-unstyled topbar-menu float-end mb-0">
                         <li className="dropdown notification-list">
-                            {/* <NotificationDropdown notifications={Notifications} /> */}
                         </li>
-                        {/* <li className="notification-list">
-                            <button
-                                className="nav-link dropdown-toggle end-bar-toggle arrow-none btn btn-link shadow-none"
-                                onClick={handleRightSideBar}>
-                                <i className="dripicons-gear noti-icon"></i>
-                            </button>
-                        </li> */}
                         <li className="dropdown notification-list">
                             <ProfileDropdown
                                 profilePic={profilePic}
@@ -145,9 +137,12 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
 
                     {/* toggle for vertical layout */}
                     {(layoutType === layoutConstants.LAYOUT_VERTICAL || layoutType === layoutConstants.LAYOUT_FULL) && (
-                        <button className="button-menu-mobile open-left" onClick={handleLeftMenuCallBack}>
-                            <i className="mdi mdi-menu" />
-                        </button>
+                        <div className='d-flex align-items-center'>
+                            <button className="button-menu-mobile open-left" onClick={handleLeftMenuCallBack}>
+                                <i className="mdi mdi-menu" />
+                            </button>
+                            <h4 className=''>Title</h4>
+                        </div>
                     )}
 
                     {/* toggle for horizontal layout */}

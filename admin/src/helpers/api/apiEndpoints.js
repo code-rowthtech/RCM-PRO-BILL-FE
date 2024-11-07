@@ -13,6 +13,8 @@ export const createClinic = '/api/v1/admin/users/create';
 export const updateClinic = '/api/v1/admin/users/edit';
 export const getClinic = '/api/v1/clinics';
 export const getClinicById = '/api/v1/clinic/byId';
+export const getStatedByCountry = '/api/v1/states/US'
+export const getCityByState = '/api/v1/cities/'
 
 // DOCTORS
 export const getDoctor = '/api/v1/admin/getAllDoctors';
@@ -22,3 +24,8 @@ export const getPatients = '/api/v1/admin/getAllPatients';
 export const getAnalytics = '/api/v1/admin/analytics';
 // SUBSCRIPTIONS
 export const getSubscriptions = '/api/v1/admin/subscription/all'
+export const createSubscriptions = '/api/v1/admin/subscription/add'
+export const updateSubscriptions = '/api/v1/admin/subscription/update'
+// SETTINGS
+export const addMastersData = '/api/v1/masterdata';
+export const getMastersData = '/api/v1/masterdata/getmasterData';

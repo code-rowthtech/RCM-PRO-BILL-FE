@@ -6,13 +6,10 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-
 //actions
 import { resetAuth, loginUser } from '../../redux/actions';
-
 // components
 import { VerticalForm, FormInput } from '../../components/';
-
 import AccountLayout from './AccountLayout';
 import { decryptMessage, encryptMessage } from '../../cryptoUtils';
 import Loader from '../../components/Loader';
@@ -22,17 +19,16 @@ import ToastHandle from '../../helpers/ToastMessage';
 /* bottom link of account pages */
 const BottomLink = () => {
     const { t } = useTranslation();
-
     return (
         <Row className="mt-3">
             {/* <Col className="text-center">
-                <p className="text-muted">
-                    {t("Don't have an account?")}{' '}
-                    <Link to={'/account/register'} className="text-muted ms-1">
-                        <b>{t('Sign Up')}</b>
-                    </Link>
-                </p>
-            </Col> */}
+                    <p className="text-muted">
+                        {t("Don't have an account?")}{' '}
+                        <Link to={'/account/register'} className="text-muted ms-1">
+                            <b>{t('Sign Up')}</b>
+                        </Link>
+                    </p>
+                </Col> */}
         </Row>
     );
 };
@@ -53,21 +49,23 @@ const Login = (): React$Element<any> => {
         error: state.Auth.error,
         userLoggedIn: state.Auth.userLoggedIn,
     }));
+
     useEffect(() => {
         if (error) {
             ToastHandle(error, 'danger')
         }
-    }, [error])
+    }, [error]);
+
     /*
     form validation schema
     */
+
     const schemaResolver = yupResolver(
         yup.object().shape({
             username: yup.string().required(t('Please enter Username')),
             password: yup.string().required(t('Please enter Password')),
         })
     );
-
 
     /*
     handle form submission
@@ -79,7 +77,6 @@ const Login = (): React$Element<any> => {
     return (
         <>
             {(userLoggedIn || user) && <Navigate to={redirectUrl} replace />}
-
             <AccountLayout bottomLinks={<BottomLink />}>
                 <div className="text-center w-75 m-auto">
                     <h4 className="text-dark-50 text-center mt-0 fw-bold">{t('Sign In')}</h4>
