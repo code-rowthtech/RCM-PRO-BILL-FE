@@ -103,10 +103,10 @@ const Subscriptions = () => {
                                                                     data-bs-toggle="tooltip"
                                                                     title={data?.description}
                                                                     className="d-inline-block text-truncate text-capitalize cursor-pointer">
-                                                                    {data?.description.substring(0, 20) + '...'}
+                                                                    {data?.description?.slice(0, 20) + '...'}
                                                                 </span>
                                                             </td>
-                                                            <td className='text-capitalize'>{data?.price}</td>
+                                                            <td className='text-capitalize'>{data?.totalAmount}</td>
                                                             <td className='text-capitalize'>
                                                                 {data?.billingFrequency}
 

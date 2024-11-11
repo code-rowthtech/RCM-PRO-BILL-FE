@@ -22,7 +22,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [status, setStatus] = useState(true);
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log({ clinicsData })
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     useEffect(() => {
         const payload = {
@@ -41,7 +40,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
             id: data?._id,
             status: !data?.status
         }
-
         dispatch(updateClinicAction({ key: encryptMessage(payload) }));
         dispatch(stateEmptydAction());
     }
@@ -55,14 +53,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
 
     return (
         <>
-            {/* <PageTitle
-                breadCrumbItems={[
-                    { label: 'Clinics', path: '/apps/crm/orders', active: true },
-                    { label: 'All clinics', path: '/apps/crm/orders', active: true },
-                ]}
-                title={'All Clinics'}
-            /> */}
-
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
@@ -83,7 +73,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                         Inactive
                                     </Button>
                                 </Col>
-
                                 <Col sm={6} className='text-end'>
                                     <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
                                         <Col xs="auto" className='d-flex gap-2'>
@@ -96,26 +85,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                             </Button>
                                         </Col>
                                     </Row>
-
                                 </Col>
                             </Row>
-                            {/* <Row className="mb-2">
-                                <Col sm={8}>
-                                    <Row className="gy-2 gx-2 align-items-center justify-content-xl-start justify-content-between">
-                                        <Col xs="auto">
-                                            <FormInput
-                                                type="text"
-                                                onChange={(e) => setName(e.target.value)}
-                                                placeholder="Search..." />
-                                        </Col>
-                                    </Row>
-                                </Col>
-                                <Col sm={4} className='text-end'>
-                                    <Button as={Link} to="/apps/crm/addclinic" className="custom-buttons">
-                                        Add Clinics
-                                    </Button>
-                                </Col>
-                            </Row> */}
                             <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                                 <thead>
                                     <tr>
@@ -147,15 +118,23 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                             clinicsData && clinicsData?.map((data, i) => {
                                                 return (
                                                     <tr key={i}>
-                                                        <td className='text-capitalize'>
-                                                            <p className='mb-0'>{data?.name}</p>
-                                                            <h6 className='mb-0 text-muted fw-semibold'>{data?.email}</h6>
+                                                        <td className='d-flex align-items-center gap-2'>
+                                                            <img
+                                                                src="https://via.placeholder.com/150"
+                                                                alt="Placeholder"
+                                                                className='rounded-circle'
+                                                                width="40"
+                                                                height="40"
+                                                            />
+                                                            <span>
+                                                                <p className='mb-0 text-capitalize'>{data?.name}</p>
+                                                                <h6 className='my-0 text-muted fw-semibold'>{data?.email}</h6>
+                                                            </span>
                                                         </td>
                                                         <td>
-                                                            {/* {data?.address?.state} */}
-                                                            NY/Yonkers
+                                                            {data?.address?.city?.state_code + ' / ' + data?.address?.city?.name}
                                                         </td>
-                                                        <td>Cardiology</td>
+                                                        <td>{data?.clinicType?.name}</td>
                                                         <td>
                                                             8:00 AM 26th sep, 2024
                                                         </td>
@@ -168,13 +147,15 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span onClick={() => handleStatusUpdate(data)} className='bg-secondary rounded-1 text-white py-0 px-1'>
+                                                            <span
+                                                                //  onClick={() => handleStatusUpdate(data)}
+                                                                className='bg-secondary rounded-1 text-white py-0 px-1'>
                                                                 {data?.status === true ? 'Active' : 'Inactive'}
                                                             </span>
                                                             {/* <Form.Switch onClick={() => handleStatusUpdate(data)} checked={data?.status === true} /> */}
                                                         </td>
                                                         <td>
-                                                            <Link to={`/apps/crm/updateclinic?id=${data?._id}`} className="action-icon">
+                                                            <Link to={`/apps/crm/addclinic?updateid=${data?._id}`} className="action-icon">
                                                                 <i className="mdi mdi-square-edit-outline"></i>
                                                             </Link>
                                                         </td>

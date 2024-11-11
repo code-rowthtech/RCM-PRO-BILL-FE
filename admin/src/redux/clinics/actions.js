@@ -12,6 +12,7 @@ export const getClinicAction = (data): AuthAction => ({
     data
 });
 
+
 export const getStatesByCountryAction = (data): AuthAction => ({
     type: ClinicsActionTypes.GET_STATES,
     data
@@ -32,7 +33,16 @@ export const getClinicById = (data): AuthAction => ({
     data
 });
 
+export const addSubscriptionPlanAction = (data): LayoutAction => ({
+    type: ClinicsActionTypes.CREATE_SUBSCRIPTION,
+    data
+})
+
+export const getClinicByParentAction = (data): AuthAction => ({
+    type: ClinicsActionTypes.GET_CLINIC_BY_PARENT,
+    data
+});
+
 export const stateEmptydAction = (): LayoutAction => ({
     type: ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE,
-
 });

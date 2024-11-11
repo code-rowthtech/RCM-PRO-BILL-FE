@@ -5,7 +5,7 @@ import Auth from './auth/reducers';
 import Layout from './layout/reducers';
 import { getPermissionsDataReducer, createPermissionsDataReducer, deletePermissionsDataReducer, updatePermissionsDataReducer } from './permissions/reducers';
 import { createRolesReducer, getRolesDataReducer, updateRolesReducer } from './roles/reducers';
-import { createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateClinicsReducer, getStatesReducer, getCitiesReducer } from './clinics/reducers';
+import { createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateClinicsReducer, getStatesReducer, getCitiesReducer, createSubscriptionPlanReducer, getClinicsByParentReducer } from './clinics/reducers';
 import { getDoctorsReducer } from './doctors/reducers';
 import { getAnalyticsReducer } from './dashboard/reducers';
 import { getPatientsReducer } from './patients/reducers';
@@ -16,7 +16,7 @@ export default (combineReducers({
     Layout,
     createPermissionsDataReducer, getPermissionsDataReducer, deletePermissionsDataReducer, updatePermissionsDataReducer,
     createRolesReducer, getRolesDataReducer, updateRolesReducer,
-    createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateClinicsReducer, getStatesReducer, getCitiesReducer,
+    createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateClinicsReducer, getStatesReducer, getCitiesReducer, createSubscriptionPlanReducer, getClinicsByParentReducer,
     getAnalyticsReducer,
     getDoctorsReducer,
     getPatientsReducer,

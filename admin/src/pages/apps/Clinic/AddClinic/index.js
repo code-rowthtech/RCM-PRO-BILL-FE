@@ -12,6 +12,8 @@ import ToastHandle from '../../../../helpers/ToastMessage';
 import ClinicForm from './clinicForm';
 import BillingForm from './billing';
 import Contract from './contract';
+import { IoMdArrowRoundBack } from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
     const {
@@ -26,8 +28,10 @@ const Index = () => {
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [clinicId, setClinicId] = useState(null);
     const [activeTab, setActiveTab] = useState('clinic');
     const store = useSelector((state) => state);
+    const navigate = useNavigate()
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
     useEffect(() => {
@@ -49,7 +53,10 @@ const Index = () => {
                     <Card>
                         <Card.Body>
                             <Row className='mb-3'>
-                                <Col className='d-flex gap-3'>
+                                <Col className='d-flex align-items-center gap-3'>
+                                    {/* <span onClick={() => navigate(-1)}>
+                                        <IoMdArrowRoundBack />
+                                    </span> */}
                                     <span
                                         onClick={() => handleActiveTab('clinic')}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
@@ -66,16 +73,17 @@ const Index = () => {
                                         Contract
                                     </span>
                                 </Col>
+                                <Col className='text-end'>
+                                </Col>
                             </Row>
                             {activeTab === 'clinic' ?
-                                <ClinicForm setActiveTab={setActiveTab} activeTab={activeTab} />
+                                <ClinicForm setActiveTab={setActiveTab} activeTab={activeTab} setClinicId={setClinicId} clinicId={clinicId} />
                                 :
                                 activeTab === 'billing' ?
-                                    <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} />
+                                    <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} />
                                     :
-                                    <Contract setActiveTab={setActiveTab} activeTab={activeTab} />
+                                    <Contract setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} />
                             }
-
                         </Card.Body>
                     </Card>
                 </Col>

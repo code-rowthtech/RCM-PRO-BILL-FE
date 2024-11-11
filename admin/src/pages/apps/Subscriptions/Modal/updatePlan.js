@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { updateRolesAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { IoMdClose } from 'react-icons/io';
+import { getMastersDataAction } from '../../../../redux/settings/actions';
 
 const UpdateSubscriptions = ({ show, closeModal, data }) => {
     const {
@@ -15,7 +16,13 @@ const UpdateSubscriptions = ({ show, closeModal, data }) => {
     } = useForm();
 
     const dispatch = useDispatch();
-
+    const store = useSelector((state) => state);
+    useEffect(() => {
+        if (show) {
+            dispatch(getMastersDataAction({ status: true, category: 'plan_name', search: '', skip: '', limit: '' }));
+        }
+    }, [show])
+    const plans = store?.getMastersDataReducer?.data?.clinicTypes;
     useEffect(() => {
         // Reset form values with the passed data when the modal opens
         if (show && data) {

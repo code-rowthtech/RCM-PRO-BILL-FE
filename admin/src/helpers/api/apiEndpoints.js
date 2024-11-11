@@ -14,8 +14,9 @@ export const updateClinic = '/api/v1/admin/users/edit';
 export const getClinic = '/api/v1/clinics';
 export const getClinicById = '/api/v1/clinic/byId';
 export const getStatedByCountry = '/api/v1/states/US'
-export const getCityByState = '/api/v1/cities/'
-
+export const getCityByState = '/api/v1/cities/';
+export const addSubscriptionPlan = '/api/v1/admin/users/addSubscriptionPlan';
+export const getClinicsByParentId = '/api/v1/sub-clinics';
 // DOCTORS
 export const getDoctor = '/api/v1/admin/getAllDoctors';
 // PATIENTS

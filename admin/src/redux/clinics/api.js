@@ -33,3 +33,12 @@ export function getClinicApi(params: any): any {
     return api.get(`${URL.getClinic}?name=${data?.payload?.name}&page=${data?.payload?.skip}&limit=${data?.payload?.limit}`);
 }
 
+export function addSubscriptionPlanApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.addSubscriptionPlan, data);
+}
+
+export function getClinicsByParentIdApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.getClinicsByParentId, data)
+}

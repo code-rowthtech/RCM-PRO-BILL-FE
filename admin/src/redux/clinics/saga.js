@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { ClinicsActionTypes } from './constants';
-import { createClinicApi, getClinicApi, getClinicByIdApi, updateClinicApi, getStateByCountry, getCityByStateApi } from './api';
+import { createClinicApi, getClinicApi, getClinicByIdApi, updateClinicApi, getStateByCountry, getCityByStateApi, addSubscriptionPlanApi, getClinicsByParentIdApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -95,6 +95,35 @@ function* getClinicByIdFunction(data) {
     }
 }
 
+function* getClinicByParentFunction(data) {
+    try {
+        yield put({
+            type: ClinicsActionTypes.GET_CLINIC_BY_PARENT_LOADING,
+            payload: {},
+        });
+        const response = yield call(getClinicsByParentIdApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+
+        if (response.status === 200) {
+            yield put({
+                type: ClinicsActionTypes.GET_CLINIC_BY_PARENT_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: ClinicsActionTypes.GET_CLINIC_BY_PARENT_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        // console.log({ error })
+        yield put({
+            type: ClinicsActionTypes.GET_CLINIC_BY_PARENT_ERROR,
+            payload: error,
+        });
+    }
+}
+
 function* getClinicsFunction(data) {
     try {
         yield put({
@@ -159,7 +188,6 @@ function* getCitiesFunction(data) {
         });
         const response = yield call(getCityByStateApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-
         if (response.status === 200) {
             yield put({
                 type: ClinicsActionTypes.GET_CITIES_SUCCESS,
@@ -174,6 +202,35 @@ function* getCitiesFunction(data) {
     } catch (error) {
         yield put({
             type: ClinicsActionTypes.GET_CITIES_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* createSubscriptionPlanFunction(data) {
+    try {
+        yield put({
+            type: ClinicsActionTypes.CREATE_SUBSCRIPTION_LOADING,
+            payload: {},
+        });
+        const response = yield call(addSubscriptionPlanApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+
+        if (response.status === 200) {
+            yield put({
+                type: ClinicsActionTypes.CREATE_SUBSCRIPTION_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: ClinicsActionTypes.CREATE_SUBSCRIPTION_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        // console.log({ error })
+        yield put({
+            type: ClinicsActionTypes.CREATE_SUBSCRIPTION_ERROR,
             payload: error,
         });
     }
@@ -208,6 +265,14 @@ export function* watchGetClinicById() {
     yield takeEvery(ClinicsActionTypes.GET_CLINIC_BY_ID, getClinicByIdFunction);
 }
 
+export function* watchGetClinicByParent() {
+    yield takeEvery(ClinicsActionTypes.GET_CLINIC_BY_PARENT, getClinicByParentFunction);
+}
+
+export function* watchCreateSubscriptions() {
+    yield takeEvery(ClinicsActionTypes.CREATE_SUBSCRIPTION, createSubscriptionPlanFunction);
+}
+
 export function* watchresetState() {
     yield takeEvery(ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE, callStateEmpty);
 }
@@ -215,7 +280,7 @@ export function* watchresetState() {
 function* clinicsSaga() {
     yield all([
         fork(watchCreateClinics), fork(watchGetClinicById), fork(watchGetClinics), fork(watchUpdateClinics),
-        fork(watchresetState), fork(watchGetStates), fork(watchGetCities)
+        fork(watchresetState), fork(watchGetStates), fork(watchGetCities), fork(watchCreateSubscriptions), fork(watchGetClinicByParent)
     ]);
 }
 export default clinicsSaga;

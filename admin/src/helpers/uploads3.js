@@ -3,20 +3,15 @@ import axios from 'axios';
 
 const UploadToS3 = () => {
     const [selectedFile, setSelectedFile] = useState(null);
-
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     };
-
     const handleUpload = async () => {
         if (!selectedFile) {
             alert('Please select a file first');
             return;
         }
-
         try {
-            console.log(selectedFile.type, "File Type Selected");
-
             const response = await axios.get(`${process.env.REACT_APP_API_URL}api/v1/s3/get-presigned-url`, {
                 params: {
                     fileName: selectedFile.name,
@@ -25,8 +20,6 @@ const UploadToS3 = () => {
             });
 
             const { url } = response.data;
-            console.log(url, 'Generated Pre-signed URL');
-
             // Use the pre-signed URL to upload the file directly to S3
             const uploadResponse = await axios.put(url, selectedFile, {
                 headers: {
@@ -36,7 +29,6 @@ const UploadToS3 = () => {
             });
 
             if (uploadResponse.status === 200) {
-                console.log(uploadResponse);
                 alert('File uploaded successfully!');
             }
         } catch (error) {
