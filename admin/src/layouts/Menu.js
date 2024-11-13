@@ -127,10 +127,7 @@ const MenuItemLink = ({ item, className }) => {
                 <Modal.Body>
                     <div className="p-4" style={{ maxWidth: '500px', width: '100%' }}>
                         <div className="card-body text-center">
-                            <h5 className="card-title">Are you sure you want to logout!</h5>
-                            <p className="card-text my-4">
-                                You are also logged out from your personal cloud and any local data apps open in this browser.
-                            </p>
+                            <h4 className="card-title">Are you sure you want to logout!</h4>
                             <div className="d-flex justify-content-center gap-3">
                                 <Button type="button" className="btn btn-secondary" onClick={() => setShow(false)}>
                                     Cancel
