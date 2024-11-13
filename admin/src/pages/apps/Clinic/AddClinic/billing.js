@@ -25,7 +25,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     useEffect(() => {
         if (activeTab === 'billing') {
-            dispatch(getSubscriptionsAction());
+            dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));
         }
         if (createResponse === 200) {
             setActiveTab('contract');
@@ -93,7 +93,8 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                         <Form.Label className='mb-1'>Plan Tenure</Form.Label>
                         <Form.Control
                             type="text"
-                            defaultValue={amount?.billingFrequency.toUpperCase()}
+                            placeholder='Plan Tenure'
+                            defaultValue={amount?.billingFrequency}
                             readOnly />
                     </Form.Group>
                 </Col>
@@ -102,6 +103,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                         <Form.Label className='mb-1'>Implemented Date</Form.Label>
                         <Form.Control
                             type="text"
+                            placeholder='Implemented Date'
                             defaultValue={amount?.implimentFrom ? new Date(amount.implimentFrom).toLocaleDateString() : ''}
                             readOnly />
                     </Form.Group>
@@ -111,6 +113,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                         <Form.Label className='mb-1'>Doctor Count</Form.Label>
                         <Form.Control
                             type="text"
+                            placeholder='Doctor Count'
                             defaultValue={amount?.doctorLimit}
                             readOnly />
                     </Form.Group>
@@ -120,6 +123,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                         <Form.Label className='mb-1'>Patient Count</Form.Label>
                         <Form.Control
                             type="text"
+                            placeholder='Patient Count'
                             defaultValue={amount?.patientLimit}
                             readOnly />
                     </Form.Group>

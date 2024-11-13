@@ -86,10 +86,15 @@ const Permissions = () => {
                         <Card.Body>
                             <Row className="mb-2 d-flex justify-content-between">
                                 <Col xs="auto">
-                                    <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
                                 </Col>
                                 <Col xs='auto'>
-                                    <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button>
+                                    <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
+                                        <Col xs="auto" className='d-flex gap-2'>
+                                            <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
+
+                                            <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button>
+                                        </Col>
+                                    </Row>
                                 </Col>
                                 <AddPermissions show={showModal} closeModal={handleClosemodal} />
                             </Row>
@@ -98,11 +103,12 @@ const Permissions = () => {
                                     <Table responsive className="table-centered table-nowrap mb-0">
                                         <thead>
                                             <tr key={''}>
-                                                <th>Permission</th>
+                                                <th colSpan={2}>#</th>
+                                                <th colSpan={2}>Permission Name</th>
                                                 <th>Description</th>
-                                                <th>Created By</th>
+                                                {/* <th>Created By</th>
                                                 <th>Status</th>
-                                                <th>Action</th>
+                                                <th>Action</th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -123,28 +129,26 @@ const Permissions = () => {
                                                     :
                                                     decryptedPermissionsData && decryptedPermissionsData.map((data, index) => (
                                                         <tr key={index}>
-                                                            <td onClick={() => setSelected(data?._id)}>
+                                                            <td colSpan={2}>{index + 1}</td>
+                                                            <td colSpan={2} onClick={() => setSelected(data?._id)}>
                                                                 <Link to="#" className="text-body fw-bold">
                                                                     {data?.name}
                                                                 </Link>
                                                             </td>
                                                             <td>
-                                                                {data?.description.slice(0, 20) + '...'}
+                                                                {data?.description}
                                                             </td>
-                                                            <td>
+                                                            {/* <td>
                                                                 {data?.createdById?.name}
                                                             </td>
                                                             <td>
                                                                 <Form.Switch onClick={() => handleToggleUpdate(data)} checked={data?.status === 'active'} />
                                                             </td>
                                                             <td>
-                                                                {/* <Link to="#" className="action-icon">
-                                                                <i className="mdi mdi-square-edit-outline"></i>
-                                                            </Link> */}
                                                                 <Link to="#" className="action-icon" onClick={() => openDeleteModal(data)}>
                                                                     <i className="mdi mdi-delete"></i>
                                                                 </Link>
-                                                            </td>
+                                                            </td> */}
                                                         </tr>
                                                     ))}
                                         </tbody>

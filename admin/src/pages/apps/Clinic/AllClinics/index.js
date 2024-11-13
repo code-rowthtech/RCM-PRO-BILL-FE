@@ -83,7 +83,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                 onChange={(e) => setName(e.target.value)}
                                                 placeholder="Search..." />
                                             <Button as={Link} to="/apps/crm/addclinic" className="custom-buttons">
-                                                Add Clinics
+                                                New Clinic
                                             </Button>
                                         </Col>
                                     </Row>
@@ -92,14 +92,15 @@ const OrderList = (): React$Element<React$FragmentType> => {
                             <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                                 <thead>
                                     <tr>
-                                        <th >&nbsp; &nbsp;Clinic Name</th>
+                                        <th>#</th>
+                                        <th >Clinic Name</th>
                                         <th>Location</th>
                                         <th>Clinic Type</th>
                                         <th>End Date <span className=' uil-info-circle mb-0 cursor-pointer'
                                             data-toggle="tooltip"
                                             data-placement="top"
                                             title="Last Date of Subscription" /></th>
-                                        <th>Renewal Date</th>
+                                        <th>Countdown</th>
                                         <th>Contract</th>
                                         <th>Status</th>
                                         <th style={{ width: '125px' }}>Action</th>
@@ -108,14 +109,14 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                 <tbody>
                                     {store?.getClinicsReducer?.loading ? (
                                         <tr>
-                                            <td className='text-center' colSpan={7}>
+                                            <td className='text-center' colSpan={9}>
                                                 <Spinner className="spinner-border-lg m-2" />
                                             </td>
                                         </tr>
                                     ) : (
                                         store?.getClinicsReducer?.data?.totalClinics === 0 ? (
                                             <tr>
-                                                <td className='text-center' colSpan={7}>
+                                                <td className='text-center' colSpan={9}>
                                                     <h3 className='my-5'>No Data Found</h3>
                                                 </td>
                                             </tr>
@@ -123,14 +124,15 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                             clinicsData && clinicsData?.map((data, i) => {
                                                 return (
                                                     <tr key={i}>
-                                                        <td className='d-flex align-items-center gap-2'>
-                                                            <img
+                                                        <td>{i + 1}</td>
+                                                        <td className=''>
+                                                            {/* <img
                                                                 src={data?.logo}
                                                                 alt="Placeholder"
                                                                 className='rounded-circle'
                                                                 width="40"
                                                                 height="40"
-                                                            />
+                                                            /> */}
                                                             <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
@@ -138,10 +140,10 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td>{data?.clinicType}</td>
                                                         <td>
-                                                            8:00 AM 26th sep, 2024
+                                                            12/11/2024
                                                         </td>
                                                         <td>
-                                                            5 day
+                                                            5 days
                                                         </td>
                                                         <td>
                                                             <span className='bg-secondary rounded-1 text-white py-0 px-1'>

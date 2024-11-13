@@ -17,6 +17,7 @@ const Roles = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [skip, setSkip] = useState(1);
     const [search, setSearch] = useState('');
+    const [status, setStatus] = useState('superadmin')
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
@@ -49,6 +50,10 @@ const Roles = () => {
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber)
     }
+    const handleStatusChange = (data) => {
+        setStatus(data);
+        setSearch('');
+    };
     return (
         <div>
             {/* <PageTitle
@@ -62,11 +67,43 @@ const Roles = () => {
                     <Card>
                         <Card.Body>
                             <Row className="mb-2 d-flex justify-content-between">
-                                <Col xs="auto">
-                                    <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
+                                <Col sm={6}>
+                                    <Button
+                                        variant={status === 'superadmin' ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange('superadmin')}
+                                        className={`${status === 'superadmin' ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    >
+                                        Super Admin
+                                    </Button>
+
+                                    <Button
+                                        variant={status === 'sales' ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange('sales')}
+                                        className={`${status === 'sales' ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    >
+                                        Sales
+                                    </Button>
+                                    <Button
+                                        variant={status === 'other' ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange('other')}
+                                        className={`${status === 'other' ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    >
+                                        Other
+                                    </Button>
                                 </Col>
                                 <Col xs='auto'>
-                                    <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Roles</Button>
+                                    <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
+                                        <Col xs="auto" className='d-flex gap-2'>
+                                            <FormInput
+                                                type="text"
+                                                onChange={(e) => {
+                                                    setSearch(e.target.value);
+                                                    setSkip(1);
+                                                }}
+                                                placeholder="Search..." />
+                                            <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add New User</Button>
+                                        </Col>
+                                    </Row>
                                 </Col>
                                 <AddRoles show={showModal} closeModal={handleClosemodal} />
                             </Row>
@@ -79,6 +116,8 @@ const Roles = () => {
                                                     S.no
                                                 </th>
                                                 <th>Name</th>
+                                                <th>Role</th>
+                                                <th>Username</th>
                                                 <th>Description</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
@@ -112,6 +151,8 @@ const Roles = () => {
                                                                     {data?.name}
                                                                 </span>
                                                             </td>
+                                                            <td>Sub Admin</td>
+                                                            <td>x24@probillRCm</td>
 
                                                             <td>
                                                                 <span className='text-truncate cursor-pointer' title={data?.description}>
