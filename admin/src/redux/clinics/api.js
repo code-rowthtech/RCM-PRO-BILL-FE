@@ -25,12 +25,12 @@ export function getStateByCountry(params: any): any {
 
 export function getCityByStateApi(params: any): any {
     const { data } = params;
-    return api.get(`${URL.getCityByState}${data?.state_code}`);
+    return api.get(`${URL.getCityByState}${data?.state_code}?name=${data?.name}&page=${data?.skip}&limit=${data?.limit}`);
 }
 
 export function getClinicApi(params: any): any {
     const { data } = params;
-    return api.get(`${URL.getClinic}?name=${data?.payload?.name}&page=${data?.payload?.skip}&limit=${data?.payload?.limit}`);
+    return api.get(`${URL.getClinic}?name=${data?.payload?.name}&page=${data?.payload?.skip}&limit=${data?.payload?.limit}&status=${data?.payload?.status}`);
 }
 
 export function addSubscriptionPlanApi(params: any): any {
@@ -41,4 +41,9 @@ export function addSubscriptionPlanApi(params: any): any {
 export function getClinicsByParentIdApi(params: any): any {
     const { data } = params;
     return api.create(URL.getClinicsByParentId, data)
+}
+
+export function deleteClinicOnboardingApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.deleteClinicOnboarding, data)
 }

@@ -18,10 +18,11 @@ const UpdateClinic = () => {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
     const id = searchParams.get('updateid');
-    const clinicData = useSelector((state) => state?.getClinicByIdReducer?.data?.clinic);
-    const updateLoading = useSelector((state) => state?.updateClinicsReducer?.loading);
-    const updateSuccess = useSelector((state) => state?.updateClinicsReducer?.data?.status);
-    console.log(clinicData, 'clinicDataclinicDataclinicDataclinicDataclinicDataclinicData')
+    const store = useSelector((state) => state);
+    const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    const updateLoading = store?.updateClinicsReducer?.loading;
+    const updateSuccess = store?.updateClinicsReducer?.data?.status;
+    console.log(store, 'clinicDataclinicDataclinicDataclinicDataclinicDataclinicData')
     useEffect(() => {
         if (id || updateSuccess === 200) {
             dispatch(getClinicById({ key: encryptMessage({ id }) }));

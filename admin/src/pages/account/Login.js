@@ -15,6 +15,7 @@ import { decryptMessage, encryptMessage } from '../../cryptoUtils';
 import Loader from '../../components/Loader';
 import Spinner from '../../constants/Spinner';
 import ToastHandle from '../../helpers/ToastMessage';
+import UploadToS3 from '../../helpers/uploads3';
 
 /* bottom link of account pages */
 const BottomLink = () => {

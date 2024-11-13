@@ -22,18 +22,20 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [status, setStatus] = useState(true);
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
+    // console.log(clinicsData, 'clinicsDataclinicsDataclinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     useEffect(() => {
         const payload = {
             name: name,
             skip: skip,
             limit: 10,
+            status: status,
         }
         dispatch(getClinicAction({ payload }))
         if (updateSuccess === 200) {
             dispatch(getClinicAction({ payload }))
         }
-    }, [dispatch, name, updateSuccess, skip])
+    }, [dispatch, name, updateSuccess, skip, status])
 
     const handleStatusUpdate = (data) => {
         const payload = {
@@ -90,10 +92,13 @@ const OrderList = (): React$Element<React$FragmentType> => {
                             <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Clinic Name</th>
+                                        <th >&nbsp; &nbsp;Clinic Name</th>
                                         <th>Location</th>
                                         <th>Clinic Type</th>
-                                        <th>End Date</th>
+                                        <th>End Date <span className=' uil-info-circle mb-0 cursor-pointer'
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Last Date of Subscription" /></th>
                                         <th>Renewal Date</th>
                                         <th>Contract</th>
                                         <th>Status</th>
@@ -120,21 +125,18 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                     <tr key={i}>
                                                         <td className='d-flex align-items-center gap-2'>
                                                             <img
-                                                                src="https://via.placeholder.com/150"
+                                                                src={data?.logo}
                                                                 alt="Placeholder"
                                                                 className='rounded-circle'
                                                                 width="40"
                                                                 height="40"
                                                             />
-                                                            <span>
-                                                                <p className='mb-0 text-capitalize'>{data?.name}</p>
-                                                                <h6 className='my-0 text-muted fw-semibold'>{data?.email}</h6>
-                                                            </span>
+                                                            <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
                                                             {data?.address?.city?.state_code + ' / ' + data?.address?.city?.name}
                                                         </td>
-                                                        <td>{data?.clinicType?.name}</td>
+                                                        <td>{data?.clinicType}</td>
                                                         <td>
                                                             8:00 AM 26th sep, 2024
                                                         </td>
@@ -147,12 +149,14 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <span
+                                                            {/* <span
                                                                 //  onClick={() => handleStatusUpdate(data)}
                                                                 className='bg-secondary rounded-1 text-white py-0 px-1'>
                                                                 {data?.status === true ? 'Active' : 'Inactive'}
-                                                            </span>
-                                                            {/* <Form.Switch onClick={() => handleStatusUpdate(data)} checked={data?.status === true} /> */}
+                                                            </span> */}
+                                                            <Form.Switch
+                                                                onClick={() => handleStatusUpdate(data)}
+                                                                checked={data?.status === true} />
                                                         </td>
                                                         <td>
                                                             <Link to={`/apps/crm/addclinic?updateid=${data?._id}`} className="action-icon">

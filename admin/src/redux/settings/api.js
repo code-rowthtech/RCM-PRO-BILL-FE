@@ -13,3 +13,7 @@ export function getMastersDataApi(params: any): any {
     return api.get(`${URL.getMastersData}?status=${data?.status}&category=${data?.category}&search=${data?.search}&page=${data?.skip}&limit=${data?.limit}`);
 }
 
+export function updateMastersDataApi(params: any): any {
+    const { data } = params;
+    return api.update(URL.updateMastersData, data)
+}

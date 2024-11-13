@@ -1,6 +1,10 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { ClinicsActionTypes } from './constants';
-import { createClinicApi, getClinicApi, getClinicByIdApi, updateClinicApi, getStateByCountry, getCityByStateApi, addSubscriptionPlanApi, getClinicsByParentIdApi } from './api';
+import {
+    createClinicApi, getClinicApi, getClinicByIdApi,
+    updateClinicApi, getStateByCountry, getCityByStateApi,
+    addSubscriptionPlanApi, getClinicsByParentIdApi, deleteClinicOnboardingApi
+} from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -235,6 +239,34 @@ function* createSubscriptionPlanFunction(data) {
         });
     }
 }
+function* deleteClinicFunction(data) {
+    try {
+        yield put({
+            type: ClinicsActionTypes.DELETE_CLINIC_LOADING,
+            payload: {},
+        });
+        const response = yield call(deleteClinicOnboardingApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+
+        if (response.status === 200) {
+            yield put({
+                type: ClinicsActionTypes.DELETE_CLINIC_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: ClinicsActionTypes.DELETE_CLINIC_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        // console.log({ error })
+        yield put({
+            type: ClinicsActionTypes.DELETE_CLINIC_ERROR,
+            payload: error,
+        });
+    }
+}
 
 export function* callStateEmpty() {
     put({
@@ -273,6 +305,10 @@ export function* watchCreateSubscriptions() {
     yield takeEvery(ClinicsActionTypes.CREATE_SUBSCRIPTION, createSubscriptionPlanFunction);
 }
 
+export function* watchDeleteClinicOnboarding() {
+    yield takeEvery(ClinicsActionTypes.DELETE_CLINIC, deleteClinicFunction);
+}
+
 export function* watchresetState() {
     yield takeEvery(ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE, callStateEmpty);
 }
@@ -280,7 +316,8 @@ export function* watchresetState() {
 function* clinicsSaga() {
     yield all([
         fork(watchCreateClinics), fork(watchGetClinicById), fork(watchGetClinics), fork(watchUpdateClinics),
-        fork(watchresetState), fork(watchGetStates), fork(watchGetCities), fork(watchCreateSubscriptions), fork(watchGetClinicByParent)
+        fork(watchresetState), fork(watchGetStates), fork(watchGetCities), fork(watchCreateSubscriptions),
+        fork(watchGetClinicByParent), fork(watchDeleteClinicOnboarding)
     ]);
 }
 export default clinicsSaga;

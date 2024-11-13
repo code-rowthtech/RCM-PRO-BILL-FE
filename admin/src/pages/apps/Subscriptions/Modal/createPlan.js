@@ -2,20 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { createSubscriptionsAction } from '../../../../redux/actions';
+import { createSubscriptionsAction, updateRolesAction, updateSubscriptionsAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { IoMdClose } from 'react-icons/io';
 import { getMastersDataAction } from '../../../../redux/settings/actions';
+import { formatDate } from '../../../../helpers/dateFormat';
 
 const calculateFinalAmount = (price, taxPercentage) => {
-    if (typeof price !== 'number' || typeof taxPercentage !== 'number' || isNaN(price) || isNaN(taxPercentage)) {
-        return 0;
-    }
     const taxAmount = (price * taxPercentage) / 100;
     return price + taxAmount;
 };
 
-const AddSubscriptions = ({ show, closeModal }) => {
+
+const SubscriptionModal = ({ show, closeModal, data = null }) => {
     const {
         register,
         handleSubmit,
@@ -23,50 +22,75 @@ const AddSubscriptions = ({ show, closeModal }) => {
         reset,
         watch,
     } = useForm();
-    const store = useSelector((state) => state);
     const dispatch = useDispatch();
+    const store = useSelector((state) => state);
     const [finalAmount, setFinalAmount] = useState(0);
-
-    // Watching changes on 'amount' and 'tax' fields
+    const isUpdateMode = Boolean(data); // Determines if this is "update" mode
     const watchedPrice = watch('amount');
     const watchedTax = watch('tax');
-
     useEffect(() => {
         const parsedPrice = parseFloat(watchedPrice) || 0;
         const parsedTax = parseFloat(watchedTax) || 0;
         const calculatedAmount = calculateFinalAmount(parsedPrice, parsedTax);
         setFinalAmount(calculatedAmount);
     }, [watchedPrice, watchedTax]);
-    useEffect(() => {
-        if (show) {
-            dispatch(getMastersDataAction({ status: true, category: 'plan_name', search: '', skip: '', limit: '' }));
-        }
-    }, [show])
-    const plans = store?.getMastersDataReducer?.data?.clinicTypes;
-    const onSubmit = (formData) => {
-        const finalAmount = calculateFinalAmount(parseFloat(formData?.amount), parseFloat(formData?.tax));
 
-        const payload = {
-            name: formData?.name,
-            amount: formData?.amount,
-            billingFrequency: formData?.tenure,
-            description: formData?.description,
-            doctorLimit: formData?.doctorcount,
-            patientLimit: formData?.patientcount,
-            implimentFrom: formData?.date,
-            tax: formData?.tax,
-            totalAmount: finalAmount,
-        };
-        dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
-    };
-
-    const createSuccess = store?.createSubscriptionsReducer?.data?.status;
     useEffect(() => {
-        if (createSuccess === 201) {
+        // if (show) {
+        dispatch(getMastersDataAction({ status: true, category: 'plan_name', search: '', skip: '', limit: '' }));
+        if (isUpdateMode && data) {
             reset();
-            closeModal();
         }
-    }, [createSuccess]);
+        // }
+    }, [data])
+    const plans = store?.getMastersDataReducer?.data?.clinicTypes;
+
+    // const onSubmit = (formData) => {
+    //     const payload = {
+    //         name: formData.name,
+    //         amount: formData.amount,
+    //         billingFrequency: formData.tenure,
+    //         description: formData.description,
+    //         doctorLimit: formData.doctorcount,
+    //         patientLimit: formData.patientcount,
+    //         implimentFrom: formData.date,
+    //         tax: formData.tax,
+    //         totalAmount: finalAmount,
+    //         ...(isUpdateMode ? { id: data._id } : {}), // Only add id if in update mode
+    //     };
+
+    //     if (isUpdateMode) {
+    //         dispatch(updateSubscriptionsAction({ key: encryptMessage(payload) }));
+    //     } else {
+    //         dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
+    //     }
+    //     closeModal();
+    // };
+
+    const onSubmit = (formData) => {
+        // Prepare payload with only changed values
+        const payload = {};
+
+        if (formData.name !== data?.name) payload.name = formData.name;
+        if (formData.amount !== data?.amount) payload.amount = formData.amount;
+        if (formData.tenure !== data?.billingFrequency) payload.billingFrequency = formData.tenure;
+        if (formData.description !== data?.description) payload.description = formData.description;
+        if (formData.doctorcount !== data?.doctorLimit) payload.doctorLimit = formData.doctorcount;
+        if (formData.patientcount !== data?.patientLimit) payload.patientLimit = formData.patientcount;
+        if (formData.date !== formatDate(data?.implimentFrom)) payload.implimentFrom = formData.date;
+        if (formData.tax !== data?.tax) payload.tax = formData.tax;
+        payload.totalAmount = finalAmount;
+
+        // If it's an update, include the ID
+        if (isUpdateMode) {
+            payload.id = data._id;
+            dispatch(updateSubscriptionsAction({ key: encryptMessage(payload) }));
+        } else {
+            dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
+        }
+
+        closeModal();
+    };
 
     return (
         <Modal centered show={show} size="md" onHide={closeModal}>
@@ -74,7 +98,7 @@ const AddSubscriptions = ({ show, closeModal }) => {
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
                     <Col sm={10}>
-                        <h4 className="mb-0 text-center">New Plan</h4>
+                        <h4 className="mb-0 text-center">{isUpdateMode ? 'Edit Plan' : 'New Plan'}</h4>
                     </Col>
                     <Col sm={1}>
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
@@ -86,11 +110,14 @@ const AddSubscriptions = ({ show, closeModal }) => {
                             <Form.Group className="mb-2">
                                 <Form.Label>Plan Name</Form.Label>
                                 <Form.Select
-                                    {...register('name')}
+                                    defaultValue={isUpdateMode ? data?.name : ""}
+                                    {...register('name', { required: 'Name is required' })}
                                 >
-                                    <option readOnly>Select</option>
-                                    {plans && plans?.map((data, index) => (
-                                        <option key={data?._id} value={data?.name}>{data?.name}</option>
+                                    <option value="">Select</option>
+                                    {plans?.map((plan) => (
+                                        <option key={plan._id} value={plan.name}>
+                                            {plan.name}
+                                        </option>
                                     ))}
                                 </Form.Select>
                                 {errors.name && <span className="text-danger fs-6">{errors.name.message}</span>}
@@ -100,6 +127,7 @@ const AddSubscriptions = ({ show, closeModal }) => {
                             <Form.Group className="mb-2">
                                 <Form.Label>Plan Tenure</Form.Label>
                                 <Form.Select
+                                    defaultValue={isUpdateMode ? data?.billingFrequency : ''}
                                     {...register('tenure', { required: 'Tenure is required' })}
                                 >
                                     <option value="">Select tenure</option>
@@ -115,14 +143,11 @@ const AddSubscriptions = ({ show, closeModal }) => {
                                 <Form.Label>Amount</Form.Label>
                                 <Form.Control
                                     type="text"
+                                    defaultValue={isUpdateMode ? data?.amount : ''}
                                     placeholder="Enter amount"
                                     {...register('amount', {
                                         required: 'Amount is required',
-                                        validate: value => (parseFloat(value) > 0) || 'Amount must be greater than 0',
-                                        pattern: {
-                                            value: /^[0-9]+(\.[0-9]+)?$/,
-                                            message: 'Only positive numbers are allowed',
-                                        },
+                                        validate: value => parseFloat(value) >= 0 || 'Amount must be a positive number',
                                     })}
                                 />
                                 {errors.amount && <span className="text-danger fs-6">{errors.amount.message}</span>}
@@ -132,15 +157,12 @@ const AddSubscriptions = ({ show, closeModal }) => {
                             <Form.Group className="mb-2">
                                 <Form.Label>Tax</Form.Label>
                                 <Form.Control
+                                    defaultValue={isUpdateMode ? data?.tax : ''}
                                     type="text"
                                     placeholder="Enter tax"
                                     {...register('tax', {
                                         required: 'Tax is required',
-                                        validate: value => (parseFloat(value) > 0) || 'Tax must be greater than 0',
-                                        pattern: {
-                                            value: /^[0-9]+(\.[0-9]+)?$/,
-                                            message: 'Only positive numbers are allowed',
-                                        },
+                                        validate: value => parseFloat(value) >= 0 || 'Tax must be a positive number.',
                                     })}
                                 />
                                 {errors.tax && <span className="text-danger fs-6">{errors.tax.message}</span>}
@@ -151,9 +173,12 @@ const AddSubscriptions = ({ show, closeModal }) => {
                                 <Form.Label>Implemented Date</Form.Label>
                                 <Form.Control
                                     type="date"
+                                    defaultValue={isUpdateMode ? formatDate(data?.implimentFrom) : ''} // Ensure the date is formatted correctly
                                     placeholder="Select date"
                                     {...register('date', { required: 'Date is required' })}
                                 />
+
+
                                 {errors.date && <span className="text-danger fs-6">{errors.date.message}</span>}
                             </Form.Group>
                         </Col>
@@ -162,14 +187,11 @@ const AddSubscriptions = ({ show, closeModal }) => {
                                 <Form.Label>Patient Count</Form.Label>
                                 <Form.Control
                                     type="text"
+                                    defaultValue={isUpdateMode ? data?.patientLimit : ''}
                                     placeholder="Enter patient count"
                                     {...register('patientcount', {
                                         required: 'Patient count is required',
-                                        validate: value => (parseInt(value) > 0) || 'Patient count must be a positive number greater than 0',
-                                        pattern: {
-                                            value: /^[1-9][0-9]*$/,
-                                            message: 'Only positive numbers are allowed',
-                                        },
+                                        validate: value => parseInt(value) > 0 || 'Patient count must be positive',
                                     })}
                                 />
                                 {errors.patientcount && <span className="text-danger fs-6">{errors.patientcount.message}</span>}
@@ -180,14 +202,11 @@ const AddSubscriptions = ({ show, closeModal }) => {
                                 <Form.Label>Doctor Count</Form.Label>
                                 <Form.Control
                                     type="text"
+                                    defaultValue={isUpdateMode ? data?.doctorLimit : ''}
                                     placeholder="Enter doctor count"
                                     {...register('doctorcount', {
                                         required: 'Doctor count is required',
-                                        validate: value => (parseInt(value) > 0) || 'Doctor count must be a positive number greater than 0',
-                                        pattern: {
-                                            value: /^[1-9][0-9]*$/,
-                                            message: 'Only positive numbers are allowed',
-                                        },
+                                        validate: value => parseInt(value) > 0 || 'Doctor count must be positive',
                                     })}
                                 />
                                 {errors.doctorcount && <span className="text-danger fs-6">{errors.doctorcount.message}</span>}
@@ -201,6 +220,19 @@ const AddSubscriptions = ({ show, closeModal }) => {
                                     placeholder="Total amount"
                                     value={finalAmount}
                                     readOnly
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col sm={12}>
+                            <Form.Group className="mb-2">
+                                <Form.Label>Description</Form.Label>
+                                <Form.Control
+                                    as={'textarea'}
+                                    {...register('description')}
+                                    rows={3}
+                                    placeholder="Enter description"
+                                    defaultValue={isUpdateMode ? data?.description : ''}
+
                                 />
                             </Form.Group>
                         </Col>
@@ -219,4 +251,4 @@ const AddSubscriptions = ({ show, closeModal }) => {
     );
 };
 
-export default AddSubscriptions;
+export default SubscriptionModal;

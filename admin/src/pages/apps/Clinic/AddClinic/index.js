@@ -29,6 +29,7 @@ const Index = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [clinicId, setClinicId] = useState(null);
+    const [billingId, setBillingId] = useState(null);
     const [activeTab, setActiveTab] = useState('clinic');
     const store = useSelector((state) => state);
     const navigate = useNavigate()
@@ -73,14 +74,16 @@ const Index = () => {
                                         Contract
                                     </span>
                                 </Col>
-                                <Col className='text-end'>
+                                <Col className='d-flex gap-2 justify-content-end align-items-center'>
+                                    <Button className='custom-buttons'>Email to Clinic</Button>
+                                    <Button className='custom-buttons' disabled>View</Button>
                                 </Col>
                             </Row>
                             {activeTab === 'clinic' ?
-                                <ClinicForm setActiveTab={setActiveTab} activeTab={activeTab} setClinicId={setClinicId} clinicId={clinicId} />
+                                <ClinicForm setActiveTab={setActiveTab} activeTab={activeTab} setClinicId={setClinicId} clinicId={clinicId} setBillingId={setBillingId} />
                                 :
                                 activeTab === 'billing' ?
-                                    <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} />
+                                    <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
                                     :
                                     <Contract setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} />
                             }

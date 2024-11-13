@@ -12,6 +12,10 @@ export const getMastersDataAction = (data): AuthAction => ({
     type: SettingsActionTypes.GET_MASTERS_DATA,
     data
 });
+export const updateMastersDataAction = (data): AuthAction => ({
+    type: SettingsActionTypes.UPDATE_MASTERS_DATA,
+    data
+});
 
 export const stateEmptydAction = (): LayoutAction => ({
     type: SettingsActionTypes.STATE_EMPTY_INTIAL_STATE,

@@ -43,6 +43,11 @@ export const getClinicByParentAction = (data): AuthAction => ({
     data
 });
 
+export const deleteClinicAction = (data): AuthAction => ({
+    type: ClinicsActionTypes.DELETE_CLINIC,
+    data
+});
+
 export const stateEmptydAction = (): LayoutAction => ({
     type: ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE,
 });

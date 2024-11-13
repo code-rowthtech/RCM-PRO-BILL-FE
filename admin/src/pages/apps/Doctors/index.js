@@ -17,6 +17,7 @@ const Doctors = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const doctorsResponse = store?.getDoctorsReducer?.data?.data;
+    // console.log(doctorsResponse, 'doctorsResponsedoctorsResponsedoctorsResponse')
     useEffect(() => {
         const payload = {
             skip: skip,
@@ -91,7 +92,7 @@ const Doctors = () => {
                                                                     {data?.title + ' ' + data?.firstName + " " + data?.lastName}
                                                                 </Link>
                                                             </td>
-                                                            <td className='text-capitalize'>{data?.clinicId?.name}</td>
+                                                            <td className='text-capitalize'>{data?.clinicId?.name || 'N/A'}</td>
                                                             <td>
                                                                 {data?.city}
                                                             </td>

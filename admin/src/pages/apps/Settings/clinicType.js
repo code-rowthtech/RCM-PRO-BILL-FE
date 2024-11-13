@@ -6,27 +6,12 @@ import { FiFileText, FiFilter } from 'react-icons/fi'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form';
 import { encryptMessage } from '../../../cryptoUtils'
-import { createMastersDataAction, getMastersDataAction } from '../../../redux/settings/actions'
+import { createMastersDataAction, getMastersDataAction, stateEmptydAction, updateMastersDataAction } from '../../../redux/settings/actions'
 import { IoMdClose } from 'react-icons/io'
 import Paginations from '../../../helpers/Paginations'
+import { formatDate } from '../../../helpers/dateFormat'
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
 
-    // Define options for custom formatting
-    const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
-    const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-
-    // Format time and date separately
-    const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
-    const formattedDate = date.toLocaleDateString('en-US', dateOptions);
-
-    // Customize day suffix (st, nd, rd, th)
-    const day = date.getDate();
-    const suffix = ["th", "st", "nd", "rd"][(day % 10 > 3 || Math.floor(day % 100 / 10) === 1) ? 0 : day % 10];
-
-    return `${formattedTime} ${day}${suffix}    ${formattedDate.split(' ')[1]} ${date.getFullYear()}`;
-}
 
 const ClinicType = () => {
     const store = useSelector((state) => state);
@@ -52,13 +37,19 @@ const ClinicType = () => {
     };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
+    const updateResponse = store?.updateMastersDataReducer?.data?.status;
+
     useEffect(() => {
         dispatch(getMastersDataAction({ status: status, category: 'clinic_type', search: search, skip: skip, limit: 10 }));
         if (store?.createMastersDataReducer?.data?.status === 201) {
             reset();
             closeAddModal()
         }
-    }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip]);
+        if (updateResponse === 200) {
+            dispatch(getMastersDataAction({ status: status, category: 'clinic_type', search: search, limit: 10, skip: skip }));
+            dispatch(stateEmptydAction());
+        }
+    }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip, updateResponse]);
     const handleStatusChange = (isActive) => {
         setStatus(isActive);
         setSearch('');
@@ -67,6 +58,13 @@ const ClinicType = () => {
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber);
     };
+    const handleUpdate = (data) => {
+        const payload = {
+            id: data?._id,
+            isActive: !data?.isActive
+        }
+        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
+    }
     return (
         <Row className='mt-2'>
             <Col xs={12}>
@@ -155,7 +153,7 @@ const ClinicType = () => {
                                                         </td>
                                                         <td className='text-capitalize'>{formatDate(data?.createdAt)}</td>
                                                         <td>
-                                                            <Form.Switch checked />
+                                                            <Form.Switch checked={data?.isActive} onChange={() => handleUpdate(data)} />
                                                         </td>
                                                         <td>
                                                             {/* <Link to="#" className="action-icon"> */}

@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { SettingsActionTypes } from './constants';
-import { createMastersDataApi, getMastersDataApi } from './api';
+import { createMastersDataApi, getMastersDataApi, updateMastersDataApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -66,6 +66,34 @@ function* getMastersDataFunction(data) {
     }
 }
 
+function* updateMastersDataFunction(data) {
+    try {
+        yield put({
+            type: SettingsActionTypes.UPDATE_MASTERS_DATA_LOADING,
+            payload: {},
+        });
+        const response = yield call(updateMastersDataApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+
+        if (response.status === 200) {
+            yield put({
+                type: SettingsActionTypes.UPDATE_MASTERS_DATA_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        yield put({
+            type: SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR,
+            payload: error,
+        });
+    }
+}
+
 export function* callStateEmpty() {
     put({
         type: SettingsActionTypes.STATE_EMPTY_INTIAL_STATE,
@@ -81,6 +109,9 @@ export function* watchCreateMastersData() {
 export function* watchGetMastersData() {
     yield takeEvery(SettingsActionTypes.GET_MASTERS_DATA, getMastersDataFunction);
 }
+export function* watchUpdateMastersData() {
+    yield takeEvery(SettingsActionTypes.UPDATE_MASTERS_DATA, updateMastersDataFunction);
+}
 
 
 
@@ -92,6 +123,7 @@ function* settingsSaga() {
     yield all([
         fork(watchCreateMastersData),
         fork(watchGetMastersData),
+        fork(watchUpdateMastersData),
         fork(watchresetState)
     ]);
 }

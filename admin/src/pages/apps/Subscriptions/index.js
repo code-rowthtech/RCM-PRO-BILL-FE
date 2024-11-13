@@ -9,7 +9,9 @@ import Spinner from '../../../constants/Spinner'
 import { getSubscriptionsAction, stateEmptydAction, updateSubscriptionsAction } from '../../../redux/subscriptions/actions'
 import AddSubscriptions from './Modal/createPlan'
 import { encryptMessage } from '../../../cryptoUtils'
-import UpdateSubscriptions from './Modal/updatePlan'
+import UpdateSubscriptions from './Modal/updatePlan';
+import { formatDate } from '../../../helpers/dateFormat'
+
 const Subscriptions = () => {
     const [skip, setSkip] = useState(1);
     const [search, setSearch] = useState('');
@@ -34,6 +36,7 @@ const Subscriptions = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
+        setDataToUpdate(null)
     }
 
     const handleCloseUpdateModal = () => {
@@ -56,8 +59,7 @@ const Subscriptions = () => {
                                     <Button onClick={() => setShowModal(true)} className="custom-buttons">
                                         Add Subscriptions
                                     </Button>
-                                    <AddSubscriptions show={showModal} closeModal={handleCloseModal} />
-
+                                    <AddSubscriptions data={dataToUpdate} show={showModal} closeModal={handleCloseModal} />
                                 </Col>
                             </Row>
                             <Row>
@@ -67,10 +69,11 @@ const Subscriptions = () => {
                                             <tr key={''}>
                                                 <th>Plan name</th>
                                                 <th>Description</th>
-                                                <th>Price</th>
-                                                <th>Billing</th>
-                                                <th>Doctor Limit</th>
-                                                <th>Patient Limit</th>
+                                                <th>Amount</th>
+                                                <th>Date</th>
+                                                <th>Plan Tenure</th>
+                                                <th>Doctor Count</th>
+                                                <th>Patient Count</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -107,6 +110,7 @@ const Subscriptions = () => {
                                                                 </span>
                                                             </td>
                                                             <td className='text-capitalize'>{data?.totalAmount}</td>
+                                                            <td className='text-capitalize'>{formatDate(data?.implimentFrom)}</td>
                                                             <td className='text-capitalize'>
                                                                 {data?.billingFrequency}
 
@@ -123,12 +127,12 @@ const Subscriptions = () => {
                                                             </td>
                                                             <td>
                                                                 <Link to="#" className="action-icon" onClick={() => {
-                                                                    setShowUpdateModal(true);
+                                                                    setShowModal(true);
                                                                     setDataToUpdate(data);
                                                                 }}>
                                                                     <i className="mdi mdi-square-edit-outline"></i>
                                                                 </Link>
-                                                                <UpdateSubscriptions show={showUpdateModal} data={dataToUpdate} closeModal={handleCloseUpdateModal} />
+                                                                {/* <UpdateSubscriptions show={showUpdateModal} data={dataToUpdate} closeModal={handleCloseUpdateModal} /> */}
                                                             </td>
                                                         </tr>
                                                     ))

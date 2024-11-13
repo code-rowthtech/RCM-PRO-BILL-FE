@@ -21,7 +21,6 @@ const Roles = () => {
     const store = useSelector((state) => state);
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const updateSuccess = store?.updateRolesReducer?.data?.status;
-
     const handleClosemodal = () => {
         setShowModal(false);
     };

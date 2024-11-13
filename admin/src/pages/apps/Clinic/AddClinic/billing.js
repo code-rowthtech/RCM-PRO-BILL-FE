@@ -6,7 +6,8 @@ import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions'
 import { encryptMessage } from '../../../../cryptoUtils';
 import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
-const BillingForm = ({ activeTab, setActiveTab, clinicId }) => {
+import Spinner from '../../../../constants/Spinner';
+const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
     const {
         register,
         handleSubmit,
@@ -21,15 +22,19 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId }) => {
     const store = useSelector((state) => state);
     const [amount, setAmount] = useState((null));
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
+    const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction());
+        }
+        if (createResponse === 200) {
+            setActiveTab('contract');
         }
     }, [dispatch, activeTab]);
     const onSubmit = (data) => {
         const payload = {
             subscription: data?.subscription,
-            userId: clinicId,
+            userId: billingId,
             billingContactName: data?.name,
             billingContactPhone: data?.contact,
             billingContactemail: data?.email
@@ -57,7 +62,8 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId }) => {
                             onChange={(e) => {
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
-                                setAmount(selectedSubscription?.price || 0);
+                                console.log(selectedSubscription, 'selectedSubscription')
+                                setAmount(selectedSubscription || 0);
                             }}
                         >
                             <option>Select</option>
@@ -75,11 +81,47 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId }) => {
                         <Form.Label className='mb-1'>Amount</Form.Label>
                         <Form.Control
                             type="text"
-                            defaultValue={amount}
+                            defaultValue={amount?.amount}
                             readOnly
                             // {...register('amount', { required: 'This field is required' })}
                             placeholder="Amount" />
                         {/* {errors.amount && <span className="text-danger">{errors.amount.message}</span>} */}
+                    </Form.Group>
+                </Col>
+                <Col sm={6}>
+                    <Form.Group className="mb-2">
+                        <Form.Label className='mb-1'>Plan Tenure</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={amount?.billingFrequency.toUpperCase()}
+                            readOnly />
+                    </Form.Group>
+                </Col>
+                <Col sm={6}>
+                    <Form.Group className="mb-2">
+                        <Form.Label className='mb-1'>Implemented Date</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={amount?.implimentFrom ? new Date(amount.implimentFrom).toLocaleDateString() : ''}
+                            readOnly />
+                    </Form.Group>
+                </Col>
+                <Col sm={6}>
+                    <Form.Group className="mb-2">
+                        <Form.Label className='mb-1'>Doctor Count</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={amount?.doctorLimit}
+                            readOnly />
+                    </Form.Group>
+                </Col>
+                <Col sm={6}>
+                    <Form.Group className="mb-2">
+                        <Form.Label className='mb-1'>Patient Count</Form.Label>
+                        <Form.Control
+                            type="text"
+                            defaultValue={amount?.patientLimit}
+                            readOnly />
                     </Form.Group>
                 </Col>
             </Row>
@@ -196,8 +238,12 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId }) => {
             </Row>
             <Row className='mt-2'>
                 <Col sm={12} className='text-end'>
-                    <Button type='submit' className='custom-button'>
-                        Generate Contract
+                    <Button type='submit' className='custom-button' disabled={store?.createSubscriptionPlanReducer?.loading}>
+                        {store?.store?.createSubscriptionPlanReducer?.loading ?
+                            <Spinner />
+                            :
+                            'Generate Contract'
+                        }
                     </Button>
                 </Col>
             </Row>

@@ -29,6 +29,7 @@ const AddRoles = ({ show, closeModal }) => {
         }
     }, [show])
 
+
     const onSubmit = (data) => {
         const payload = {
             name: data.name,
