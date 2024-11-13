@@ -95,7 +95,7 @@ const ForgetPassword = (): React$Element<any> => {
                         />
 
                         <div className="mb-3 mb-0 text-center">
-                            <Button variant="primary" className='grayish-buttons' type="submit" disabled={loading}>
+                            <Button variant="primary" className='custom-buttons' type="submit" disabled={loading}>
                                 {t('Submit')}
                             </Button>
                         </div>

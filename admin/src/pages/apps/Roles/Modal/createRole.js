@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { createPermissionAction, createRolesAction, getPermissionAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import Multiselect from "multiselect-react-dropdown";
+import { IoMdClose } from 'react-icons/io';
 
 const AddRoles = ({ show, closeModal }) => {
     const dispatch = useDispatch();
@@ -28,6 +29,7 @@ const AddRoles = ({ show, closeModal }) => {
         }
     }, [show])
 
+
     const onSubmit = (data) => {
         const payload = {
             name: data.name,
@@ -50,14 +52,22 @@ const AddRoles = ({ show, closeModal }) => {
     };
 
     return (
-        <Modal show={show} onHide={closeModal}>
-            <Modal.Header
+        <Modal centered show={show} onHide={closeModal}>
+            {/* <Modal.Header
                 onHide={closeModal}
                 closeButton
                 className={'modal-colored-header pb-0 border-0 text-center'}>
-            </Modal.Header>
+            </Modal.Header> */}
             <Modal.Body>
-                <h4 className="mt-0 text-center">Add Roles</h4>
+                <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                    <Col sm={1}></Col>
+                    <Col sm={10}>
+                        <h4 className="mb-0 text-center">Add Roles</h4>
+                    </Col>
+                    <Col sm={1}>
+                        <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
+                    </Col>
+                </Row>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md={12}>
@@ -102,7 +112,7 @@ const AddRoles = ({ show, closeModal }) => {
 
                     </Row>
                     <Modal.Footer>
-                        <Button type='submit' className='grayish-buttons'>
+                        <Button type='submit' className='custom-buttons'>
                             Create role
                         </Button>
                     </Modal.Footer>

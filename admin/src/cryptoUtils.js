@@ -36,5 +36,5 @@ export function decryptMessage(encryptedText) {
 // const encrypted = encryptMessage(text);
 // // console.log("encrypted: ", encrypted);
 
-// const decrypted = decryptMessage("tDqxOSVWtD4H89kHsfblgUFe7x4LW/2rrb3CoMQekqASdLdtyWvL2EGowHNHZW+5z6PY+uxyppKiKAZ50fVpIIJVlEz31QfO/QNP0PHmLL7zHqbDA0DI2almlIvB91UiU+1Ynb/g1IMos1vqZDnCKGbqG7/mbhxPkkzacIdJiFk=");
-// console.log("decrypted: ", decrypted);
+const decrypted = decryptMessage("rEodp8z2xusBv79LTxgdmXtHrEhmWLkQl7RWxq1losgHGYj3qQ1quf0BIaUYu0Hze4gdIJooMHJ5PwhHB6w8IcabItTW90lvUzpZxb2hh6o7vXpR8XoBUtWHGuGYDGVDKkq0CMXU6+HCxM/nRHAYbPqejycDYFEZF6SA5UO6+kw=");
+console.log("decrypted: ", JSON.parse(decrypted));

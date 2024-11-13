@@ -17,11 +17,12 @@ const UpdateClinic = () => {
     } = useForm();
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
-    const id = searchParams.get('id');
-    const clinicData = useSelector((state) => state?.getClinicByIdReducer?.data?.clinic);
-    const updateLoading = useSelector((state) => state?.updateClinicsReducer?.loading);
-    const updateSuccess = useSelector((state) => state?.updateClinicsReducer?.data?.status);
-
+    const id = searchParams.get('updateid');
+    const store = useSelector((state) => state);
+    const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    const updateLoading = store?.updateClinicsReducer?.loading;
+    const updateSuccess = store?.updateClinicsReducer?.data?.status;
+    console.log(store, 'clinicDataclinicDataclinicDataclinicDataclinicDataclinicData')
     useEffect(() => {
         if (id || updateSuccess === 200) {
             dispatch(getClinicById({ key: encryptMessage({ id }) }));
@@ -132,7 +133,7 @@ const UpdateClinic = () => {
                                             </Form.Group>
                                         </Col>
                                         <Col md={12} className="mt-2 text-end">
-                                            <Button variant="primary" type="submit" disabled={updateLoading} className="grayish-buttons">
+                                            <Button variant="primary" type="submit" disabled={updateLoading} className="custom-buttons">
                                                 {updateLoading ? <Spinner className="spinner-border-sm" /> : 'Update'}
                                             </Button>
                                         </Col>

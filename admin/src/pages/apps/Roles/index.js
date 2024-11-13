@@ -21,7 +21,6 @@ const Roles = () => {
     const store = useSelector((state) => state);
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const updateSuccess = store?.updateRolesReducer?.data?.status;
-
     const handleClosemodal = () => {
         setShowModal(false);
     };
@@ -52,13 +51,13 @@ const Roles = () => {
     }
     return (
         <div>
-            <PageTitle
+            {/* <PageTitle
                 breadCrumbItems={[
                     { label: 'Roles', path: '/apps/Roles/list', active: true },
                 ]}
                 title={'Roles'}
-            />
-            <Row>
+            /> */}
+            <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body>
@@ -67,14 +66,14 @@ const Roles = () => {
                                     <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
                                 </Col>
                                 <Col xs='auto'>
-                                    <Button className='grayish-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Roles</Button>
+                                    <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Roles</Button>
                                 </Col>
                                 <AddRoles show={showModal} closeModal={handleClosemodal} />
                             </Row>
                             <Row>
                                 <Col>
                                     <Table responsive className="table-centered table-nowrap mb-0">
-                                        <thead className="table-light">
+                                        <thead className="">
                                             <tr key={''}>
                                                 <th>
                                                     S.no

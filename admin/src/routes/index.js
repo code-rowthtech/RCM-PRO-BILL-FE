@@ -11,6 +11,7 @@ import VerticalLayout from '../layouts/Vertical';
 import DetachedLayout from '../layouts/Detached';
 import HorizontalLayout from '../layouts/Horizontal';
 import FullLayout from '../layouts/Full';
+import Blood from '../pages/apps/Settings/blood';
 
 // lazy load all the views
 
@@ -36,10 +37,22 @@ const AllClinics = React.lazy(() => import('../pages/apps/Clinic/AllClinics'));
 const AddClinics = React.lazy(() => import('../pages/apps/Clinic/AddClinic/index'));
 const UpdateClinic = React.lazy(() => import('../pages/apps/Clinic/AllClinics/updateClinic'));
 const AppointmentsList = React.lazy(() => import('../pages/apps/Appointments/index'));
+const Subscriptions = React.lazy(() => import('../pages/apps/Subscriptions/index'));
+// const AddSubscriptions = React.lazy(() => import('../pages/apps/Subscriptions/Addsubscriptions/index'));
 const Doctors = React.lazy(() => import('../pages/apps/Doctors/index'));
 const Patients = React.lazy(() => import('../pages/apps/Patients/index'));
 const Permissions = React.lazy(() => import('../pages/apps/Permissions/index'))
 const Roles = React.lazy(() => import('../pages/apps/Roles/index'))
+
+// SETTINGS
+const PlanName = React.lazy(() => import('../pages/apps/Settings/planName'))
+const Speciality = React.lazy(() => import('../pages/apps/Settings/speciality'))
+const Departments = React.lazy(() => import('../pages/apps/Settings/departments'))
+const ContractFormat = React.lazy(() => import('../pages/apps/Settings/contract'))
+const Designation = React.lazy(() => import('../pages/apps/Settings/designation'))
+const ClinicType = React.lazy(() => import('../pages/apps/Settings/clinicType'))
+const Location = React.lazy(() => import('../pages/apps/Settings/location'))
+
 
 // pages
 
@@ -57,33 +70,33 @@ const Timeline = React.lazy(() => import('../pages/other/Timeline'));
 
 // const Landing = React.lazy(() => import('../pages/landing'));
 
-// uikit
-const Accordions = React.lazy(() => import('../pages/uikit/Accordions'));
-const Alerts = React.lazy(() => import('../pages/uikit/Alerts'));
-const Avatars = React.lazy(() => import('../pages/uikit/Avatars'));
-const Badges = React.lazy(() => import('../pages/uikit/Badges'));
-const Breadcrumbs = React.lazy(() => import('../pages/uikit/Breadcrumb'));
-const Buttons = React.lazy(() => import('../pages/uikit/Buttons'));
-const Cards = React.lazy(() => import('../pages/uikit/Cards'));
-const Carousels = React.lazy(() => import('../pages/uikit/Carousel'));
-const Dropdowns = React.lazy(() => import('../pages/uikit/Dropdowns'));
-const EmbedVideo = React.lazy(() => import('../pages/uikit/EmbedVideo'));
-const Grid = React.lazy(() => import('../pages/uikit/Grid'));
-const ListGroups = React.lazy(() => import('../pages/uikit/ListGroups'));
-const Modals = React.lazy(() => import('../pages/uikit/Modals'));
-const Notifications = React.lazy(() => import('../pages/uikit/Notifications'));
-const Offcanvases = React.lazy(() => import('../pages/uikit/Offcanvas'));
-const Paginations = React.lazy(() => import('../helpers/Paginations'));
-const Popovers = React.lazy(() => import('../pages/uikit/Popovers'));
-const Progress = React.lazy(() => import('../pages/uikit/Progress'));
-const Ribbons = React.lazy(() => import('../pages/uikit/Ribbons'));
-const Spinners = React.lazy(() => import('../pages/uikit/Spinners'));
-const Tabs = React.lazy(() => import('../pages/uikit/Tabs'));
-const Tooltips = React.lazy(() => import('../pages/uikit/Tooltips'));
-const Typography = React.lazy(() => import('../pages/uikit/Typography'));
-const DragDrop = React.lazy(() => import('../pages/uikit/DragDrop'));
-const RangeSliders = React.lazy(() => import('../pages/uikit/RangeSliders'));
-const Ratings = React.lazy(() => import('../pages/uikit/Ratings'));
+// // uikit
+// const Accordions = React.lazy(() => import('../pages/uikit/Accordions'));
+// const Alerts = React.lazy(() => import('../pages/uikit/Alerts'));
+// const Avatars = React.lazy(() => import('../pages/uikit/Avatars'));
+// const Badges = React.lazy(() => import('../pages/uikit/Badges'));
+// const Breadcrumbs = React.lazy(() => import('../pages/uikit/Breadcrumb'));
+// const Buttons = React.lazy(() => import('../pages/uikit/Buttons'));
+// const Cards = React.lazy(() => import('../pages/uikit/Cards'));
+// const Carousels = React.lazy(() => import('../pages/uikit/Carousel'));
+// const Dropdowns = React.lazy(() => import('../pages/uikit/Dropdowns'));
+// const EmbedVideo = React.lazy(() => import('../pages/uikit/EmbedVideo'));
+// const Grid = React.lazy(() => import('../pages/uikit/Grid'));
+// const ListGroups = React.lazy(() => import('../pages/uikit/ListGroups'));
+// const Modals = React.lazy(() => import('../pages/uikit/Modals'));
+// const Notifications = React.lazy(() => import('../pages/uikit/Notifications'));
+// const Offcanvases = React.lazy(() => import('../pages/uikit/Offcanvas'));
+// const Paginations = React.lazy(() => import('../helpers/Paginations'));
+// const Popovers = React.lazy(() => import('../pages/uikit/Popovers'));
+// const Progress = React.lazy(() => import('../pages/uikit/Progress'));
+// const Ribbons = React.lazy(() => import('../pages/uikit/Ribbons'));
+// const Spinners = React.lazy(() => import('../pages/uikit/Spinners'));
+// const Tabs = React.lazy(() => import('../pages/uikit/Tabs'));
+// const Tooltips = React.lazy(() => import('../pages/uikit/Tooltips'));
+// const Typography = React.lazy(() => import('../pages/uikit/Typography'));
+// const DragDrop = React.lazy(() => import('../pages/uikit/DragDrop'));
+// const RangeSliders = React.lazy(() => import('../pages/uikit/RangeSliders'));
+// const Ratings = React.lazy(() => import('../pages/uikit/Ratings'));
 
 // icons
 const Dripicons = React.lazy(() => import('../pages/icons/Dripicons'));
@@ -91,28 +104,27 @@ const MDIIcons = React.lazy(() => import('../pages/icons/MDIIcons'));
 const Unicons = React.lazy(() => import('../pages/icons/Unicons'));
 
 // forms
-const BasicForms = React.lazy(() => import('../pages/forms/Basic'));
-const FormAdvanced = React.lazy(() => import('../pages/forms/Advanced'));
-const FormValidation = React.lazy(() => import('../pages/forms/Validation'));
-const FormWizard = React.lazy(() => import('../pages/forms/Wizard'));
-const FileUpload = React.lazy(() => import('../pages/forms/FileUpload'));
-const Editors = React.lazy(() => import('../pages/forms/Editors'));
+// const BasicForms = React.lazy(() => import('../pages/forms/Basic'));
+// const FormValidation = React.lazy(() => import('../pages/forms/Validation'));
+// const FormWizard = React.lazy(() => import('../pages/forms/Wizard'));
+// const FileUpload = React.lazy(() => import('../pages/forms/FileUpload'));
+// const Editors = React.lazy(() => import('../pages/forms/Editors'));
 
 // charts
-const ApexChart = React.lazy(() => import('../pages/charts/Apex'));
-const BriteChart = React.lazy(() => import('../pages/charts/Brite'));
-const ChartJs = React.lazy(() => import('../pages/charts/ChartJs'));
+// const ApexChart = React.lazy(() => import('../pages/charts/Apex'));
+// const BriteChart = React.lazy(() => import('../pages/charts/Brite'));
+// const ChartJs = React.lazy(() => import('../pages/charts/ChartJs'));
 
 // tables
-const BasicTables = React.lazy(() => import('../pages/tables/Basic'));
-const AdvancedTables = React.lazy(() => import('../pages/tables/Advanced'));
+// const BasicTables = React.lazy(() => import('../pages/tables/Basic'));
+// const AdvancedTables = React.lazy(() => import('../pages/tables/Advanced'));
 
 // widgets
-const Widgets = React.lazy(() => import('../pages/uikit/Widgets'));
+// const Widgets = React.lazy(() => import('../pages/uikit/Widgets'));
 
 // maps
-const GoogleMaps = React.lazy(() => import('../pages/maps/GoogleMaps'));
-const VectorMaps = React.lazy(() => import('../pages/maps/VectorMaps'));
+// const GoogleMaps = React.lazy(() => import('../pages/maps/GoogleMaps'));
+// const VectorMaps = React.lazy(() => import('../pages/maps/VectorMaps'));
 
 const loading = () => <div className=""></div>;
 
@@ -245,6 +257,24 @@ const AllRoutes = () => {
                             ],
                         },
                         {
+                            path: 'subscriptions',
+                            children: [
+                                {
+                                    path: 'list',
+                                    element: <LoadComponent component={Subscriptions} />,
+                                },
+                            ],
+                        },
+                        // {
+                        //     path: 'subscriptions',
+                        //     children: [
+                        //         {
+                        //             path: 'add',
+                        //             element: <LoadComponent component={AddSubscriptions} />,
+                        //         },
+                        //     ],
+                        // },
+                        {
                             path: 'patients',
                             children: [
                                 {
@@ -321,259 +351,259 @@ const AllRoutes = () => {
                     ],
                 },
                 {
-                    path: 'pages',
+                    path: 'settings',
                     children: [
                         {
-                            path: 'starter',
-                            element: <LoadComponent component={Starter} />,
-                        },
-                        // {
-                        //     path: 'profile',
-                        //     element: <LoadComponent component={Profile} />,
-                        // },
-                        // {
-                        //     path: 'profile2',
-                        //     element: <LoadComponent component={Profile2} />,
-                        // },
-                        {
-                            path: 'pricing',
-                            element: <LoadComponent component={Pricing} />,
+                            path: 'planName',
+                            element: <LoadComponent component={PlanName} />,
                         },
                         {
-                            path: 'error-404-alt',
-                            element: <LoadComponent component={ErrorPageNotFoundAlt} />,
+                            path: 'speciality',
+                            element: <LoadComponent component={Speciality} />,
                         },
                         {
-                            path: 'timeline',
-                            element: <LoadComponent component={Timeline} />,
+                            path: 'department',
+                            element: <LoadComponent component={Departments} />,
                         },
                         {
-                            path: 'invoice',
-                            element: <LoadComponent component={Invoice} />,
+                            path: 'contractFormat',
+                            element: <LoadComponent component={ContractFormat} />,
+                        },
+                        {
+                            path: 'designation',
+                            element: <LoadComponent component={Designation} />,
+                        },
+                        {
+                            path: 'bloodGroup',
+                            element: <LoadComponent component={Blood} />,
+                        },
+                        {
+                            path: 'clinicType',
+                            element: <LoadComponent component={ClinicType} />,
                         },
 
                         {
-                            path: 'preloader',
-                            element: <LoadComponent component={PreLoader} />,
+                            path: 'location',
+                            element: <LoadComponent component={Location} />,
                         },
                     ],
                 },
-                {
-                    path: 'ui',
-                    children: [
-                        {
-                            path: 'base-ui',
-                            children: [
-                                {
-                                    path: 'accordions',
-                                    element: <LoadComponent component={Accordions} />,
-                                },
-                                {
-                                    path: 'alerts',
-                                    element: <LoadComponent component={Alerts} />,
-                                },
-                                {
-                                    path: 'avatars',
-                                    element: <LoadComponent component={Avatars} />,
-                                },
-                                {
-                                    path: 'badges',
-                                    element: <LoadComponent component={Badges} />,
-                                },
-                                {
-                                    path: 'breadcrumb',
-                                    element: <LoadComponent component={Breadcrumbs} />,
-                                },
-                                {
-                                    path: 'buttons',
-                                    element: <LoadComponent component={Buttons} />,
-                                },
-                                {
-                                    path: 'cards',
-                                    element: <LoadComponent component={Cards} />,
-                                },
-                                {
-                                    path: 'carousel',
-                                    element: <LoadComponent component={Carousels} />,
-                                },
-                                {
-                                    path: 'dropdowns',
-                                    element: <LoadComponent component={Dropdowns} />,
-                                },
-                                {
-                                    path: 'embedvideo',
-                                    element: <LoadComponent component={EmbedVideo} />,
-                                },
-                                {
-                                    path: 'grid',
-                                    element: <LoadComponent component={Grid} />,
-                                },
-                                {
-                                    path: 'listgroups',
-                                    element: <LoadComponent component={ListGroups} />,
-                                },
-                                {
-                                    path: 'modals',
-                                    element: <LoadComponent component={Modals} />,
-                                },
-                                {
-                                    path: 'notifications',
-                                    element: <LoadComponent component={Notifications} />,
-                                },
-                                {
-                                    path: 'offcanvas',
-                                    element: <LoadComponent component={Offcanvases} />,
-                                },
-                                {
-                                    path: 'paginations',
-                                    element: <LoadComponent component={Paginations} />,
-                                },
-                                // {
-                                //     path: 'placeholders',
-                                //     element: <LoadComponent component={Placeholders} />,
-                                // },
-                                {
-                                    path: 'popovers',
-                                    element: <LoadComponent component={Popovers} />,
-                                },
-                                {
-                                    path: 'progress',
-                                    element: <LoadComponent component={Progress} />,
-                                },
-                                {
-                                    path: 'ribbons',
-                                    element: <LoadComponent component={Ribbons} />,
-                                },
-                                {
-                                    path: 'spinners',
-                                    element: <LoadComponent component={Spinners} />,
-                                },
-                                {
-                                    path: 'tabs',
-                                    element: <LoadComponent component={Tabs} />,
-                                },
-                                {
-                                    path: 'tooltips',
-                                    element: <LoadComponent component={Tooltips} />,
-                                },
-                                {
-                                    path: 'typography',
-                                    element: <LoadComponent component={Typography} />,
-                                },
-                            ],
-                        },
-                        {
-                            path: 'widgets',
-                            element: <LoadComponent component={Widgets} />,
-                        },
-                        {
-                            path: 'extended',
-                            children: [
-                                {
-                                    path: 'dragdrop',
-                                    element: <LoadComponent component={DragDrop} />,
-                                },
-                                {
-                                    path: 'rangesliders',
-                                    element: <LoadComponent component={RangeSliders} />,
-                                },
-                                {
-                                    path: 'ratings',
-                                    element: <LoadComponent component={Ratings} />,
-                                },
-                            ],
-                        },
-                        {
-                            path: 'icons',
-                            children: [
-                                {
-                                    path: 'unicons',
-                                    element: <LoadComponent component={Unicons} />,
-                                },
-                                {
-                                    path: 'mdi',
-                                    element: <LoadComponent component={MDIIcons} />,
-                                },
-                                {
-                                    path: 'dripicons',
-                                    element: <LoadComponent component={Dripicons} />,
-                                },
-                            ],
-                        },
-                        {
-                            path: 'forms',
-                            children: [
-                                {
-                                    path: 'basic',
-                                    element: <LoadComponent component={BasicForms} />,
-                                },
-                                {
-                                    path: 'advanced',
-                                    element: <LoadComponent component={FormAdvanced} />,
-                                },
-                                {
-                                    path: 'validation',
-                                    element: <LoadComponent component={FormValidation} />,
-                                },
-                                {
-                                    path: 'wizard',
-                                    element: <LoadComponent component={FormWizard} />,
-                                },
-                                {
-                                    path: 'upload',
-                                    element: <LoadComponent component={FileUpload} />,
-                                },
-                                {
-                                    path: 'editors',
-                                    element: <LoadComponent component={Editors} />,
-                                },
-                            ],
-                        },
-                        {
-                            path: 'tables',
-                            children: [
-                                {
-                                    path: 'basic',
-                                    element: <LoadComponent component={BasicTables} />,
-                                },
-                                {
-                                    path: 'advanced',
-                                    element: <LoadComponent component={AdvancedTables} />,
-                                },
-                            ],
-                        },
-                        {
-                            path: 'charts',
-                            children: [
-                                {
-                                    path: 'apex',
-                                    element: <LoadComponent component={ApexChart} />,
-                                },
-                                {
-                                    path: 'brite',
-                                    element: <LoadComponent component={BriteChart} />,
-                                },
-                                {
-                                    path: 'chartjs',
-                                    element: <LoadComponent component={ChartJs} />,
-                                },
-                            ],
-                        },
-                        {
-                            path: 'maps',
-                            children: [
-                                {
-                                    path: 'googlemaps',
-                                    element: <LoadComponent component={GoogleMaps} />,
-                                },
-                                {
-                                    path: 'vectormaps',
-                                    element: <LoadComponent component={VectorMaps} />,
-                                },
-                            ],
-                        },
-                    ],
-                },
+                // {
+                //     path: 'ui',
+                //     children: [
+                //         {
+                //             path: 'base-ui',
+                //             children: [
+                //                 {
+                //                     path: 'accordions',
+                //                     element: <LoadComponent component={Accordions} />,
+                //                 },
+                //                 {
+                //                     path: 'alerts',
+                //                     element: <LoadComponent component={Alerts} />,
+                //                 },
+                //                 {
+                //                     path: 'avatars',
+                //                     element: <LoadComponent component={Avatars} />,
+                //                 },
+                //                 {
+                //                     path: 'badges',
+                //                     element: <LoadComponent component={Badges} />,
+                //                 },
+                //                 {
+                //                     path: 'breadcrumb',
+                //                     element: <LoadComponent component={Breadcrumbs} />,
+                //                 },
+                //                 {
+                //                     path: 'buttons',
+                //                     element: <LoadComponent component={Buttons} />,
+                //                 },
+                //                 {
+                //                     path: 'cards',
+                //                     element: <LoadComponent component={Cards} />,
+                //                 },
+                //                 {
+                //                     path: 'carousel',
+                //                     element: <LoadComponent component={Carousels} />,
+                //                 },
+                //                 {
+                //                     path: 'dropdowns',
+                //                     element: <LoadComponent component={Dropdowns} />,
+                //                 },
+                //                 {
+                //                     path: 'embedvideo',
+                //                     element: <LoadComponent component={EmbedVideo} />,
+                //                 },
+                //                 {
+                //                     path: 'grid',
+                //                     element: <LoadComponent component={Grid} />,
+                //                 },
+                //                 {
+                //                     path: 'listgroups',
+                //                     element: <LoadComponent component={ListGroups} />,
+                //                 },
+                //                 {
+                //                     path: 'modals',
+                //                     element: <LoadComponent component={Modals} />,
+                //                 },
+                //                 {
+                //                     path: 'notifications',
+                //                     element: <LoadComponent component={Notifications} />,
+                //                 },
+                //                 {
+                //                     path: 'offcanvas',
+                //                     element: <LoadComponent component={Offcanvases} />,
+                //                 },
+                //                 {
+                //                     path: 'paginations',
+                //                     element: <LoadComponent component={Paginations} />,
+                //                 },
+                //                 // {
+                //                 //     path: 'placeholders',
+                //                 //     element: <LoadComponent component={Placeholders} />,
+                //                 // },
+                //                 {
+                //                     path: 'popovers',
+                //                     element: <LoadComponent component={Popovers} />,
+                //                 },
+                //                 {
+                //                     path: 'progress',
+                //                     element: <LoadComponent component={Progress} />,
+                //                 },
+                //                 {
+                //                     path: 'ribbons',
+                //                     element: <LoadComponent component={Ribbons} />,
+                //                 },
+                //                 {
+                //                     path: 'spinners',
+                //                     element: <LoadComponent component={Spinners} />,
+                //                 },
+                //                 {
+                //                     path: 'tabs',
+                //                     element: <LoadComponent component={Tabs} />,
+                //                 },
+                //                 {
+                //                     path: 'tooltips',
+                //                     element: <LoadComponent component={Tooltips} />,
+                //                 },
+                //                 {
+                //                     path: 'typography',
+                //                     element: <LoadComponent component={Typography} />,
+                //                 },
+                //             ],
+                //         },
+                //         {
+                //             path: 'widgets',
+                //             element: <LoadComponent component={Widgets} />,
+                //         },
+                //         {
+                //             path: 'extended',
+                //             children: [
+                //                 {
+                //                     path: 'dragdrop',
+                //                     element: <LoadComponent component={DragDrop} />,
+                //                 },
+                //                 {
+                //                     path: 'rangesliders',
+                //                     element: <LoadComponent component={RangeSliders} />,
+                //                 },
+                //                 {
+                //                     path: 'ratings',
+                //                     element: <LoadComponent component={Ratings} />,
+                //                 },
+                //             ],
+                //         },
+                //         {
+                //             path: 'icons',
+                //             children: [
+                //                 {
+                //                     path: 'unicons',
+                //                     element: <LoadComponent component={Unicons} />,
+                //                 },
+                //                 {
+                //                     path: 'mdi',
+                //                     element: <LoadComponent component={MDIIcons} />,
+                //                 },
+                //                 {
+                //                     path: 'dripicons',
+                //                     element: <LoadComponent component={Dripicons} />,
+                //                 },
+                //             ],
+                //         },
+                //         // {
+                //         //     path: 'forms',
+                //         //     children: [
+                //         //         {
+                //         //             path: 'basic',
+                //         //             element: <LoadComponent component={BasicForms} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'advanced',
+                //         //             element: <LoadComponent component={FormAdvanced} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'validation',
+                //         //             element: <LoadComponent component={FormValidation} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'wizard',
+                //         //             element: <LoadComponent component={FormWizard} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'upload',
+                //         //             element: <LoadComponent component={FileUpload} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'editors',
+                //         //             element: <LoadComponent component={Editors} />,
+                //         //         },
+                //         //     ],
+                //         // },
+                //         // {
+                //         //     path: 'tables',
+                //         //     children: [
+                //         //         {
+                //         //             path: 'basic',
+                //         //             element: <LoadComponent component={BasicTables} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'advanced',
+                //         //             element: <LoadComponent component={AdvancedTables} />,
+                //         //         },
+                //         //     ],
+                //         // },
+                //         {
+                //             path: 'charts',
+                //             children: [
+                //                 {
+                //                     path: 'apex',
+                //                     element: <LoadComponent component={ApexChart} />,
+                //                 },
+                //                 {
+                //                     path: 'brite',
+                //                     element: <LoadComponent component={BriteChart} />,
+                //                 },
+                //                 {
+                //                     path: 'chartjs',
+                //                     element: <LoadComponent component={ChartJs} />,
+                //                 },
+                //             ],
+                //         },
+                //         // {
+                //         //     path: 'maps',
+                //         //     children: [
+                //         //         {
+                //         //             path: 'googlemaps',
+                //         //             element: <LoadComponent component={GoogleMaps} />,
+                //         //         },
+                //         //         {
+                //         //             path: 'vectormaps',
+                //         //             element: <LoadComponent component={VectorMaps} />,
+                //         //         },
+                //         //     ],
+                //         // },
+                //     ],
+                // },
             ],
         },
     ]);

@@ -6,9 +6,9 @@ import { Row, Col } from 'react-bootstrap';
 import PageTitle from '../../../components/PageTitle';
 
 import Statistics from './Statistics';
-import Status from './Status';
+// import Status from './Status';
 import Tasks from './Tasks';
-import TasksChart from './TasksChart';
+// import TasksChart from './TasksChart';
 import Activity from './Activity';
 import Calendar from './Calendar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,27 +23,27 @@ const ProjectDashboardPage = (): React$Element<React$FragmentType> => {
     const analyticsResponse = store?.getAnalyticsReducer;
     return (
         <>
-            <PageTitle
+            {/* <PageTitle
                 breadCrumbItems={[
                     { label: 'Dashboard', path: '/', active: true },
                 ]}
                 title={'Dashboard'}
-            />
+            /> */}
 
             <Statistics data={analyticsResponse} />
 
             <Row>
-                <Col lg={4}>
+                {/* <Col lg={4}>
                     <Status />
-                </Col>
-                <Col lg={8}>
+                </Col> */}
+                <Col lg={12}>
                     <Tasks />
                 </Col>
             </Row>
 
             <Row>
                 <Col xs={12}>
-                    <TasksChart />
+                    {/* <TasksChart /> */}
                 </Col>
                 {/* <Col xl={4}>
                     <Activity />
