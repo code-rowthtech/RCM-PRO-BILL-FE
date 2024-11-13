@@ -1,10 +1,12 @@
 // @flow
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Collapse } from 'react-bootstrap';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button, Collapse, Modal } from 'react-bootstrap';
 import classNames from 'classnames';
 
 import { findAllParent, findMenuItem } from '../helpers/menu';
+import { logoutUser, resetAuth } from '../redux/actions';
+import { useDispatch } from 'react-redux';
 
 const MenuItemWithChildren = ({ item, linkClassName, subMenuClassNames, activeMenuItems, toggleMenu }) => {
     const [open, setOpen] = useState(activeMenuItems.includes(item.key));
@@ -88,6 +90,23 @@ const MenuItem = ({ item, className, linkClassName }) => {
 };
 
 const MenuItemLink = ({ item, className }) => {
+    const [show, setShow] = useState(false)
+    const handleCheckLogout = (data) => {
+        if (data === 'Logout') {
+            setShow(true);
+        }
+
+    }
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+        dispatch(logoutUser())
+        navigate('account/logout')
+    }
+    const closeModal = () => {
+        setShow(false);
+    }
     return (
         <Link
             to={{ pathname: item.url }}
@@ -103,8 +122,29 @@ const MenuItemLink = ({ item, className }) => {
                     {item.badge.text}
                 </span>
             )}
-            <span> {item.label} </span>
+            <span onClick={() => handleCheckLogout(item.label)}> {item.label} </span>
+            <Modal centered show={show} onHide={closeModal}>
+                <Modal.Body>
+                    <div className="p-4" style={{ maxWidth: '500px', width: '100%' }}>
+                        <div className="card-body text-center">
+                            <h5 className="card-title">Are you sure you want to logout!</h5>
+                            <p className="card-text my-4">
+                                You are also logged out from your personal cloud and any local data apps open in this browser.
+                            </p>
+                            <div className="d-flex justify-content-center gap-3">
+                                <Button type="button" className="btn btn-secondary" onClick={() => setShow(false)}>
+                                    Cancel
+                                </Button>
+                                <Button type="button" className="custom-buttons " onClick={handleLogout}>
+                                    Logout
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </Link>
+
     );
 };
 

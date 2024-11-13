@@ -56,7 +56,7 @@ const MENU_ITEMS = [
     },
     {
         key: 'roles',
-        label: 'Roles',
+        label: 'Role Management',
         icon: 'uil-user-circle',
         url: '/apps/roles/list',
     },
@@ -128,6 +128,13 @@ const MENU_ITEMS = [
                 parentKey: 'settings',
             },
         ],
+
+    },
+    {
+        key: 'logout',
+        label: 'Logout',
+        icon: 'mdi mdi-logout',
+        // url: '#',
     },
     // { key: 'components', label: 'Components', isTitle: true },
     // {

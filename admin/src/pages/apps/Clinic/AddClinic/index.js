@@ -74,7 +74,7 @@ const Index = () => {
                                         Contract
                                     </span>
                                 </Col>
-                                <Col className='d-flex gap-2 justify-content-end align-items-center'>
+                                <Col className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
                                     <Button className='custom-buttons'>Email to Clinic</Button>
                                     <Button className='custom-buttons' disabled>View</Button>
                                 </Col>

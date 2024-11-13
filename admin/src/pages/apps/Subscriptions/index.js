@@ -20,17 +20,19 @@ const Subscriptions = () => {
     const [showModal, setShowModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [dataToUpdate, setDataToUpdate] = useState(null);
+    const [status, setStatus] = useState(true);
     const subscriptionsResponse = store?.getSubscriptionsReducer?.data;
     const createSuccess = store?.createSubscriptionsReducer?.data?.status;
     const updateSuccess = store?.updateSubscriptionsReducer?.data?.status;
     useEffect(() => {
-        dispatch(getSubscriptionsAction());
+        dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
         if (createSuccess === 201 || updateSuccess === 200) {
             dispatch(stateEmptydAction())
-            dispatch(getSubscriptionsAction());
+            dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
         }
-    }, [dispatch, createSuccess, updateSuccess])
+    }, [dispatch, createSuccess, updateSuccess, status, skip, search])
     const handlePageChange = (pageNumber) => {
+        setSearch('');
         setSkip(pageNumber);
     };
 
@@ -48,6 +50,11 @@ const Subscriptions = () => {
         dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive }) }))
     }
 
+
+    const handleStatusChange = (isActive) => {
+        setStatus(isActive);
+        setSearch('');
+    };
     return (
         <div>
             <Row className='mt-2'>
@@ -55,11 +62,37 @@ const Subscriptions = () => {
                     <Card>
                         <Card.Body>
                             <Row className="mb-2">
-                                <Col className='text-end'>
-                                    <Button onClick={() => setShowModal(true)} className="custom-buttons">
-                                        Add Subscriptions
+                                <Col sm={6}>
+                                    <Button variant={status === false ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange(true)}
+                                        className={`${status === true ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    >
+                                        Active
                                     </Button>
-                                    <AddSubscriptions data={dataToUpdate} show={showModal} closeModal={handleCloseModal} />
+
+                                    <Button variant={status === true ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange(false)}
+                                        className={`${status === false ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    >
+                                        Inactive
+                                    </Button>
+                                </Col>
+                                <Col sm={6} className='text-end'>
+                                    <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
+                                        <Col xs="auto" className='d-flex gap-2'>
+                                            <FormInput
+                                                type="text"
+                                                onChange={(e) => {
+                                                    setSearch(e.target.value);
+                                                    setSkip(1);
+                                                }}
+                                                placeholder="Search..." />
+                                            <Button onClick={() => setShowModal(true)} className="custom-buttons">
+                                                New Plan
+                                            </Button>
+                                            <AddSubscriptions data={dataToUpdate} show={showModal} closeModal={handleCloseModal} />
+                                        </Col>
+                                    </Row>
                                 </Col>
                             </Row>
                             <Row>

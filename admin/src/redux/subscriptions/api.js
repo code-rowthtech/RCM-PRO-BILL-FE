@@ -5,7 +5,7 @@ const api = new APICore();
 
 export function getSubscriptionsApi(params: any): any {
     const { data } = params;
-    return api.get(URL.getSubscriptions, data);
+    return api.get(`${URL.getSubscriptions}?page=${data?.skip}&search=${data?.search}&status=${data?.status}`);
 }
 
 export function createSubscriptionsApi(params: any): any {

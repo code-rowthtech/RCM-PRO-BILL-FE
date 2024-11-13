@@ -41,7 +41,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
     const [logo, setLogo] = useState(null);
     const [logoName, setLogoName] = useState(null)
     const [accreditationLogo, setAccreditationLogo] = useState(null);
-    const [addType, setAddType] = useState('')
+    const [addType, setAddType] = useState('');
+    const [logoError, setLogoError] = useState(null);
     // const [clinicId, setClinicId] = useState(null);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
@@ -146,6 +147,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
             return;
         }
         const clinicRoleId = decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id;
+
         const newPayload = {
             ...(clinicsList && clinicsList?.length !== 0 && { parentClinic: clinicId }),
             ...(updateId && { id: updateId }),
@@ -354,7 +356,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
             return updatedDetails;
         });
     };
-    console.log(posDetails, 'posDetails')
     return (
         <>
             {/* <UploadToS3 /> */}
@@ -362,37 +363,41 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                 <Row>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Clinic Name</Form.Label>
+                            <Form.Label className='mb-1'>Clinic Name <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('clinicname')}
+                                {...register('clinicname', { required: 'This field is required' })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.name : ''}
-                                placeholder="Clinic name" />
-                            {/* {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>} */}
+                                placeholder="Clinic name"
+                            />
+                            {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
+
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Clinic type</Form.Label>
+                            <Form.Label className='mb-1'>Clinic type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
                                 defaultValue={updatePage ? clinicDataToUpdate?.clinicType : ''}
-                                {...register('clinicType')}                        >
-                                <option>Clinic type</option>
+                                {...register('clinicType', { required: 'This field is required' })}
+                            >
+                                <option value="">Clinic type</option> {/* Ensure this has a value to represent unselected */}
                                 {clinicTypeData?.map((data) => (
                                     <option key={data?._id} value={data?.name}>{data?.name}</option>
                                 ))}
                             </Form.Select>
+                            {errors.clinicType && <span className="text-danger">{errors.clinicType.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Email</Form.Label>
+                            <Form.Label className='mb-1'>Email<span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="email"
                                 defaultValue={updatePage ? clinicDataToUpdate?.email : ''}
-                                {...register('email')}
+                                {...register('email', { required: 'This field is required' })}
                                 placeholder="Email" />
-                            {/* {errors.email && <span className="text-danger">{errors.email.message}</span>} */}
+                            {errors.email && <span className="text-danger">{errors.email.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
@@ -406,15 +411,21 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
-                        <Form.Group className="mb-2 position-relative">
-                            <Form.Label className='mb-1'>Contact Person</Form.Label>
+                        <Form.Group className="mb-0 position-relative">
+                            <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 style={{ paddingLeft: '5%' }}
-                                {...register('contact')}
+                                {...register('contact', {
+                                    required: 'This field is required',
+                                    pattern: {
+                                        value: /^[0-9]*$/,
+                                        message: 'Contact must be a number'
+                                    }
+                                })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
-                                placeholder="+1 1234-234-234" />
-                            {/* {errors.contact1 && <span className="text-danger">{errors.contact1.message}</span>} */}
+                                placeholder="+1 1234-234-234"
+                            />
                             <img
                                 src={us}
                                 alt="country code flag"
@@ -422,6 +433,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                                 className='position-absolute' width={20} />
 
                         </Form.Group>
+                        {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
@@ -456,9 +468,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                             type="file"
                             className="rounded-circle"
                             style={{ display: 'none' }}
+                            // {...register('logoimage', { required: 'This field is required' })}
                             ref={logoFileInputRef}
                             onChange={handleFileChange}
                         />
+                        {/* {errors.logoimage && <span className="text-danger">{errors.logoimage.message}</span>} */}
                     </Col>
                     <hr />
                     <Col sm={12}>

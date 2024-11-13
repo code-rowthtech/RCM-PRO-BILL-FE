@@ -9,6 +9,22 @@ import { getPatientsAction } from '../../../redux/patients/actions';
 import Spinner from '../../../constants/Spinner';
 import Paginations from '../../../helpers/Paginations';
 import { IoMdClose } from 'react-icons/io';
+import { formatDate } from '../../../helpers/dateFormat';
+const calculateAge = (dob) => {
+    if (!dob) return null; // Handle missing or invalid dates
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+
+    // Adjust age if the current date is before the birthday this year
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+};
+
+
 const Patients = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -18,6 +34,7 @@ const Patients = () => {
     const [detailsModal, setDetailsModal] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const decrytedPatientsData = store?.getPatientsReducer?.data?.patients;
+    console.log(decrytedPatientsData, 'decrytedPatientsData')
     useEffect(() => {
         const payload = {
             clinicId: clinicId,
@@ -57,47 +74,49 @@ const Patients = () => {
                                     <Table responsive className="table-centered table-nowrap mb-0">
                                         <thead className="tablelight">
                                             <tr key={''}>
-                                                <th>Full name</th>
-                                                <th>Insaurance Provider</th>
-                                                <th>Email</th>
-                                                <th>Contact</th>
-                                                <th>Address</th>
+                                                <th>Sr. No.</th>
+                                                <th>Patients name</th>
+                                                <th>Age</th>
+                                                <th>Gender</th>
+                                                <th>Amount</th>
+                                                <th>Appointment Date</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {store?.getPatientsReducer?.loading ?
                                                 <tr>
-                                                    <td colSpan={6} className='text-center py-5'>
+                                                    <td colSpan={8} className='text-center py-5'>
                                                         <Spinner />
                                                     </td>
                                                 </tr>
                                                 :
                                                 store?.getPatientsReducer?.data?.total === 0 ?
                                                     <tr>
-                                                        <td colSpan={6} className='text-center'>
+                                                        <td colSpan={8} className='text-center'>
                                                             <h3 className='my-5'>No Data Found</h3>
                                                         </td>
                                                     </tr>
                                                     :
                                                     decrytedPatientsData?.map((data, index) => (
                                                         <tr key={index}>
+                                                            <td>{index + 1}</td>
                                                             <td className='text-capitalize'>
                                                                 {data?.firstName + ' ' + data?.lastName}
                                                             </td>
                                                             <td>
-                                                                {data?.insuranceProvider}
+                                                                {data?.dob ? calculateAge(data.dob) : 'N/A'}
+                                                            </td>
+
+                                                            <td>
+                                                                {data?.gender}
                                                             </td>
                                                             <td>
-                                                                <span className='text-truncate text-lowercase cursor-pointer' title={data?.email}>
-                                                                    {data?.email?.substring(0, 12) + '...'}
-                                                                </span>
+                                                                {data?.amount || '----'}
                                                             </td>
                                                             <td>
-                                                                {data?.phone}
-                                                            </td>
-                                                            <td>
-                                                                <span
+                                                                {/* <span
                                                                     data-bs-toggle="tooltip"
                                                                     title={
                                                                         data?.address
@@ -109,7 +128,11 @@ const Patients = () => {
                                                                     {data?.address
                                                                         ? `${data?.address?.street}, ${data?.address?.city}, ${data?.address?.state} (${data?.address?.zipCode})`.substring(0, 12) + '...'
                                                                         : ''}
-                                                                </span>
+                                                                </span> */}
+                                                                {formatDate(data?.appointments[0]?.date)}
+                                                            </td>
+                                                            <td>
+                                                                {data?.status || '---   '}
                                                             </td>
                                                             <td>
                                                                 <Link to="#" className="action-icon">
