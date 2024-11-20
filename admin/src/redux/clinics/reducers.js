@@ -45,6 +45,11 @@ const DELETE_CLINIC_INITIAL_STATE = {
     loading: false
 }
 
+const GET_CONTRACT_INITIAL_STATE = {
+    data: [],
+    loading: false
+}
+
 export const createClinicsReducer = (state = CREATE_CLINICS_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.CREATE_CLINIC_LOADING:
@@ -96,6 +101,7 @@ export const getClinicByIdReducer = (state = GET_CLINIC_BY_ID_INITIAL_STATE, act
         default: return state
     }
 }
+
 export const getClinicsReducer = (state = GET_CLINICS_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_CLINIC_LOADING:
@@ -147,6 +153,7 @@ export const getClinicsByParentReducer = (state = GET_CLINIC_BY_PARENT_INITIAL_S
         default: return state
     }
 }
+
 export const getStatesReducer = (state = GET_STATES_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_STATES_LOADING:
@@ -263,6 +270,32 @@ export const deleteClinicOnboardingReducer = (state = DELETE_CLINIC_INITIAL_STAT
                 loading: false
             }
         case ClinicsActionTypes.DELETE_CLINIC_ERROR:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
+            return {
+                data: [],
+                loading: false
+            }
+        default: return state
+    }
+}
+
+export const getContractReducer = (state = GET_CONTRACT_INITIAL_STATE, action) => {
+    switch (action.type) {
+        case ClinicsActionTypes.GET_CONTRACT_LOADING:
+            return {
+                data: state.data,
+                loading: true
+            }
+        case ClinicsActionTypes.GET_CONTRACT_SUCCESS:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case ClinicsActionTypes.GET_CONTRACT_ERROR:
             return {
                 data: action.payload,
                 loading: false

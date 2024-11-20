@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Table } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContractAction } from '../../../../redux/actions';
+import { encryptMessage } from '../../../../cryptoUtils';
 
 
-const Contract = () => {
+const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId }) => {
     const {
         register,
         handleSubmit,
@@ -13,6 +16,23 @@ const Contract = () => {
         setError,
         clearErrors
     } = useForm();
+    const dispatch = useDispatch()
+    const store = useSelector((state) => state);
+    const contracts = store?.getContractReducer?.data?.response;
+
+    useEffect(() => {
+        if (activeTab === 'contract') {
+            const payload = {
+                parentClinicId: billingId
+            }
+            console.log(payload, "payload");
+            dispatch(getContractAction({ key: encryptMessage(payload) }))
+        }
+        if (store?.getContractReducer?.data?.status === 200) {
+            setBillingId(null);
+            setClinicId(null)
+        }
+    }, [activeTab, store?.getContractReducer?.data?.status])
     return (
         <>
             <Table responsive className="table-centered border border-muted table-nowrap mb-0">
@@ -26,11 +46,11 @@ const Contract = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {[0, 1, 2, 3, 4, 5].map((item) => (
-                        <tr key={item}>
-                            <td>XYZ</td>
-                            <td><span className='bg-secondary text-light px-1 rounded-1'>Pending</span></td>
-                            <td><span className='bg-secondary text-light px-1 rounded-1'>Pending</span></td>
+                    {contracts?.map((item, index) => (
+                        <tr key={item?._id}>
+                            <td>{item?.contractName}</td>
+                            <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                            <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
                             <td>8:00 AM 26th Sep, 2024</td>
                             <td>
                                 <i className="fs-5 mdi mdi-eye"></i>

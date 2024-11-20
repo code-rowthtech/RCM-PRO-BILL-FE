@@ -79,6 +79,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         if (formData.patientcount !== data?.patientLimit) payload.patientLimit = formData.patientcount;
         if (formData.date !== formatDate(data?.implimentFrom)) payload.implimentFrom = formData.date;
         if (formData.tax !== data?.tax) payload.tax = formData.tax;
+        if (formData.discount !== data?.discount) payload.discount = formData.discount;
         payload.totalAmount = finalAmount;
 
         // If it's an update, include the ID
@@ -108,10 +109,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                     <Row>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Plan Name</Form.Label>
+                                <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.name : ""}
-                                    {...register('name', { required: 'Name is required' })}
+                                    {...register('name', { required: 'This field is required' })}
                                 >
                                     <option value="">Select</option>
                                     {plans?.map((plan) => (
@@ -125,10 +126,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Plan Tenure</Form.Label>
+                                <Form.Label>Plan Tenure <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.billingFrequency : ''}
-                                    {...register('tenure', { required: 'Tenure is required' })}
+                                    {...register('tenure', { required: 'This field is required' })}
                                 >
                                     <option value="">Select tenure</option>
                                     <option value="monthly">Monthly</option>
@@ -140,13 +141,13 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Amount</Form.Label>
+                                <Form.Label>Amount <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     defaultValue={isUpdateMode ? data?.amount : ''}
                                     placeholder="Enter amount"
                                     {...register('amount', {
-                                        required: 'Amount is required',
+                                        required: 'This field is required',
                                         validate: value => parseFloat(value) >= 0 || 'Amount must be a positive number',
                                     })}
                                 />
@@ -155,13 +156,13 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Tax</Form.Label>
+                                <Form.Label>Tax <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     defaultValue={isUpdateMode ? data?.tax : ''}
                                     type="text"
                                     placeholder="Enter tax"
                                     {...register('tax', {
-                                        required: 'Tax is required',
+                                        required: 'This field is required',
                                         validate: value => parseFloat(value) >= 0 || 'Tax must be a positive number.',
                                     })}
                                 />
@@ -170,12 +171,12 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Implemented Date</Form.Label>
+                                <Form.Label>Implemented Date <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
                                     defaultValue={isUpdateMode ? formatDate(data?.implimentFrom) : ''} // Ensure the date is formatted correctly
                                     placeholder="Select date"
-                                    {...register('date', { required: 'Date is required' })}
+                                    {...register('date', { required: 'This field is required' })}
                                 />
 
 
@@ -184,13 +185,13 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Patient Count</Form.Label>
+                                <Form.Label>Patient Count <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     defaultValue={isUpdateMode ? data?.patientLimit : ''}
                                     placeholder="Enter patient count"
                                     {...register('patientcount', {
-                                        required: 'Patient count is required',
+                                        required: 'This field count is required',
                                         validate: value => parseInt(value) > 0 || 'Patient count must be positive',
                                     })}
                                 />
@@ -199,13 +200,13 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Doctor Count</Form.Label>
+                                <Form.Label>Doctor Count <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     defaultValue={isUpdateMode ? data?.doctorLimit : ''}
                                     placeholder="Enter doctor count"
                                     {...register('doctorcount', {
-                                        required: 'Doctor count is required',
+                                        required: 'This field count is required',
                                         validate: value => parseInt(value) > 0 || 'Doctor count must be positive',
                                     })}
                                 />
@@ -214,7 +215,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Total Amount</Form.Label>
+                                <Form.Label>Total Amount <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Total amount"
@@ -223,7 +224,18 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 />
                             </Form.Group>
                         </Col>
-                        <Col sm={12}>
+                        <Col sm={6}>
+                            <Form.Group className="mb-2">
+                                <Form.Label>Discount <span className='text-danger'>*</span></Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    {...register('discount', { required: 'This field is required' })}
+                                    placeholder="Discount Percentage"
+                                />
+                            </Form.Group>
+                            {errors.discount && <span className="text-danger fs-6">{errors.discount.message}</span>}
+                        </Col>
+                        <Col sm={6}>
                             <Form.Group className="mb-2">
                                 <Form.Label>Description</Form.Label>
                                 <Form.Control
@@ -232,12 +244,12 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                     rows={3}
                                     placeholder="Enter description"
                                     defaultValue={isUpdateMode ? data?.description : ''}
-
                                 />
                             </Form.Group>
+
                         </Col>
                     </Row>
-                    <Modal.Footer className="border-0">
+                    <Modal.Footer className='pb-0 px-0'>
                         <Button className="custom-buttons" onClick={closeModal}>
                             Cancel
                         </Button>
@@ -247,6 +259,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                     </Modal.Footer>
                 </Form>
             </Modal.Body>
+
         </Modal>
     );
 };

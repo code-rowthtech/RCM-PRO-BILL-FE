@@ -41,8 +41,8 @@ const Subscriptions = React.lazy(() => import('../pages/apps/Subscriptions/index
 // const AddSubscriptions = React.lazy(() => import('../pages/apps/Subscriptions/Addsubscriptions/index'));
 const Doctors = React.lazy(() => import('../pages/apps/Doctors/index'));
 const Patients = React.lazy(() => import('../pages/apps/Patients/index'));
-const Permissions = React.lazy(() => import('../pages/apps/Permissions/index'))
-const Roles = React.lazy(() => import('../pages/apps/Roles/index'))
+const Permissions = React.lazy(() => import('../pages/apps/Permissions/index'));
+const RoleManagement = React.lazy(() => import('../pages/apps/Roles/index'));
 
 // SETTINGS
 const PlanName = React.lazy(() => import('../pages/apps/Settings/planName'))
@@ -52,6 +52,8 @@ const ContractFormat = React.lazy(() => import('../pages/apps/Settings/contract'
 const Designation = React.lazy(() => import('../pages/apps/Settings/designation'))
 const ClinicType = React.lazy(() => import('../pages/apps/Settings/clinicType'))
 const Location = React.lazy(() => import('../pages/apps/Settings/location'))
+const Roles = React.lazy(() => import('../pages/apps/Settings/roles'))
+
 
 
 // pages
@@ -237,13 +239,21 @@ const AllRoutes = () => {
                                 },
                             ],
                         },
-
                         {
                             path: 'appointments',
                             children: [
                                 {
                                     path: 'list',
                                     element: <LoadComponent component={AppointmentsList} />,
+                                },
+                            ],
+                        },
+                        {
+                            path: 'roles',
+                            children: [
+                                {
+                                    path: 'list',
+                                    element: <LoadComponent component={RoleManagement} />,
                                 },
                             ],
                         },
@@ -292,15 +302,15 @@ const AllRoutes = () => {
                                 },
                             ],
                         },
-                        {
-                            path: 'roles',
-                            children: [
-                                {
-                                    path: 'list',
-                                    element: <LoadComponent component={Roles} />,
-                                },
-                            ],
-                        },
+                        // {
+                        //     path: 'roles',
+                        //     children: [
+                        //         {
+                        //             path: 'list',
+                        //             element: <LoadComponent component={Roles} />,
+                        //         },
+                        //     ],
+                        // },
                         // {
                         //     path: 'tasks',
                         //     children: [
@@ -356,6 +366,10 @@ const AllRoutes = () => {
                         {
                             path: 'planName',
                             element: <LoadComponent component={PlanName} />,
+                        },
+                        {
+                            path: 'roles',
+                            element: <LoadComponent component={Roles} />
                         },
                         {
                             path: 'speciality',

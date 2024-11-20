@@ -17,7 +17,8 @@ export const getStatedByCountry = '/api/v1/admin/states/US'
 export const getCityByState = '/api/v1/admin/cities/';
 export const addSubscriptionPlan = '/api/v1/admin/users/addSubscriptionPlan';
 export const getClinicsByParentId = '/api/v1/admin/sub-clinics';
-export const deleteClinicOnboarding = '/api/v1/admin/deleteClinicOnboarding'
+export const deleteClinicOnboarding = '/api/v1/admin/deleteClinicOnboarding';
+export const getContract = '/api/v1/admin/getAllContracts'
 // DOCTORS
 export const getDoctor = '/api/v1/admin/getAllDoctors';
 // PATIENTS

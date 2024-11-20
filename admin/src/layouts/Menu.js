@@ -112,6 +112,7 @@ const MenuItemLink = ({ item, className }) => {
             to={{ pathname: item.url }}
             target={item.target}
             className={classNames('side-nav-link-ref', 'side-sub-nav-link', className)}
+            onClick={() => handleCheckLogout(item.label)}
             data-menu-key={item.key}>
             {item.icon && <i className={item.icon}></i>}
             {item.badge && (
@@ -122,7 +123,7 @@ const MenuItemLink = ({ item, className }) => {
                     {item.badge.text}
                 </span>
             )}
-            <span onClick={() => handleCheckLogout(item.label)}> {item.label} </span>
+            <span> {item.label} </span>
             <Modal centered show={show} onHide={closeModal}>
                 <Modal.Body>
                     <div className="p-4" style={{ maxWidth: '500px', width: '100%' }}>

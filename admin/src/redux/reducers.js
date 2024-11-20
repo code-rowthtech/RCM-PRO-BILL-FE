@@ -8,7 +8,8 @@ import { createRolesReducer, getRolesDataReducer, updateRolesReducer } from './r
 import {
     createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateClinicsReducer,
     getStatesReducer, getCitiesReducer, createSubscriptionPlanReducer, getClinicsByParentReducer,
-    deleteClinicOnboardingReducer
+    deleteClinicOnboardingReducer, getContract,
+    getContractReducer
 } from './clinics/reducers';
 import { getDoctorsReducer } from './doctors/reducers';
 import { getAnalyticsReducer } from './dashboard/reducers';
@@ -21,7 +22,7 @@ export default (combineReducers({
     createPermissionsDataReducer, getPermissionsDataReducer, deletePermissionsDataReducer, updatePermissionsDataReducer,
     createRolesReducer, getRolesDataReducer, updateRolesReducer,
     createClinicsReducer, getClinicsReducer, getClinicByIdReducer, updateClinicsReducer,
-    getStatesReducer, getCitiesReducer, createSubscriptionPlanReducer, getClinicsByParentReducer, deleteClinicOnboardingReducer,
+    getStatesReducer, getCitiesReducer, createSubscriptionPlanReducer, getClinicsByParentReducer, deleteClinicOnboardingReducer, getContractReducer,
     getAnalyticsReducer,
     getDoctorsReducer,
     getPatientsReducer,

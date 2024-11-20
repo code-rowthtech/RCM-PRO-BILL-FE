@@ -23,6 +23,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
     const [amount, setAmount] = useState((null));
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
+    const subClinics = store?.getClinicsByParentReducer?.data?.data;
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));
@@ -31,13 +32,16 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
             setActiveTab('contract');
         }
     }, [dispatch, activeTab]);
+    const adminData = JSON.parse(sessionStorage.getItem('hyper_user'));
     const onSubmit = (data) => {
+
         const payload = {
             subscription: data?.subscription,
             userId: billingId,
             billingContactName: data?.name,
             billingContactPhone: data?.contact,
-            billingContactemail: data?.email
+            billingContactemail: data?.email,
+            adminId: adminData?._id,
         }
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
     };
@@ -62,7 +66,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                             onChange={(e) => {
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
-                                console.log(selectedSubscription, 'selectedSubscription')
                                 setAmount(selectedSubscription || 0);
                             }}
                         >
@@ -78,10 +81,17 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>Amount</Form.Label>
+                        <Form.Label className='mb-1'>Amount&nbsp;
+                            <span className=' uil-info-circle mb-0 cursor-pointer'
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="The amount displayed is inclusive of all applicable taxes and covers all added clinics." />
+                        </Form.Label>
                         <Form.Control
                             type="text"
-                            defaultValue={amount?.amount}
+                            defaultValue={
+                                amount?.amount
+                            }
                             readOnly
                             // {...register('amount', { required: 'This field is required' })}
                             placeholder="Amount" />
@@ -129,10 +139,11 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                     </Form.Group>
                 </Col>
             </Row>
+            <hr />
             <Row className='mt-2'>
                 <Col sm={12}>
                     <Row>
-                        <Col sm={6} className='border-end border-dark'>
+                        <Col sm={6} className=''>
                             <Row className='mt-2'>
                                 <Col sm={12}>
                                     <span className='text-black fw-semibold'>Payment Information</span>

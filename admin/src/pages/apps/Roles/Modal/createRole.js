@@ -6,38 +6,58 @@ import { createPermissionAction, createRolesAction, getPermissionAction } from '
 import { encryptMessage } from '../../../../cryptoUtils';
 import Multiselect from "multiselect-react-dropdown";
 import { IoMdClose } from 'react-icons/io';
+import Spinner from '../../../../constants/Spinner';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for eye visibility toggle
+import { getMastersDataAction } from '../../../../redux/settings/actions';
 
 const AddRoles = ({ show, closeModal }) => {
     const dispatch = useDispatch();
     const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const store = useSelector((state) => state);
+    const createResponse = store?.createRolesReducer?.data?.status;
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
         ...item,
         name: `${item?.name}`,
     }));
 
+    useEffect(() => {
+        if (show) {
+            dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
+            dispatch(getPermissionAction({ search: '', limit: 10 }));
+        }
+    }, [show])
+    const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
+
+    console.log(clinicTypeData, 'clinicTypeDate')
     const {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
+        watch
     } = useForm();
+
+    const password = watch('password');
+    const confirmPassword = watch('confirmPassword');
 
     useEffect(() => {
         if (show) {
-            dispatch(getPermissionAction({ search: '', limit: '', skip: '' }))
+            dispatch(getPermissionAction({ search: '', limit: '', skip: '' }));
         }
-    }, [show])
-
+    }, [show]);
 
     const onSubmit = (data) => {
         const payload = {
             name: data.name,
             description: data.description,
             permissions: selectedPermissionIds,
-            createdById: idFromStorage
-
-        }
+            createdById: idFromStorage?._id,
+            parentId: idFromStorage?._id,
+            showto: 'super-admin'
+        };
         dispatch(createRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
@@ -51,51 +71,163 @@ const AddRoles = ({ show, closeModal }) => {
         setSelectedPermissionIds(selectedIds);
     };
 
+    useEffect(() => {
+        if (createResponse === 201) {
+            reset();
+            closeModal();
+        }
+    }, [createResponse]);
+
     return (
         <Modal centered show={show} onHide={closeModal}>
-            {/* <Modal.Header
-                onHide={closeModal}
-                closeButton
-                className={'modal-colored-header pb-0 border-0 text-center'}>
-            </Modal.Header> */}
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
                     <Col sm={10}>
-                        <h4 className="mb-0 text-center">Add Roles</h4>
+                        <h4 className="mb-0 text-center">Add New User</h4>
                     </Col>
                     <Col sm={1}>
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
                     </Col>
                 </Row>
                 <Form onSubmit={handleSubmit(onSubmit)}>
-                    <Row>
-                        <Col md={12}>
-                            <Form.Group className="mb-2">
+                    <Row >
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    placeholder="Enter role name"
-                                    {...register('name', { required: 'Name is required' })}
+                                    placeholder="Name"
+                                    {...register('name', { required: 'This field is required' })}
                                 />
                                 {errors.name && <span className="text-danger">{errors.name.message}</span>}
                             </Form.Group>
                         </Col>
-
-                        <Col md={12}>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Description</Form.Label>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Email ID</Form.Label>
                                 <Form.Control
-                                    as="textarea"
-                                    rows={3}
-                                    placeholder="Enter role description"
-                                    {...register('description', { required: 'Description is required' })}
+                                    type="email"
+                                    placeholder="Email ID"
+                                    {...register('email', { required: 'This field is required' })}
                                 />
-                                {errors.description && <span className="text-danger">{errors.description.message}</span>}
+                                {errors.email && <span className="text-danger">{errors.email.message}</span>}
                             </Form.Group>
                         </Col>
-                        <Col md={12}>
-                            <Form.Group className="mb-2">
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Contact No</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Contact No"
+                                    {...register('phone', { required: 'This field is required' })}
+                                />
+                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Reporting</Form.Label>
+                                <Form.Select>
+                                    <option>Reporting</option>
+                                    <option value="">1</option>
+                                    <option value="">2</option>
+                                    <option value="">3</option>
+                                </Form.Select>
+                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Password</Form.Label>
+                                <div className="position-relative">
+                                    <Form.Control
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Password"
+                                        {...register('password', { required: 'This field is required' })}
+                                    />
+                                    <span
+                                        className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                    {errors.password && <span className="text-danger">{errors.password.message}</span>}
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Confirm Password</Form.Label>
+                                <div className="position-relative">
+                                    <Form.Control
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        placeholder="Confirm Password"
+                                        {...register('confirmPassword', {
+                                            required: 'This field is required',
+                                            validate: value =>
+                                                value === password || 'Passwords do not match'
+                                        })}
+                                    />
+                                    <span
+                                        className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    >
+                                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                    {errors.confirmPassword && <span className="text-danger">{errors.confirmPassword.message}</span>}
+                                </div>
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Date of Joining</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    {...register('joiningDate', { required: 'This field is required' })}
+                                />
+                                {errors.joiningDate && <span className="text-danger">{errors.joiningDate.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Date of Leaving</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    {...register('leavingDate', { required: 'This field is required' })}
+                                />
+                                {errors.leavingDate && <span className="text-danger">{errors.leavingDate.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Designation</Form.Label>
+                                <Form.Select>
+                                    <option value={''} key={''}>Designation</option>
+                                    {clinicTypeData?.map((data, i) => (
+                                        <option key={data?._id} value={data?.name}>{data?.name}</option>
+                                    ))}
+                                </Form.Select>
+                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className='mb-2'>
+                                <Form.Label>Re-Enter Designation</Form.Label>
+                                <Form.Select>
+                                    <option value={''} key={''}>Re-Enter Designation</option>
+                                    {clinicTypeData?.map((data, i) => (
+                                        <option key={data?._id} value={data?.name}>{data?.name}</option>
+                                    ))}
+                                </Form.Select>
+                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <hr className='my-1' />
+                    <Row >
+                        <Col sm={6} >
+                            <Form.Group className='mb-2'>
                                 <Form.Label>Permissions</Form.Label>
 
                                 <Multiselect
@@ -106,14 +238,17 @@ const AddRoles = ({ show, closeModal }) => {
                                     onSelect={handleSelect}
                                     onRemove={handleRemove}
                                 />
-
                             </Form.Group>
                         </Col>
-
                     </Row>
-                    <Modal.Footer>
-                        <Button type='submit' className='custom-buttons'>
-                            Create role
+                    <Modal.Footer className='border-0'>
+                        <Button className='custom-buttons' onClick={() => closeModal()}>Cancel</Button>
+                        <Button type='submit' disabled={store?.createRolesReducer?.loading} className='custom-buttons'>
+                            {store?.createRolesReducer?.loading ?
+                                <Spinner color='white' className="spinner-border-sm" />
+                                :
+                                'Create role'
+                            }
                         </Button>
                     </Modal.Footer>
                 </Form>
