@@ -48,6 +48,11 @@ export const deleteClinicAction = (data): AuthAction => ({
     data
 });
 
+export const getContractAction = (data): AuthAction => ({
+    type: ClinicsActionTypes.GET_CONTRACT,
+    data
+});
+
 export const stateEmptydAction = (): LayoutAction => ({
     type: ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE,
 });

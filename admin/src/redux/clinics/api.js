@@ -47,3 +47,9 @@ export function deleteClinicOnboardingApi(params: any): any {
     const { data } = params;
     return api.create(URL.deleteClinicOnboarding, data)
 }
+
+export function getContractApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.getContract, data)
+}
+

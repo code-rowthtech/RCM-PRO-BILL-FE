@@ -1,6 +1,6 @@
 // @flow
 import React, { useEffect, useState } from 'react';
-import { Badge, Button, Card, Col, Form, Row, Table } from 'react-bootstrap';
+import { Badge, Button, Card, Col, Form, Modal, Row, Table } from 'react-bootstrap';
 
 // component
 import PageTitle from '../../../../components/PageTitle';
@@ -14,15 +14,19 @@ import { getClinicAction, stateEmptydAction, updateClinicAction } from '../../..
 import Spinner from '../../../../constants/Spinner';
 import Paginations from '../../../../helpers/Paginations';
 import { encryptMessage } from '../../../../cryptoUtils';
+import { IoMdClose } from 'react-icons/io';
+import { GoAlert } from 'react-icons/go';
 
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
     const [name, setName] = useState('');
     const [skip, setSkip] = useState(1);
     const [status, setStatus] = useState(true);
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [deleteData, setDeleteData] = useState(null);
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    // console.log(clinicsData, 'clinicsDataclinicsDataclinicsData')
+    console.log(clinicsData, 'clinicsDataclinicsDataclinicsDataclinicsDataclinicsDataclinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     useEffect(() => {
         const payload = {
@@ -34,17 +38,19 @@ const OrderList = (): React$Element<React$FragmentType> => {
         dispatch(getClinicAction({ payload }))
         if (updateSuccess === 200) {
             dispatch(getClinicAction({ payload }))
+            closeDeleteModal();
         }
     }, [dispatch, name, updateSuccess, skip, status])
 
-    const handleStatusUpdate = (data) => {
+    const handleStatusUpdate = () => {
         const payload = {
-            id: data?._id,
-            status: !data?.status
+            id: deleteData?._id,
+            status: !deleteData?.status
         }
         dispatch(updateClinicAction({ key: encryptMessage(payload) }));
         dispatch(stateEmptydAction());
     }
+
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber);
     };
@@ -53,6 +59,13 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setName('');
     };
 
+    const closeDeleteModal = () => {
+        setDeleteModal(false);
+    }
+    const handleOpenDeleteModal = (data) => {
+        setDeleteModal(true);
+        setDeleteData(data);
+    }
     return (
         <>
             <Row className='mt-2'>
@@ -136,7 +149,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
-                                                            {data?.address?.city?.state_code + ' / ' + data?.address?.city?.name}
+                                                            {data?.userId?.address?.city?.state_code + ' / ' + data?.userId?.address?.city?.name}
                                                         </td>
                                                         <td>{data?.clinicType}</td>
                                                         <td>
@@ -157,7 +170,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                                 {data?.status === true ? 'Active' : 'Inactive'}
                                                             </span> */}
                                                             <Form.Switch
-                                                                onClick={() => handleStatusUpdate(data)}
+                                                                onClick={() => handleOpenDeleteModal(data)}
                                                                 checked={data?.status === true} />
                                                         </td>
                                                         <td>
@@ -185,6 +198,58 @@ const OrderList = (): React$Element<React$FragmentType> => {
                     </Card>
                 </Col>
             </Row>
+            <Modal show={deleteModal} onHide={closeDeleteModal} centered size='md' >
+                <Modal.Body>
+                    <div>
+                        <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                            <Col sm={1}></Col>
+                            <Col sm={10}>
+                                <h4 className="mb-0  d-flex align-items-center justify-content-center"><span className='text-danger'><GoAlert />&nbsp;</span>{deleteData?.status === true ? 'Deactivate' : "Activate"} Clinic</h4>
+                            </Col>
+                            <Col sm={1}>
+                                <IoMdClose className="fs-4 cursor-pointer" onClick={closeDeleteModal} />
+                            </Col>
+                        </Row>
+                        <Row className=''>
+                            {deleteData?.status === true ?
+                                <Col sm={12}>
+                                    <p className='mb-0'>
+                                        Once this change is applied, please be aware that <strong>{deleteData?.name}</strong> will:
+                                    </p>
+                                    <ul>
+                                        <li>Lose access to
+                                            their account and will not be able to log in.</li>
+                                        <li>All plans associated with their account will be deactivated or canceled.</li>
+                                        <li>Any services linked to the
+                                            account will be suspended and they will not be able to make any changes to account settings or details.</li>
+                                    </ul>
+
+                                    {/* <p>
+                                        All plans associated with their account will be deactivated or canceled. Any services linked to the
+                                        account will be suspended and they will not be able to make any changes to account settings or details.
+                                    </p> */}
+                                </Col>
+                                :
+                                <Col>
+                                    After this {deleteData?.name} will have full access to their account, plans, and services.
+                                </Col>
+                            }
+                            <Modal.Footer className='d-flex justify-content-end gap-2'>
+                                <Button className='custom-buttons' onClick={closeDeleteModal}>
+                                    Cancel
+                                </Button>
+                                <Button className='custom-buttons' disabled={store?.updateClinicsReducer?.loading} onClick={() => handleStatusUpdate()}>
+                                    {store?.updateClinicsReducer?.loading ?
+                                        <Spinner color='light' />
+                                        :
+                                        deleteData?.status === true ? 'Deactivate' : "Activate"
+                                    }
+                                </Button>
+                            </Modal.Footer>
+                        </Row>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </>
     );
 };

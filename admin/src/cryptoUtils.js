@@ -36,5 +36,5 @@ export function decryptMessage(encryptedText) {
 // const encrypted = encryptMessage(text);
 // // console.log("encrypted: ", encrypted);
 
-const decrypted = decryptMessage("rEodp8z2xusBv79LTxgdmXtHrEhmWLkQl7RWxq1losgHGYj3qQ1quf0BIaUYu0Hze4gdIJooMHJ5PwhHB6w8IcabItTW90lvUzpZxb2hh6o7vXpR8XoBUtWHGuGYDGVDKkq0CMXU6+HCxM/nRHAYbPqejycDYFEZF6SA5UO6+kw=");
-console.log("decrypted: ", JSON.parse(decrypted));
+const decrypted = decryptMessage("");
+// console.log("decrypted: ", JSON.parse(decrypted));

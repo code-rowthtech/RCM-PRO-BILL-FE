@@ -3,21 +3,16 @@ import { Col, Form, Row, Button, Table } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
-import profileDummy from '../../../../assets/images/profileDummy.png'
 import us from '../../../../assets/images/flags/us.jpg'
-import { getMastersDataAction, stateEmptydAction } from '../../../../redux/settings/actions';
 import { createClinicAction, deleteClinicAction, getCitiesAction, getClinicById, getClinicByParentAction, getStatesByCountryAction, updateClinicAction } from '../../../../redux/clinics/actions';
-import { VscLoading } from 'react-icons/vsc';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaDownload, FaPlus } from 'react-icons/fa';
-import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
 import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
-import UploadToS3 from '../../../../helpers/uploads3';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
-import ToastHandle from '../../../../helpers/ToastMessage';
 
-const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
+const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setContractId, setResetEmail, resetEmail }) => {
+    const dispatch = useDispatch();
+
+    //  Set states 
     const {
         register,
         handleSubmit,
@@ -27,23 +22,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
         setError,
         clearErrors
     } = useForm();
-    const dispatch = useDispatch();
-    const store = useSelector((state) => state);
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const [searchTerm, setSearchTerm] = useState('');
-    const updateId = searchParams.get('updateid');
     const [updatePage, setUpdatePage] = useState(false);
+    const [counter, setCounter] = useState(0);
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
-    const [medicalLicenses, setMedicalLicenses] = useState(null);
-    const [stateOfLicensing, setStateOfLicensing] = useState(null);
     const [logo, setLogo] = useState(null);
-    const [logoName, setLogoName] = useState(null)
-    const [accreditationLogo, setAccreditationLogo] = useState(null);
-    const [addType, setAddType] = useState('');
-    const [logoError, setLogoError] = useState(null);
-    // const [clinicId, setClinicId] = useState(null);
+    const [parentClinic, setParentclinic] = useState(null);
+    const [logoName, setLogoName] = useState(null);
+    const [singleOrMultiple, setSingleOrMultiple] = useState(false);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
     ]);
@@ -56,134 +42,33 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
-    const [nextClicked, setNextClicked] = useState(false);
+
+    // Get store Data 
+    const store = useSelector((state) => state);
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const createResponse = store?.createClinicsReducer?.data?.status;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
-    useEffect(() => {
-        if (clinicId) {
-            const payload = {
-                parentClinic: clinicId,
-            }
-            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-        }
-        if (clinicDataToUpdate) {
-            setAccreditationDetails(clinicDataToUpdate?.accreditationDetails)
-            setMedicalDetails(clinicDataToUpdate?.medicalLicenses)
-            setStateDetails(clinicDataToUpdate?.stateOfLicensing)
-        }
-    }, [clinicId, clinicDataToUpdate])
-    const deleteClinicResponse = store?.deleteClinicOnboardingReducer?.data?.status;
-    useEffect(() => {
-        if (createResponse === 200) {
-            reset();
-            if (clinicsList?.length > 0) {
-                const payload = {
-                    parentClinic: clinicId,
-                }
-                dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-            } else {
-                setClinicId(store?.createClinicsReducer?.data?.data?._id);
-                setBillingId(store?.createClinicsReducer?.data?.data?.clinicId)
-            }
-        }
-        if (createResponse === 200 && nextClicked === true) {
-            setActiveTab('billing');
-        }
-        if (deleteClinicResponse === 200) {
-            const payload = {
-                parentClinic: clinicId,
-            }
-            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-            dispatch(stateEmptydAction())
-        }
-    }, [createResponse, deleteClinicResponse, clinicsList])
-    useEffect(() => {
-        if (updateId) {
-            dispatch(getClinicById({ key: encryptMessage({ id: updateId }) }))
-            setUpdatePage(true)
-        }
-        dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
-        dispatch(getStatesByCountryAction());
-    }, [dispatch, updateId, createResponse === 200]);
+    const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     const cities = store?.getCitiesReducer?.data?.cities;
-    const handleStateSelection = (e) => {
-        setSelectedState(e.target.value)
-        try {
-            const selectedState = JSON.parse(e.target.value);
-            if (selectedState?.state_code) {
-                dispatch(getCitiesAction({ state_code: selectedState.id, name: '', limit: 25 }));
-            }
-        } catch (error) {
-            console.error('Error parsing selected state:', error);
-        }
-    };
-
-    // const handleCitySelection = (e) => {
-    //     const citySelected = JSON.parse(e.target.value);
-    //     setSelectedCity(citySelected)
-    // }
-    const handleCitySelection = (e) => {
-        const value = e.target.value;
-        if (value) {
-            try {
-                const citySelected = JSON.parse(value);
-                setSelectedCity(citySelected);
-            } catch (error) {
-                console.error('Invalid JSON:', value);
-            }
-        }
-    };
-
-    const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
-    const onSubmit = (data) => {
-        if (data.Password !== data.confirmPassword) {
-            setError('confirmPassword', {
-                type: 'manual',
-                message: 'Passwords do not match',
-            });
-            return;
-        }
-        const clinicRoleId = decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id;
-
-        const newPayload = {
-            ...(clinicsList && clinicsList?.length !== 0 && { parentClinic: clinicId }),
-            ...(updateId && { id: updateId }),
-            name: data?.clinicname,
-            email: data?.email,
-            role: clinicRoleId,
-            phone: data?.contact,
-            clinicType: data?.clinicType,
-            taxIdOrEIN: data?.taxId,
-            npiNumber: data?.npi,
-            medicalLicenses: medicalDetails,
-            stateOfLicensing: stateDetails,
-            accreditationDetails: accreditationDetails,
-            logo: logo?.url.split('?')[0],
-            pos: posDetails,
-            address: {
-                address1: data?.address,
-                city: selectedCity?._id,
-                state: selectedState?._id,
-                street: data?.street,
-                zip: data?.zip,
-                latitude: selectedCity?.latitude,
-                longitude: selectedCity?.longitude,
-            }
-        };
-
-        if (updatePage) {
-            // dispatch(updateClinicAction({ key: encryptMessage() }));
-        } else {
-            dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
-        }
-    };
+    // ref init
     const logoFileInputRef = useRef(null);
     const accreditationFileInputRef = useRef(null);
     const medicalFileInputRef = useRef(null);
     const stateFileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (decryptedRolesData) {
+            const clinicRoleId = decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id;
+            setResetEmail({ ...resetEmail, role: clinicRoleId })
+        }
+    }, [decryptedRolesData])
+    // data consoles 
+    // console.log(store?.createClinicsReducer?.data?.data, "store?.createClinicsReducer?.data")
+
+
+    // handle Inputs
     const handleLogoClick = () => {
         logoFileInputRef.current.click();
     };
@@ -198,6 +83,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
             console.error('Error during file upload:', error);
         }
     };
+
     const handleAccreditationChange = async (e, index) => {
         const selectedFile = e.target.files[0];
         try {
@@ -356,9 +242,119 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
             return updatedDetails;
         });
     };
+
+    const handleStateSelection = (e) => {
+        setSelectedState(e.target.value)
+        try {
+            const selectedState = JSON.parse(e.target.value);
+            if (selectedState?.state_code) {
+                setSelectedState(selectedState);
+                dispatch(getCitiesAction({ state_code: selectedState.id, name: '', limit: 25 }));
+            }
+        } catch (error) {
+            console.error('Error parsing selected state:', error);
+        }
+    };
+
+    const handleCitySelection = (e) => {
+        const value = e.target.value;
+        if (value) {
+            try {
+                const citySelected = JSON.parse(value);
+                setSelectedCity(citySelected);
+            } catch (error) {
+                console.error('Invalid JSON:', value);
+            }
+        }
+    };
+
+    // create Response
+    useEffect(() => {
+        if (createResponse === 200) {
+            // reset Data
+            reset();
+            setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setPosDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setStateDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setMedicalDetails([{ name: '', number: '', url: null, fileName: '' }]);
+
+            if (!singleOrMultiple) {
+                setBillingId(store?.createClinicsReducer?.data?.data?._id);
+                setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
+                setActiveTab('billing');
+            } else {
+                if (counter === 1) {
+                    setParentclinic(store?.createClinicsReducer?.data?.data?.clinicId?._id);
+                    setBillingId(store?.createClinicsReducer?.data?.data?._id);
+                } else if (counter > 1 && clinicsList) {
+                    setParentclinic(clinicsList[0]?.parentClinic)
+                    setBillingId(clinicsList[0]?.parentClinic);
+                }
+
+            }
+            if (parentClinic) {
+                const payload = {
+                    parentClinic: parentClinic,
+                }
+                dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
+            }
+        }
+    }, [createResponse, parentClinic]);
+
+    // Submit Button 
+
+    const [formValid, setFormValid] = useState(false)
+    const clinicname = watch('clinicname');
+    const email = watch('email');
+    const contact = watch('contact');
+    const clinicType = watch('clinicType');
+
+    // Determine form validity
+    const isFormValid = clinicname && email && contact && clinicType;
+    useEffect(() => {
+        if (isFormValid) {
+            setFormValid(true)
+        }
+    }, [isFormValid])
+    const onSubmit = (data) => {
+        const newPayload = {
+            isParent: counter === 1 ? true : false, // Conditional property assignment using a ternary operator
+            parentClinic: parentClinic,
+            name: data?.clinicname,
+            email: data?.email,
+            role: decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id,
+            phone: data?.contact,
+            clinicType: data?.clinicType,
+            taxIdOrEIN: data?.taxId,
+            npiNumber: data?.npi,
+            medicalLicenses: medicalDetails,
+            stateOfLicensing: stateDetails,
+            accreditationDetails: accreditationDetails,
+            logo: logo?.url.split('?')[0],
+            pos: posDetails,
+            address: {
+                address1: data?.address,
+                city: selectedCity?._id,
+                state: selectedState?._id,
+                street: data?.street,
+                zip: data?.zip,
+                latitude: selectedCity?.latitude,
+                longitude: selectedCity?.longitude,
+            }
+        };
+        dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
+    };
+
+    const createData = store?.createClinicsReducer?.data?.data;
+    const [createTableData, setCreateTableData] = useState(null);
+    useEffect(() => {
+        if (createData) {
+            setCreateTableData(createData)
+        }
+    }, [createData])
+    console.log(createData)
     return (
         <>
-            {/* <UploadToS3 /> */}
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <Row>
                     <Col sm={6}>
@@ -367,6 +363,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                             <Form.Control
                                 type="text"
                                 {...register('clinicname', { required: 'This field is required' })}
+                                onChange={(e) => setResetEmail({ ...resetEmail, name: e.target.value })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.name : ''}
                                 placeholder="Clinic name"
                             />
@@ -380,6 +377,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                             <Form.Select
                                 defaultValue={updatePage ? clinicDataToUpdate?.clinicType : ''}
                                 {...register('clinicType', { required: 'This field is required' })}
+                                onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
                                 <option value="">Clinic type</option> {/* Ensure this has a value to represent unselected */}
                                 {clinicTypeData?.map((data) => (
@@ -396,6 +394,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                                 type="email"
                                 defaultValue={updatePage ? clinicDataToUpdate?.email : ''}
                                 {...register('email', { required: 'This field is required' })}
+                                onChange={(e) => setResetEmail({ ...resetEmail, email: e.target.value })}
                                 placeholder="Email" />
                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
                         </Form.Group>
@@ -423,6 +422,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                                         message: 'Contact must be a number'
                                     }
                                 })}
+                                onChange={(e) => setResetEmail({ ...resetEmail, phone: e.target.value })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                 placeholder="+1 1234-234-234"
                             />
@@ -448,22 +448,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                     </Col>
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
                         <Form.Label>Logo</Form.Label>
-                        {/* <img
-                            src={!updatePage || clinicDataToUpdate?.logo === null ? profileDummy : clinicDataToUpdate?.logo}
-                            alt="Upload icon"
-                            className={`upload-icon rounded-circle cursor-pointer ${logo ? 'd-none' : ''}`}
-                            onClick={handleLogoClick}
-                        /> */}
                         <div onClick={handleLogoClick}
                             className=' custom-file-upload justify-content-between cursor-pointer'>
                             {logoName ? logoName : 'Upload Document'}
                             <p className='mb-0'><FiDownloadCloud /></p>
                         </div>
-                        {/* <img alt="Upload icon"
-                            src={logo?.url.split('?')[0]}
-                            onClick={handleLogoClick}
-                            className={`${logo ? 'upload-icon rounded-circle cursor-pointer' : 'd-none'}`} /> */}
-                        {/* <i onClick={handleLogoClick} className="mdi mdi-square-edit-outline position-absolute cursor-pointer" style={{ left: '13%', top: '15%' }}></i> */}
                         <Form.Control
                             type="file"
                             className="rounded-circle"
@@ -636,6 +625,99 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                     <hr />
                     <Col sm={12}>
                         <Row>
+                            <Col sm={12} className='mb-2'>
+                                <span className='text-black fw-semibold'>Address Details</span>
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className='mb-1'>Address 1</Form.Label>
+                                    <Form.Control
+                                        defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
+                                        as={'textarea'}
+                                        rows={5}
+                                        {...register('address')}
+                                        placeholder="Address 1" />
+                                    {/* {errors.address1 && <span className="text-danger">{errors.address1.message}</span>} */}
+                                </Form.Group>
+                            </Col>
+                            <Col sm={6}>
+                                <Row>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>State</Form.Label>
+                                            <Form.Select
+                                                {...register('stateName')}
+                                                onChange={(e) => handleStateSelection(e)}
+                                            >
+                                                <option>State</option>
+                                                {statesData?.states?.map((data) => (
+                                                    <option
+                                                        key={data?.state_code} // Unique key for each option
+                                                        value={JSON.stringify({ name: data?.name, state_code: data?.state_code, id: data?.id, _id: data?._id })}
+                                                    >
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            {
+                                                store?.getCitiesReducer?.loading ?
+                                                    <Row>
+                                                        <Col sm={12}>
+                                                            <Spinner className='fs-5' />
+                                                        </Col>
+                                                    </Row>
+                                                    :
+                                                    <Form.Select
+                                                        {...register('city')}
+                                                        onChange={(e) => handleCitySelection(e)}
+                                                    >
+                                                        <option>{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
+                                                        {cities?.map((data) => (
+                                                            <option key={data?._id} value={JSON.stringify({ _id: data?._id, name: data?.name, latitude: data?.latitude, longitude: data?.longitude })}>
+                                                                {data?.name}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Select>
+                                            }
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Control
+                                                defaultValue={updatePage ? clinicDataToUpdate?.address?.street : ''}
+                                                type="text"
+                                                {...register('street')}
+                                                placeholder="Street" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Zip</Form.Label>
+                                            <Form.Control
+                                                defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
+                                                type="text"
+                                                {...register('zip')}
+                                                placeholder="Zip" />
+                                            {/* {errors.zip && <span className="text-danger">{errors.zip.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <hr />
+
+                    <Col sm={12}>
+                        <Row>
                             <Col sm={12} className="mb-2">
                                 <span className="text-black fw-semibold">
                                     POS
@@ -708,23 +790,30 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                     </Col>
                     <hr />
                     <Col md={12} className='mt-2 d-flex gap-2 justify-content-end'>
-                        <Button variant="primary" className='custom-buttons'>
-                            Reset Password
-                        </Button>
-                        <Button variant="primary" type='submit' className='custom-buttons'>
+                        <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid} onClick={() => { setSingleOrMultiple(true); setCounter(counter + 1) }} >
                             Add Multiple
                         </Button>
-                        <Button variant="primary" type="submit" disabled={store?.createClinicsReducer?.loading} onClick={() => setNextClicked(true)} className='custom-buttons'>
-                            {store?.createClinicsReducer?.loading ?
-                                <Spinner className="spinner-border-sm" />
-                                :
-                                'Next'
-                            }
+                        <Button
+                            variant="primary"
+                            type={counter > 0 ? 'button' : 'submit'}
+                            className='custom-buttons'
+                            disabled={!formValid}
+                            onClick={() => {
+                                setSingleOrMultiple(false);
+                                if (counter > 0) {
+                                    setActiveTab('billing');
+                                    setSingleOrMultiple(false);
+                                    setCounter(0);
+                                }
+                            }}
+                        >
+                            Next
                         </Button>
+
                     </Col>
                 </Row >
             </Form >
-            <Row className={`${clinicsList?.length > 0 ? '' : 'd-none'}`}>
+            <Row className={`${clinicsList?.length > 0 || counter === 1 ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
                         <thead>
@@ -739,7 +828,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className={`${counter === 1 ? 'd-none' : ''}`}>
                             {store?.getClinicsByParentReducer?.loading ?
                                 <tr>
                                     <td colSpan={5} className='text-center'>
@@ -751,10 +840,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                                 clinicsList?.map((multipleData, index) => (
                                     <tr key={multipleData?._id}>
                                         <td className='text-capitalize'>{multipleData?.name}</td>
-                                        <td>{multipleData?.address?.city?.state_code + ' / ' + multipleData?.address?.city?.name}</td>
+                                        <td>{multipleData?.userId?.address?.city?.state_code + ' / ' + multipleData?.userId?.address?.city?.name}</td>
                                         {/* <td>{multipleData?.clinicType}</td> */}
-                                        <td className='text-lowercase'>{multipleData?.email}</td>
-                                        <td>{multipleData?.phone}</td>
+                                        <td className='text-lowercase'>{multipleData?.userId?.email}</td>
+                                        <td>{multipleData?.userId?.phone}</td>
                                         {/* <td>{multipleData?.taxIdOrEIN}</td> */}
                                         <td className='fs-4 d-flex gap-1'>
                                             <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
@@ -776,6 +865,18 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId }) => {
                                     </tr>
                                 )
                                 )}
+                        </tbody>
+                        <tbody className={`${counter === 1 ? '' : 'd-none'}`}>
+                            <tr key={createTableData?._id}>
+                                <td className='text-capitalize'>{createTableData?.clinicId?.name}</td>
+                                <td>{createTableData?.address?.state?.state_code + ' / ' + createTableData?.address?.city?.name}</td>
+                                <td>{createTableData?.email}</td>
+                                <td>{createTableData?.phone}</td>
+                                <td>
+                                    <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
+                                    <i className="mdi mdi-delete cursor-pointer"></i>
+                                </td>
+                            </tr>
                         </tbody>
                     </Table>
                 </Col>

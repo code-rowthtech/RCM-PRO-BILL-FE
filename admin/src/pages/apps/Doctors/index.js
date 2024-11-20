@@ -8,12 +8,15 @@ import { getDoctorsAction } from '../../../redux/doctors/actions'
 import Paginations from '../../../helpers/Paginations'
 import Spinner from '../../../constants/Spinner'
 import { IoMdClose } from 'react-icons/io'
+import PasswordModal from '../../../helpers/viewContactModal'
 const Doctors = () => {
     const [skip, setSkip] = useState(1);
     const [clinicId, setClinicId] = useState('');
     const [detailsModal, setDetailsModal] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const [search, setSearch] = useState('');
+    const [passwordModal, setPasswordModal] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const doctorsResponse = store?.getDoctorsReducer?.data?.data;
@@ -34,6 +37,16 @@ const Doctors = () => {
         setDetailsModal(false);
         setSelectedDetails(null);
     };
+
+    const closePasswordModal = () => {
+        {
+            setPasswordModal(false);
+        }
+    }
+
+    const handlePasswordClick = () => {
+
+    }
     return (
         <div>
             {/* <PageTitle
@@ -96,9 +109,11 @@ const Doctors = () => {
                                                             <td>
                                                                 {data?.city}
                                                             </td>
-                                                            <td>
-                                                                {data?.phone}
+
+                                                            <td onClick={handlePasswordClick}>
+                                                                {showPassword ? data?.phone : '**********'}
                                                             </td>
+                                                            <PasswordModal closeModal={closePasswordModal} show={passwordModal} setShowPassword={setShowPassword} />
                                                             <td className='text-lowercase'>
                                                                 {data?.email}
                                                             </td>
