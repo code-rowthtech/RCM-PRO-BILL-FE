@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { createPermissionAction, createRolesAction, getPermissionAction } from '../../../../redux/actions';
+import { createPermissionAction, createRolesAction, createUserRolesAction, getPermissionAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import Multiselect from "multiselect-react-dropdown";
 import { IoMdClose } from 'react-icons/io';
@@ -31,7 +31,6 @@ const AddRoles = ({ show, closeModal }) => {
     }, [show])
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
 
-    console.log(clinicTypeData, 'clinicTypeDate')
     const {
         register,
         handleSubmit,
@@ -43,22 +42,19 @@ const AddRoles = ({ show, closeModal }) => {
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
 
-    useEffect(() => {
-        if (show) {
-            dispatch(getPermissionAction({ search: '', limit: '', skip: '' }));
-        }
-    }, [show]);
-
     const onSubmit = (data) => {
         const payload = {
             name: data.name,
-            description: data.description,
-            permissions: selectedPermissionIds,
+            email: '',
+            password: '',
+            phone: '',
+            reportingTo: idFromStorage?._id,
             createdById: idFromStorage?._id,
-            parentId: idFromStorage?._id,
-            showto: 'super-admin'
+            joiningDate: '',
+            leavingDate: '',
+            role: '',
         };
-        dispatch(createRolesAction({ key: `${encryptMessage(payload)}` }));
+        dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }))
     };
 
     const handleSelect = (selectedList) => {

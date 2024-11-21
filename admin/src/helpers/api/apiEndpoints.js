@@ -33,3 +33,6 @@ export const updateSubscriptions = '/api/v1/admin/subscription/update'
 export const addMastersData = '/api/v1/admin/masterdata';
 export const getMastersData = '/api/v1/admin/masterdata/getmasterData';
 export const updateMastersData = '/api/v1/admin/masterdata/edit';
+
+// ROLE MANAGEMENT
+export const addNewUserRole = '/api/v1/admin/masterdata/sub-users/create'

@@ -149,7 +149,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
-                                                            {data?.userId?.address?.city?.state_code + ' / ' + data?.userId?.address?.city?.name}
+                                                            {(data?.userId?.address?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.address?.city?.name || 'N/A')}
                                                         </td>
                                                         <td>{data?.clinicType}</td>
                                                         <td>
