@@ -58,11 +58,12 @@ type TopbarProps = {
     navCssClasses?: string,
     openLeftMenuCallBack?: () => void,
     topbarDark?: boolean,
+
 };
 
 const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: TopbarProps): React$Element<any> => {
     const dispatch = useDispatch();
-
+    console.log(hideLogo, 'adsfj')
     const [isopen, setIsopen] = useState(false);
 
     const navbarCssClasses = navCssClasses || '';
@@ -142,7 +143,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
                             <button className="button-menu-mobile open-left" onClick={handleLeftMenuCallBack}>
                                 <i className="mdi mdi-menu" />
                             </button>
-                            <h4 className=''>Title</h4>
+                            <h4 className=''>{'Title'}</h4>
                         </div>
                     )}
 

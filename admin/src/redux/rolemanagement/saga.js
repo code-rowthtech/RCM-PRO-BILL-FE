@@ -30,6 +30,7 @@ function* createUserRolesFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger');
         yield put({
             type: RoleManagementActionTypes.CREATE_USER_ROLE_ERROR,
             payload: error,

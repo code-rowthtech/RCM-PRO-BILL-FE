@@ -9,6 +9,7 @@ import { IoMdClose } from 'react-icons/io';
 import ToastHandle from '../../../../helpers/ToastMessage';
 const SendEmailModal = ({ show, closeModal, mailId }) => {
     const dispatch = useDispatch();
+    console.log({ mailId })
     // Using useForm hook for form handling and validation
     const {
         register,
