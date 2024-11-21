@@ -26,7 +26,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [deleteData, setDeleteData] = useState(null);
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log(clinicsData, 'clinicsDataclinicsDataclinicsDataclinicsDataclinicsDataclinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     useEffect(() => {
         const payload = {
@@ -35,7 +34,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
             limit: 10,
             status: status,
         }
-        dispatch(getClinicAction({ payload }))
+        dispatch(getClinicAction({ payload }));
         if (updateSuccess === 200) {
             dispatch(getClinicAction({ payload }))
             closeDeleteModal();

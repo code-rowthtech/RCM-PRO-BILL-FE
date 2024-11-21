@@ -80,7 +80,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                         </Form.Select>
                     </Form.Group>
                     {errors?.subscription && <span className='text-danger'>{errors?.subscription?.message}</span>}
-
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">

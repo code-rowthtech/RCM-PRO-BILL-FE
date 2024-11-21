@@ -34,6 +34,7 @@ const Index = () => {
     const [billingId, setBillingId] = useState(null);
     const [contractId, setContractId] = useState(null);
     const [activeTab, setActiveTab] = useState('clinic');
+    const [allowedTabs, setAllowedTabs] = useState(['clinic'])
     const [resetEmail, setResetEmail] = useState({
         name: null, email: null, role: null, phone: null, clinicType: null
     });
@@ -44,7 +45,7 @@ const Index = () => {
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
     useEffect(() => {
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
-        dispatch(getRolesAction({ limit: '', skip: '', search: '' }));
+        dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic' }));
         dispatch(getStatesByCountryAction());
         if (addClinicResponse === 200) {
             reset();
@@ -55,6 +56,7 @@ const Index = () => {
 
 
     const handleActiveTab = (data) => {
+
         setActiveTab(data)
     }
     const [showMailModal, setShowMailModal] = useState(false);
@@ -73,9 +75,6 @@ const Index = () => {
                         <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className='mb-1' style={{ height: '7%' }}>
                                 <Col className='d-flex align-items-center gap-3'>
-                                    {/* <span onClick={() => navigate(-1)}>
-                                        <IoMdArrowRoundBack />
-                                    </span> */}
                                     <span
                                         onClick={() => handleActiveTab('clinic')}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>

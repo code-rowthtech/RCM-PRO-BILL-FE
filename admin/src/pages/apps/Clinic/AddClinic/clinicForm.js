@@ -11,8 +11,6 @@ import { encryptMessage } from '../../../../cryptoUtils';
 
 const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setContractId, setResetEmail, resetEmail }) => {
     const dispatch = useDispatch();
-
-    //  Set states 
     const {
         register,
         handleSubmit,
@@ -367,7 +365,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 placeholder="Clinic name"
                                 onKeyPress={(e) => {
                                     // Allow only numbers and one decimal point
-                                    const regex = /^(?!\s)[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*$/;
+                                    const regex = /^[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*|(?: [A-Za-z0-9]+)*$/;
                                     if (!regex.test(e.target.value + e.key) && e.key !== "Backspace") {
                                         e.preventDefault();
                                     }
@@ -819,26 +817,31 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                     </Col>
                     <hr />
                     <Col md={12} className='mt-2 d-flex gap-2 justify-content-end'>
-                        <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid} onClick={() => { setSingleOrMultiple(true); setCounter(counter + 1) }} >
-                            Add Multiple
-                        </Button>
-                        <Button
-                            variant="primary"
-                            type={counter > 0 ? 'button' : 'submit'}
-                            className='custom-buttons'
-                            disabled={!formValid}
-                            onClick={() => {
-                                setSingleOrMultiple(false);
-                                if (counter > 0) {
-                                    setActiveTab('billing');
-                                    setSingleOrMultiple(false);
-                                    setCounter(0);
-                                }
-                            }}
-                        >
-                            Next
-                        </Button>
-
+                        {store?.createClinicsReducer?.loading ?
+                            <Spinner />
+                            :
+                            <>
+                                <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid} onClick={() => { setSingleOrMultiple(true); setCounter(counter + 1) }} >
+                                    Add Multiple
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    type={counter > 0 ? 'button' : 'submit'}
+                                    className='custom-buttons'
+                                    disabled={!formValid}
+                                    onClick={() => {
+                                        setSingleOrMultiple(false);
+                                        if (counter > 0) {
+                                            setActiveTab('billing');
+                                            setSingleOrMultiple(false);
+                                            setCounter(0);
+                                        }
+                                    }}
+                                >
+                                    Next
+                                </Button>
+                            </>
+                        }
                     </Col>
                 </Row >
             </Form >
@@ -898,7 +901,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                         <tbody className={`${counter === 1 ? '' : 'd-none'}`}>
                             <tr key={createTableData?._id}>
                                 <td className='text-capitalize'>{createTableData?.clinicId?.name}</td>
-                                <td>{createTableData?.address?.state?.state_code + ' / ' + createTableData?.address?.city?.name}</td>
+                                <td>{(createTableData?.address?.state?.state_code || "N/A") + " / " + (createTableData?.address?.city?.name || "N/A")}</td>
                                 <td>{createTableData?.email}</td>
                                 <td>{createTableData?.phone}</td>
                                 <td>

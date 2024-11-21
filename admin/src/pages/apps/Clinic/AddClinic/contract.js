@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getContractAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
+import Spinner from '../../../../constants/Spinner';
 
 
 const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId }) => {
@@ -25,7 +26,6 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId 
             const payload = {
                 parentClinicId: billingId
             }
-            console.log(payload, "payload");
             dispatch(getContractAction({ key: encryptMessage(payload) }))
         }
         if (store?.getContractReducer?.data?.status === 200) {
@@ -46,18 +46,28 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId 
                     </tr>
                 </thead>
                 <tbody>
-                    {contracts?.map((item, index) => (
-                        <tr key={item?._id}>
-                            <td>{item?.contractName}</td>
-                            <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
-                            <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                            <td>8:00 AM 26th Sep, 2024</td>
-                            <td>
-                                <i className="fs-5 mdi mdi-eye"></i>
-                                <i className="fs-5 mdi mdi-download"></i>
-                            </td>
-                        </tr>
-                    ))}
+                    {
+                        store?.getContractReducer?.loading ?
+                            <tr>
+                                <td className='text-center' colSpan={5}>
+                                    <Spinner />
+                                </td>
+                            </tr>
+                            :
+                            contracts?.map((item, index) => (
+                                <tr key={item?._id}>
+                                    <td>{item?.contractName}</td>
+                                    <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                    <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                    <td>8:00 AM 26th Sep, 2024</td>
+                                    <td>
+                                        <i className="fs-5 mdi mdi-eye"></i>
+                                        <i className="fs-5 mdi mdi-download"></i>
+                                    </td>
+                                </tr>
+                            ))
+                    }
+
 
 
                 </tbody>

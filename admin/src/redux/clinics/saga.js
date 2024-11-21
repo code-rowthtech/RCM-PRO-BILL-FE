@@ -34,7 +34,7 @@ function* createClinicsFunction(data) {
             });
         }
     } catch (error) {
-        // console.log({ error })
+        ToastHandle(error, 'danger');
         yield put({
             type: ClinicsActionTypes.CREATE_CLINIC_ERROR,
             payload: error,
@@ -64,6 +64,7 @@ function* updateClinicsFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger');
         yield put({
             type: ClinicsActionTypes.UPDATE_CLINIC_ERROR,
             payload: error,
@@ -233,7 +234,7 @@ function* createSubscriptionPlanFunction(data) {
             });
         }
     } catch (error) {
-        console.log({ error })
+        ToastHandle(error, 'danger');
         yield put({
             type: ClinicsActionTypes.CREATE_SUBSCRIPTION_ERROR,
             payload: error,
@@ -261,7 +262,7 @@ function* deleteClinicFunction(data) {
             });
         }
     } catch (error) {
-        // console.log({ error })
+        ToastHandle(error, 'danger');
         yield put({
             type: ClinicsActionTypes.DELETE_CLINIC_ERROR,
             payload: error,

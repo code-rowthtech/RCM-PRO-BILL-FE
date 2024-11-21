@@ -57,6 +57,7 @@ function* createSubscriptionsFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger');
         yield put({
             type: SubscriptionsActionTypes.CREATE_SUBSCRIPTIONS_ERROR,
             payload: error,
@@ -84,6 +85,7 @@ function* updateSubscriptionsFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger');
         yield put({
             type: SubscriptionsActionTypes.UPDATE_SUBSCRIPTIONS_ERROR,
             payload: error,
