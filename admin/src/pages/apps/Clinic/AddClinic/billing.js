@@ -58,26 +58,29 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <Row>
-                <Col sm={6}>
-                    <Form.Group className="mb-2">
+                <Col sm={6} className="mb-2">
+                    <Form.Group >
                         <Form.Label className='mb-1'>Subscription Plan</Form.Label>
                         <Form.Select
-                            {...register('subscription')}
+                            {...register('subscription', {
+                                required: 'This field is required'
+                            })}
                             onChange={(e) => {
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
                                 setAmount(selectedSubscription || 0);
                             }}
                         >
-                            <option>Select</option>
+                            <option value="">Select plan type</option>
                             {subscriptionsData?.map((data) => (
-                                <option value={data?._id} key={data?._id} className='text-capitalize'>
+                                <option value={data?._id} key={data?._id} className="text-capitalize">
                                     {data?.name} {data?.billingFrequency} {data?.price}
                                 </option>
                             ))}
                         </Form.Select>
-
                     </Form.Group>
+                    {errors?.subscription && <span className='text-danger'>{errors?.subscription?.message}</span>}
+
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
@@ -151,13 +154,18 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                                 <Col sm={12}>
                                     <Form.Group className="mb-2">
                                         <Form.Label className='mb-1'>Payment Method</Form.Label>
-                                        <Form.Select onChange={(e) => setPaymentType(e.target.value)}>
-                                            <option>Select</option>
+                                        <Form.Select
+                                            {...register('method', {
+                                                required: 'This field is required'
+                                            })}
+                                            onChange={(e) => setPaymentType(e.target.value)}>
+                                            <option>Select payment method</option>
                                             <option value='card'>Card</option>
                                             <option value='online'>Online banking</option>
                                             <option value='cheque'>Cheque</option>
                                         </Form.Select>
                                     </Form.Group>
+                                    {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
                                 </Col>
                                 <Col sm={12}>
                                     <Form.Group className="mb-2">
@@ -217,26 +225,30 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                                 <Col sm={12}>
                                     <span className='text-black fw-semibold'>Billing Contact Information</span>
                                 </Col>
-                                <Col sm={12}>
-                                    <Form.Group className="mb-2">
+                                <Col sm={12} className='mb-2'>
+                                    <Form.Group className="">
                                         <Form.Label className='mb-1'>Billing Contact Name</Form.Label>
                                         <Form.Control
                                             type='text'
-                                            {...register('name')}
+                                            {...register('name', {
+                                                required: 'This field is required.'
+                                            })}
                                             placeholder='Billing Contact Name' />
                                     </Form.Group>
+                                    {errors.name && <span className="text-danger">{errors.name.message}</span>}
                                 </Col>
-                                <Col sm={12}>
-                                    <Form.Group className="mb-2">
+                                <Col sm={12} className='mb-2'>
+                                    <Form.Group className="">
                                         <Form.Label className='mb-1'>Billing Contact Email</Form.Label>
                                         <Form.Control
                                             type='email'
                                             {...register('email')}
                                             placeholder='Billing Contact Email' />
                                     </Form.Group>
+                                    {errors.name && <span className="text-danger">{errors.name.message}</span>}
                                 </Col>
-                                <Col sm={12}>
-                                    <Form.Group className="mb-2">
+                                <Col sm={12} className='mb-2'>
+                                    <Form.Group className="">
                                         <Form.Label className='mb-1'>Billing Contact Phone Number</Form.Label>
                                         <Form.Control
                                             type='text'

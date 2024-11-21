@@ -98,18 +98,26 @@ const Login = (): React$Element<any> => {
                 // defaultValues={{ username: 'test', password: 'test' }}
                 >
                     <FormInput
-                        label={t('Username')}
+                        label={t('Email')}
                         type="text"
                         name="username"
-                        placeholder={t('Enter your Username')}
+                        placeholder={t('Enter your Email')}
                         containerClass={'mb-3'}
+                    // onChange={(e) => {
+                    //     const value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                    //     e.target.value = value; 
+                    // }}
                     />
                     <FormInput
                         label={t('Password')}
                         type="password"
                         name="password"
                         placeholder={t('Enter your password')}
-                        containerClass={'mb-3'}>
+                        containerClass={'mb-3'}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                        }}
+                    >
                         <Link to="/account/forget-password" className="text-muted float-end">
                             <small>{t('Forgot your password?')}</small>
                         </Link>

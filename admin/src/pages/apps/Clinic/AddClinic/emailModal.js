@@ -67,7 +67,7 @@ const SendEmailModal = ({ show, closeModal, mailId }) => {
                                 {store?.createClinicsReducer?.loading ?
                                     <Spinner color='white' className='spinner-border-sm' />
                                     :
-                                    'Save'
+                                    'Send'
                                 }
                             </Button>
                         </Col>

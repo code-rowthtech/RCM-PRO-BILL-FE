@@ -352,7 +352,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
             setCreateTableData(createData)
         }
     }, [createData])
-    console.log(createData)
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -366,6 +365,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 onChange={(e) => setResetEmail({ ...resetEmail, name: e.target.value })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.name : ''}
                                 placeholder="Clinic name"
+                                onKeyPress={(e) => {
+                                    // Allow only numbers and one decimal point
+                                    const regex = /^(?!\s)[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*$/;
+                                    if (!regex.test(e.target.value + e.key) && e.key !== "Backspace") {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
 
@@ -379,7 +385,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 {...register('clinicType', { required: 'This field is required' })}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
-                                <option value="">Clinic type</option> {/* Ensure this has a value to represent unselected */}
+                                <option value="">Select clinic type</option> {/* Ensure this has a value to represent unselected */}
                                 {clinicTypeData?.map((data) => (
                                     <option key={data?._id} value={data?.name}>{data?.name}</option>
                                 ))}
@@ -391,11 +397,19 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                         <Form.Group className="mb-2">
                             <Form.Label className='mb-1'>Email<span className='text-danger'>*</span></Form.Label>
                             <Form.Control
-                                type="email"
+                                type="text"
                                 defaultValue={updatePage ? clinicDataToUpdate?.email : ''}
-                                {...register('email', { required: 'This field is required' })}
+                                {...register('email', {
+                                    required: 'This field is required',
+                                    pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
+                                        message: 'Please enter a valid email address'
+                                    }
+                                })}
                                 onChange={(e) => setResetEmail({ ...resetEmail, email: e.target.value })}
-                                placeholder="Email" />
+                                placeholder="Email"
+                            />
+
                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
                         </Form.Group>
                     </Col>
@@ -420,17 +434,32 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                     pattern: {
                                         value: /^[0-9]*$/,
                                         message: 'Contact must be a number'
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'Contact must not exceed 10 digits'
+                                    },
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Contact must not be less than 10 digits '
                                     }
                                 })}
-                                onChange={(e) => setResetEmail({ ...resetEmail, phone: e.target.value })}
+                                onChange={(e) => {
+                                    setResetEmail({ ...resetEmail, phone: e.target.value });
+                                }}
                                 defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
-                                placeholder="+1 1234-234-234"
+                                placeholder="1234-234-234"
+                                maxLength={10}
                             />
-                            <img
-                                src={us}
-                                alt="country code flag"
-                                style={{ top: '60%', left: '1%' }}
-                                className='position-absolute' width={20} />
+                            <div
+                                className='position-absolute ' style={{ top: '52%', left: '1%' }}
+                            >
+                                <img
+                                    src={us}
+                                    alt="country code flag"
+                                    width={20} />
+                            </div>
+
 
                         </Form.Group>
                         {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
@@ -449,7 +478,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
                         <Form.Label>Logo</Form.Label>
                         <div onClick={handleLogoClick}
-                            className=' custom-file-upload justify-content-between cursor-pointer'>
+                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName ? '' : 'custom-form-fields'}`}>
                             {logoName ? logoName : 'Upload Document'}
                             <p className='mb-0'><FiDownloadCloud /></p>
                         </div>
@@ -469,7 +498,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                             Accreditation Details&nbsp;
                             <span
                                 onClick={handleAddAccreditation}
-                                className='text-black fs-5 uil-plus-circle fw-bold cursor-pointer'>
+                                className=' fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer'>
                                 {/* <CiCirclePlus size={20} /> */}
                             </span>
                         </Form.Label>
@@ -494,7 +523,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
                                 <div onClick={() => accreditationFileInputRef.current.click()}
-                                    className=' custom-file-upload justify-content-between cursor-pointer'>
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${accreditation.fileName ? '' : 'custom-form-fields'}`}>
                                     {accreditation.fileName ? accreditation.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
@@ -522,7 +551,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                             Medical Licenses&nbsp;
                             <span
                                 onClick={handleAddMedical}
-                                className='text-black fs-5 uil-plus-circle fw-bold cursor-pointer'>
+                                className='plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer'>
                             </span>
                         </Form.Label>
                     </Col>
@@ -544,9 +573,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                     onChange={(e) => handleMedicalInputChange(e, 'number', index)}
                                 />
                             </Col>
-                            <Col sm={4} className="mb-2 position-relative">
+                            <Col sm={4} className="mb-2 position-relative ">
                                 <div onClick={() => medicalFileInputRef.current.click()}
-                                    className=' custom-file-upload justify-content-between cursor-pointer'>
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${medical.fileName ? '' : 'custom-form-fields'}`}>
                                     {medical.fileName ? medical.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
@@ -572,7 +601,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                             State of Licensing&nbsp;
                             <span
                                 onClick={handleAddState}
-                                className='text-black fs-5 uil-plus-circle fw-bold cursor-pointer'>
+                                className='plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer'>
                             </span>
                         </Form.Label>
                     </Col>
@@ -602,7 +631,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
                                 <div onClick={() => stateFileInputRef.current.click()}
-                                    className=' custom-file-upload justify-content-between cursor-pointer'>
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName ? '' : 'custom-form-fields'}`}>
                                     {data.fileName ? data.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
@@ -644,7 +673,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 <Row>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>State</Form.Label>
+                                            <Form.Label className='mb-1'>State <span className='text-danger'>*</span></Form.Label>
                                             <Form.Select
                                                 {...register('stateName')}
                                                 onChange={(e) => handleStateSelection(e)}
@@ -720,10 +749,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                         <Row>
                             <Col sm={12} className="mb-2">
                                 <span className="text-black fw-semibold">
-                                    POS
+                                    POC (Point of contact)
                                     <span
                                         onClick={handleAddPOS}
-                                        className="text-black fs-5 uil-plus-circle fw-bold cursor-pointer">
+                                        className="plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer">
                                     </span>
                                 </span>
                             </Col>

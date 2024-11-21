@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PageTitle from '../../../../components/PageTitle';
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import { FormInput } from '../../../../components';  // Assuming this is a custom form input component
+import { FormInput } from '../../../../components';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRolesAction } from '../../../../redux/actions';
@@ -37,10 +37,7 @@ const Index = () => {
     const [resetEmail, setResetEmail] = useState({
         name: null, email: null, role: null, phone: null, clinicType: null
     });
-    console.log(resetEmail, 'resetEmailresetEmailresetEmail')
     const [resetEmailError, setResetEmailError] = useState(null);
-    // console.log(resetEmail, 'resetEmail')
-    // console.log(resetEmailError, 'resetEmailError')
     const store = useSelector((state) => state);
     const navigate = useNavigate()
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
@@ -73,8 +70,8 @@ const Index = () => {
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body>
-                            <Row className='mb-3'>
+                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
+                            <Row className='mb-1' style={{ height: '7%' }}>
                                 <Col className='d-flex align-items-center gap-3'>
                                     {/* <span onClick={() => navigate(-1)}>
                                         <IoMdArrowRoundBack />
@@ -134,22 +131,26 @@ const Index = () => {
                                     <Button className='custom-buttons' disabled>View</Button>
                                 </Col>
                             </Row>
-                            {activeTab === 'clinic' ?
-                                <ClinicForm
-                                    setResetEmail={setResetEmail} resetEmailError={resetEmailError}
-                                    resetEmail={resetEmail} showMailModal={showMailModal}
-                                    setActiveTab={setActiveTab} activeTab={activeTab}
-                                    setClinicId={setClinicId} clinicId={clinicId} setBillingId={setBillingId}
-                                    setContractId={setContractId} />
-                                :
-                                activeTab === 'billing' ?
-                                    <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
-                                    :
-                                    <Contract
-                                        setClinicId={setClinicId} setBillingId={setBillingId}
-                                        setActiveTab={setActiveTab} activeTab={activeTab}
-                                        clinicId={clinicId} billingId={billingId} contractId={contractId} />
-                            }
+                            <Row className='scroll-container pt-2' style={{ height: '93%' }}>
+                                <Col>
+                                    {activeTab === 'clinic' ?
+                                        <ClinicForm
+                                            setResetEmail={setResetEmail} resetEmailError={resetEmailError}
+                                            resetEmail={resetEmail} showMailModal={showMailModal}
+                                            setActiveTab={setActiveTab} activeTab={activeTab}
+                                            setClinicId={setClinicId} clinicId={clinicId} setBillingId={setBillingId}
+                                            setContractId={setContractId} />
+                                        :
+                                        activeTab === 'billing' ?
+                                            <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
+                                            :
+                                            <Contract
+                                                setClinicId={setClinicId} setBillingId={setBillingId}
+                                                setActiveTab={setActiveTab} activeTab={activeTab}
+                                                clinicId={clinicId} billingId={billingId} contractId={contractId} />
+                                    }
+                                </Col>
+                            </Row>
                         </Card.Body>
                     </Card>
                 </Col>
