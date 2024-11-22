@@ -256,7 +256,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                 </Button>
                                 <Button className='custom-buttons' disabled={store?.updateClinicsReducer?.loading} onClick={() => handleStatusUpdate()}>
                                     {store?.updateClinicsReducer?.loading ?
-                                        <Spinner color='light' />
+                                        <Spinner color='light' className='spinner-border-sm' />
                                         :
                                         deleteData?.status === true ? 'Deactivate' : "Activate"
                                     }

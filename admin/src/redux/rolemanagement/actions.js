@@ -9,6 +9,16 @@ export const createUserRolesAction = (data): AuthAction => ({
     data
 });
 
+export const updateUserRolesAction = (data): AuthAction => ({
+    type: RoleManagementActionTypes.UPDATE_USER_ROLE,
+    data
+});
+
+export const getUserRolesAction = (data): AuthAction => ({
+    type: RoleManagementActionTypes.GET_USER_ROLE,
+    data
+});
+
 
 
 export const stateEmptydAction = (): LayoutAction => ({
