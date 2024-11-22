@@ -36,4 +36,6 @@ export const getTenure = '/api/v1/admin/masterdata/tenure';
 export const updateMastersData = '/api/v1/admin/masterdata/edit';
 
 // ROLE MANAGEMENT
-export const addNewUserRole = '/api/v1/admin/masterdata/sub-users/create'
+export const addNewUserRole = '/api/v1/admin/sub-users/create'
+export const updateNewUserRole = '/api/v1/admin/sub-users/edit'
+export const getNewUserRole = '/api/v1/admin/sub-users'

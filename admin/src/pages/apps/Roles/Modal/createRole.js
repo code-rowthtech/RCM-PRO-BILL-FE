@@ -9,6 +9,7 @@ import { IoMdClose } from 'react-icons/io';
 import Spinner from '../../../../constants/Spinner';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for eye visibility toggle
 import { getMastersDataAction } from '../../../../redux/settings/actions';
+import { createdBy } from '../../Settings/userId';
 
 const AddRoles = ({ show, closeModal }) => {
     const dispatch = useDispatch();
@@ -17,12 +18,12 @@ const AddRoles = ({ show, closeModal }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const store = useSelector((state) => state);
-    const createResponse = store?.createRolesReducer?.data?.status;
+    const createResponse = store?.createUserRolesReducer?.data?.status;
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
         ...item,
         name: `${item?.name}`,
     }));
-
+    const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     useEffect(() => {
         if (show) {
             dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
@@ -41,20 +42,20 @@ const AddRoles = ({ show, closeModal }) => {
 
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
-
+    const designation = store?.getMastersDataReducer?.data?.clinicTypes;
     const onSubmit = (data) => {
         const payload = {
-            name: data.name,
-            email: '',
-            password: '',
-            phone: '',
-            reportingTo: idFromStorage?._id,
-            createdById: idFromStorage?._id,
-            joiningDate: '',
-            leavingDate: '',
-            role: '',
+            firstName: data.name,
+            email: data.email,
+            password: data.password,
+            phone: data?.phone,
+            reportingTo: createdBy,
+            createdById: createdBy,
+            joiningDate: data.joiningDate,
+            // leavingDate: data.leavingDate,
+            role: data.role,
         };
-        console.log(payload)
+        // console.log(payload)
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }))
     };
 
@@ -116,6 +117,7 @@ const AddRoles = ({ show, closeModal }) => {
                                 <Form.Label>Contact No</Form.Label>
                                 <Form.Control
                                     type="text"
+                                    maxLength={10}
                                     placeholder="Contact No"
                                     {...register('phone', { required: 'This field is required' })}
                                 />
@@ -125,7 +127,7 @@ const AddRoles = ({ show, closeModal }) => {
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Reporting <span className='text-danger'>*</span></Form.Label>
-                                <Form.Select>
+                                <Form.Select disabled>
                                     <option>Reporting</option>
                                     <option value="">1</option>
                                     <option value="">2</option>
@@ -186,7 +188,7 @@ const AddRoles = ({ show, closeModal }) => {
                                 {errors.joiningDate && <span className="text-danger">{errors.joiningDate.message}</span>}
                             </Form.Group>
                         </Col>
-                        <Col sm={6}>
+                        {/* <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Date of Leaving <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
@@ -195,20 +197,20 @@ const AddRoles = ({ show, closeModal }) => {
                                 />
                                 {errors.leavingDate && <span className="text-danger">{errors.leavingDate.message}</span>}
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select>
                                     <option value={''} key={''}>Designation</option>
-                                    {clinicTypeData?.map((data, i) => (
+                                    {designation?.map((data, i) => (
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
                                     ))}
                                 </Form.Select>
                                 {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
                         </Col>
-                        <Col sm={6}>
+                        {/* <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Re-Enter Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select>
@@ -219,32 +221,33 @@ const AddRoles = ({ show, closeModal }) => {
                                 </Form.Select>
                                 {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
-                        </Col>
-                    </Row>
-                    <hr className='my-1' />
-                    <Row >
+                        </Col> */}
                         <Col sm={6} >
                             <Form.Group className='mb-2'>
-                                <Form.Label>Permissions <span className='text-danger'>*</span></Form.Label>
-
-                                <Multiselect
-                                    options={decryptedPermissionsData}
-                                    displayValue="name"
-                                    className="form-control p-0"
-                                    placeholder="Select Permissions"
-                                    onSelect={handleSelect}
-                                    onRemove={handleRemove}
-                                />
+                                <Form.Label>Role <span className='text-danger'>*</span></Form.Label>
+                                <Form.Select
+                                    {...register('role', {
+                                        required: 'This field is required'
+                                    })}
+                                    className='text-capitalize'>
+                                    <option value='' key=''>Select role</option>
+                                    {decryptedRolesData?.map((data) => (
+                                        <option className='text-capitalize' value={data?._id} key={data?._id}>{data?.name}</option>
+                                    ))}
+                                </Form.Select>
+                                {errors?.role && <span className='text-danger'>{errors?.role?.message}</span>}
                             </Form.Group>
                         </Col>
                     </Row>
+                    {/* <hr className='my-1' /> */}
+
                     <Modal.Footer className='border-0'>
                         <Button className='custom-buttons' onClick={() => closeModal()}>Cancel</Button>
-                        <Button type='submit' disabled={store?.createRolesReducer?.loading} className='custom-buttons'>
-                            {store?.createRolesReducer?.loading ?
+                        <Button type='submit' disabled={store?.createUserRolesReducer?.loading} className='custom-buttons'>
+                            {store?.createUserRolesReducer?.loading ?
                                 <Spinner color='white' className="spinner-border-sm" />
                                 :
-                                'Create role'
+                                'Create user'
                             }
                         </Button>
                     </Modal.Footer>

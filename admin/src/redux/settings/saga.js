@@ -46,7 +46,6 @@ function* getMastersDataFunction(data) {
         });
         const response = yield call(getMastersDataApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-        console.log(decryptedData, 'deccccc')
         if (response.status === 200) {
             yield put({
                 type: SettingsActionTypes.GET_MASTERS_DATA_SUCCESS,
