@@ -769,7 +769,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         {'POS ' + `${index + 1}`}
                                         <span
                                             onClick={() => handleRemovePOS(index)}
-                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
+                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer  fs-5 fw-bold text-danger`}>
                                         </span>
                                     </Col>
                                     <Col sm={6}>
