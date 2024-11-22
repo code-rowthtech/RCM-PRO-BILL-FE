@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import classNames from 'classnames';
+import { FaUserCircle } from 'react-icons/fa';
 
 type ProfileMenuItem = {
     label: string,
@@ -42,7 +43,8 @@ const ProfileDropdown = (props: ProfileDropdownProps, state: ProfileDropdownStat
                 onClick={toggleDropdown}
                 className="nav-link bg-white border-0 dropdown-toggle nav-user arrow-none me-0">
                 <span className="account-user-avatar">
-                    <img src={profilePic} className="rounded-circle" alt="user" />
+                    <FaUserCircle className="rounded-circle fs-1 text-dark" />
+                    {/* <img src={profilePic} className="rounded-circle" alt="user" /> */}
                 </span>
                 {/* <span>
                     <span className="account-user-name">Admin</span>

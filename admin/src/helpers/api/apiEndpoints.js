@@ -32,6 +32,7 @@ export const updateSubscriptions = '/api/v1/admin/subscription/update'
 // SETTINGS
 export const addMastersData = '/api/v1/admin/masterdata';
 export const getMastersData = '/api/v1/admin/masterdata/getmasterData';
+export const getTenure = '/api/v1/admin/masterdata/tenure';
 export const updateMastersData = '/api/v1/admin/masterdata/edit';
 
 // ROLE MANAGEMENT

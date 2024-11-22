@@ -10,6 +10,7 @@ import { createMastersDataAction, getMastersDataAction, stateEmptydAction, updat
 import { IoMdClose } from 'react-icons/io'
 import Paginations from '../../../helpers/Paginations'
 import { formatDate } from '../../../helpers/dateFormat'
+import { createdBy } from './userId'
 
 
 
@@ -27,11 +28,11 @@ const ClinicType = () => {
     }
     const addClinicType = (data) => {
         // Handle form submission logic, e.g., API call
-        console.log("Form data submitted:", data);
         const payload = {
             name: data?.name,
             description: data?.description,
             category: 'clinic_type',
+            createdBy: createdBy,
         }
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
     };
@@ -69,7 +70,7 @@ const ClinicType = () => {
         <Row className='mt-2'>
             <Col xs={12}>
                 <Card>
-                    <Card.Body>
+                    <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                         <Row className="mb-2">
                             <Col sm={6}>
                                 <Button variant={status === false ? 'outlined' : ''}
@@ -244,7 +245,7 @@ const ClinicType = () => {
                             <Button type='submit' className='custom-buttons' disabled={store?.createMastersDataReducer?.loading}>
                                 {store?.createMastersDataReducer?.loading
                                     ?
-                                    < Spinner />
+                                    < Spinner color='white' className='spinner-border-sm' />
                                     :
                                     'Submit'
                                 }

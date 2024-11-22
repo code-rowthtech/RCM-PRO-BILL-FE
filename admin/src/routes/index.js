@@ -53,6 +53,8 @@ const Designation = React.lazy(() => import('../pages/apps/Settings/designation'
 const ClinicType = React.lazy(() => import('../pages/apps/Settings/clinicType'))
 const Location = React.lazy(() => import('../pages/apps/Settings/location'))
 const Roles = React.lazy(() => import('../pages/apps/Settings/roles'))
+const Tenure = React.lazy(() => import('../pages/apps/Settings/tenure'))
+
 
 
 
@@ -293,15 +295,15 @@ const AllRoutes = () => {
                                 },
                             ],
                         },
-                        {
-                            path: 'permissions',
-                            children: [
-                                {
-                                    path: 'list',
-                                    element: <LoadComponent component={Permissions} />,
-                                },
-                            ],
-                        },
+                        // {
+                        //     path: 'permissions',
+                        //     children: [
+                        //         {
+                        //             path: 'list',
+                        //             element: <LoadComponent component={Permissions} />,
+                        //         },
+                        //     ],
+                        // },
                         // {
                         //     path: 'roles',
                         //     children: [
@@ -366,6 +368,14 @@ const AllRoutes = () => {
                         {
                             path: 'planName',
                             element: <LoadComponent component={PlanName} />,
+                        },
+                        {
+                            path: 'permissions',
+                            element: <LoadComponent component={Permissions} />,
+                        },
+                        {
+                            path: 'tenure',
+                            element: <LoadComponent component={Tenure} />,
                         },
                         {
                             path: 'roles',

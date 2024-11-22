@@ -11,6 +11,7 @@ import Loader from '../../../components/Loader';
 import Spinner from '../../../constants/Spinner';
 import Paginations from '../../../helpers/Paginations';
 import { IoMdClose } from 'react-icons/io';
+import { getMastersDataAction } from '../../../redux/settings/actions';
 const Permissions = () => {
     const [showModal, setShowModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
@@ -83,7 +84,7 @@ const Permissions = () => {
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body>
+                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className="mb-2 d-flex justify-content-between">
                                 <Col xs="auto">
                                 </Col>
@@ -92,11 +93,11 @@ const Permissions = () => {
                                         <Col xs="auto" className='d-flex gap-2'>
                                             <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
 
-                                            <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button>
+                                            {/* <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button> */}
                                         </Col>
                                     </Row>
                                 </Col>
-                                <AddPermissions show={showModal} closeModal={handleClosemodal} />
+                                {/* <AddPermissions show={showModal} closeModal={handleClosemodal} /> */}
                             </Row>
                             <Row>
                                 <Col>

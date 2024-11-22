@@ -33,6 +33,7 @@ const Index = () => {
     const [clinicId, setClinicId] = useState(null);
     const [billingId, setBillingId] = useState(null);
     const [contractId, setContractId] = useState(null);
+    const [multiple, setMultiple] = useState(0);
     const [activeTab, setActiveTab] = useState('clinic');
     const [allowedTabs, setAllowedTabs] = useState(['clinic'])
     const [resetEmail, setResetEmail] = useState({
@@ -45,14 +46,14 @@ const Index = () => {
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
     useEffect(() => {
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
-        dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic' }));
+        dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
         dispatch(getStatesByCountryAction());
         if (addClinicResponse === 200) {
             reset();
             ToastHandle(store?.createClinicsReducer?.data?.message, 'success');
             dispatch(stateEmptydAction());
         }
-    }, [dispatch, addClinicResponse])
+    }, [dispatch, addClinicResponse, activeTab])
 
 
     const handleActiveTab = (data) => {
@@ -108,6 +109,7 @@ const Index = () => {
                                     > */}
                                     <Button
                                         className='custom-buttons'
+                                        // disabled={!resetEmail?.name && !resetEmail?.email && !resetEmail?.phone && !resetEmail?.clinicType}
                                         onClick={() => {
                                             if (!resetEmail?.name) {
                                                 ToastHandle("Name is required.", 'danger');
@@ -117,7 +119,10 @@ const Index = () => {
                                                 ToastHandle("Phone number is required.", 'danger');
                                             } else if (!resetEmail?.clinicType) {
                                                 ToastHandle("Clinic Type is required.", 'danger');
-                                            } else {
+                                            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.email)) {
+                                                ToastHandle("Please enter a valid email address.", 'danger');
+                                            }
+                                            else {
                                                 setResetEmailError(null); // Clear the error when all inputs are valid
                                                 setShowMailModal(true);
                                             }
@@ -138,10 +143,10 @@ const Index = () => {
                                             resetEmail={resetEmail} showMailModal={showMailModal}
                                             setActiveTab={setActiveTab} activeTab={activeTab}
                                             setClinicId={setClinicId} clinicId={clinicId} setBillingId={setBillingId}
-                                            setContractId={setContractId} />
+                                            setContractId={setContractId} setMultiple={setMultiple} />
                                         :
                                         activeTab === 'billing' ?
-                                            <BillingForm setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
+                                            <BillingForm multiple={multiple} setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
                                             :
                                             <Contract
                                                 setClinicId={setClinicId} setBillingId={setBillingId}

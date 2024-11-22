@@ -112,6 +112,13 @@ table {
 }
 body,
 body::-webkit-scrollbar {
-    -ms-overflow-style: none; /* Hide scrollbar for Internet Explorer and Edge */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+:root {
+    overflow: hidden !important;
+}
+.searchWrapper input {
+    border: none !important;
 }

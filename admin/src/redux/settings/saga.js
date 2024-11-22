@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { SettingsActionTypes } from './constants';
-import { createMastersDataApi, getMastersDataApi, updateMastersDataApi } from './api';
+import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -46,7 +46,7 @@ function* getMastersDataFunction(data) {
         });
         const response = yield call(getMastersDataApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-
+        console.log(decryptedData, 'deccccc')
         if (response.status === 200) {
             yield put({
                 type: SettingsActionTypes.GET_MASTERS_DATA_SUCCESS,
@@ -61,6 +61,33 @@ function* getMastersDataFunction(data) {
     } catch (error) {
         yield put({
             type: SettingsActionTypes.GET_MASTERS_DATA_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* getTenureDataFunction(data) {
+    try {
+        yield put({
+            type: SettingsActionTypes.GET_TENURE_LOADING,
+            payload: {},
+        });
+        const response = yield call(getTenureApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        if (response.status === 200) {
+            yield put({
+                type: SettingsActionTypes.GET_TENURE_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: SettingsActionTypes.GET_TENURE_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        yield put({
+            type: SettingsActionTypes.GET_TENURE_ERROR,
             payload: error,
         });
     }
@@ -109,6 +136,9 @@ export function* watchCreateMastersData() {
 export function* watchGetMastersData() {
     yield takeEvery(SettingsActionTypes.GET_MASTERS_DATA, getMastersDataFunction);
 }
+export function* watchGetTenureData() {
+    yield takeEvery(SettingsActionTypes.GET_TENURE, getTenureDataFunction);
+}
 export function* watchUpdateMastersData() {
     yield takeEvery(SettingsActionTypes.UPDATE_MASTERS_DATA, updateMastersDataFunction);
 }
@@ -123,6 +153,7 @@ function* settingsSaga() {
     yield all([
         fork(watchCreateMastersData),
         fork(watchGetMastersData),
+        fork(watchGetTenureData),
         fork(watchUpdateMastersData),
         fork(watchresetState)
     ]);

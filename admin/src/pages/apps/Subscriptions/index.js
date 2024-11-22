@@ -60,7 +60,7 @@ const Subscriptions = () => {
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body>
+                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className="mb-2">
                                 <Col sm={6}>
                                     <Button variant={status === false ? 'outlined' : ''}

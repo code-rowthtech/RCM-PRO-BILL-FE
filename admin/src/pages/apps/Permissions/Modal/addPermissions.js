@@ -6,6 +6,7 @@ import { createPermissionAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import Spinner from '../../../../constants/Spinner';
 import { IoMdClose } from 'react-icons/io';
+import { createdBy } from '../../Settings/userId';
 const AddPermissions = ({ show, closeModal }) => {
     const dispatch = useDispatch();
 
@@ -16,10 +17,9 @@ const AddPermissions = ({ show, closeModal }) => {
         formState: { errors },
         reset,
     } = useForm();
-    const store = useSelector((state) => state)
-    const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
+    const store = useSelector((state) => state);
     const onSubmit = (data) => {
-        const payload = { name: data.name, description: data.description, status: 'active', createdById: idFromStorage?._id }
+        const payload = { name: data.name, description: data.description, status: 'active', createdById: createdBy }
         dispatch(createPermissionAction({ key: `${encryptMessage(payload)}` }))
     };
     useEffect(() => {
@@ -77,7 +77,7 @@ const AddPermissions = ({ show, closeModal }) => {
                     <Modal.Footer>
                         <Button type='submit' className='custom-buttons' disabled={store?.createPermissionsDataReducer?.loading}>
                             {store?.createPermissionsDataReducer?.loading ?
-                                <Spinner className="spinner-border-sm" />
+                                <Spinner color='white' className="spinner-border-sm" />
                                 :
                                 'Save changes'
                             }

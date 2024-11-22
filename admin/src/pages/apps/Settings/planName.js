@@ -10,6 +10,7 @@ import { createMastersDataAction, getMastersDataAction, stateEmptydAction, updat
 import { IoMdClose } from 'react-icons/io'
 import Paginations from '../../../helpers/Paginations'
 import { formatDate } from '../../../helpers/dateFormat'
+import { createdBy } from './userId'
 
 const PlanName = () => {
     const store = useSelector((state) => state);
@@ -28,6 +29,7 @@ const PlanName = () => {
             name: data?.name,
             description: data?.description,
             category: 'plan_name',
+            createdBy: createdBy,
         }
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
     };
@@ -64,7 +66,7 @@ const PlanName = () => {
         <Row className='mt-2'>
             <Col xs={12}>
                 <Card>
-                    <Card.Body>
+                    <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                         <Row className="mb-2">
                             <Col sm={6}>
                                 <Button variant={status === false ? 'outlined' : ''}
@@ -233,7 +235,7 @@ const PlanName = () => {
                             <Button type='submit' className='custom-buttons' disabled={store?.createMastersDataReducer?.loading}>
                                 {store?.createMastersDataReducer?.loading
                                     ?
-                                    < Spinner />
+                                    < Spinner color='white' className='spinner-border-sm' />
                                     :
                                     'Submit'
                                 }

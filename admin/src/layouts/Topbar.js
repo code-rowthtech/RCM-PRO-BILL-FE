@@ -1,6 +1,6 @@
 // @flow
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -63,12 +63,9 @@ type TopbarProps = {
 
 const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: TopbarProps): React$Element<any> => {
     const dispatch = useDispatch();
-    console.log(hideLogo, 'adsfj')
     const [isopen, setIsopen] = useState(false);
-
     const navbarCssClasses = navCssClasses || '';
     const containerCssClasses = !hideLogo ? 'container-fluid' : '';
-
     const { layoutType, leftSideBarType } = useSelector((state) => ({
         layoutType: state.Layout.layoutType,
         leftSideBarType: state.Layout.leftSideBarType,
@@ -108,6 +105,35 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
     // const handleRightSideBar = () => {
     //     dispatch(showRightSidebar());
     // };
+    const location = useLocation(); // Get the current location object
+    const { pathname } = location; // Extract pathname
+
+    // Define a mapping of paths to titles
+    const pathToTitleMap = {
+        '/dashboard': 'Dashboard',
+        '/dashboard/project': 'Dashboard', // Example of multiple paths mapping to the same title
+        '/profile': 'Profile',
+        '/settings': 'Settings',
+        '/apps/subscriptions/list': 'Subscriptions',
+        '/apps/roles/list': 'Role Management',
+        '/apps/crm/orders': 'Clinics',
+        '/apps/crm/addclinic': 'Add Clinic',
+        '/apps/crm/addclinic?updateid=': 'Update Clinic',
+    };
+
+    // Get the title for the current path or use a default value
+    const getPageTitle = (path) => {
+        const keys = Object.keys(pathToTitleMap);
+        // Match the full path or prefixes
+        for (const key of keys) {
+            if (path.startsWith(key)) {
+                return pathToTitleMap[key];
+            }
+        }
+        return 'Page Not Found'; // Fallback title
+    };
+
+    const pageTitle = getPageTitle(pathname);
 
     return (
         <>
@@ -143,7 +169,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
                             <button className="button-menu-mobile open-left" onClick={handleLeftMenuCallBack}>
                                 <i className="mdi mdi-menu" />
                             </button>
-                            <h4 className=''>{'Title'}</h4>
+                            <h4 className=''>{pageTitle}</h4>
                         </div>
                     )}
 

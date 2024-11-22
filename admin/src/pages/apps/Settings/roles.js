@@ -17,7 +17,7 @@ const Roles = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [skip, setSkip] = useState(1);
     const [search, setSearch] = useState('');
-    const [status, setStatus] = useState('active')
+    const [status, setStatus] = useState(true)
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
@@ -27,12 +27,13 @@ const Roles = () => {
         setShowModal(false);
     };
     useEffect(() => {
-        dispatch(getRolesAction({ limit: 10, skip: skip, search: search }));
+        dispatch(getRolesAction({ limit: 10, skip: skip, search: search, status: status }));
         if (updateSuccess === 200 || createSuccess === 200) {
             dispatch(stateEmptydAction());
-            dispatch(getRolesAction({ limit: 10, skip: skip, search: search }));
+            dispatch(getRolesAction({ limit: 10, skip: skip, search: search, status: status }));
         }
-    }, [dispatch, updateSuccess, skip, search, createSuccess])
+        console.log(status)
+    }, [dispatch, updateSuccess, skip, search, createSuccess, status])
     const [dataToUpdate, setDataToUpdate] = useState(null);
 
     const closeUpdateModal = () => {
@@ -43,7 +44,7 @@ const Roles = () => {
     const handleUpdateDoctorStatus = (data) => {
         const payload = {
             id: data?._id,
-            status: data?.status === 'active' ? 'inactive' : 'active'
+            status: !data?.status
         }
         dispatch(updateRolesAction({ key: encryptMessage(payload) }));
 
@@ -59,28 +60,28 @@ const Roles = () => {
         <div>
             {/* <PageTitle
                 breadCrumbItems={[
-                    { label: 'Roles', path: '/apps/Roles/list', active: true },
+                    { label: 'Roles', path:     '/apps/Roles/list', active: true },
                 ]}
                 title={'Roles'}
             /> */}
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body>
+                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className="mb-2 d-flex justify-content-between">
                                 <Col sm={6}>
                                     <Button
-                                        variant={status === 'active' ? 'outlined' : ''}
-                                        onClick={() => handleStatusChange('active')}
-                                        className={`${status === 'active' ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                        variant={status === true ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange(true)}
+                                        className={`${status === true ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
                                     >
                                         Active
                                     </Button>
 
                                     <Button
-                                        variant={status === 'inactive' ? 'outlined' : ''}
-                                        onClick={() => handleStatusChange('inactive')}
-                                        className={`${status === 'inactive' ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                        variant={status === false ? 'outlined' : ''}
+                                        onClick={() => handleStatusChange(false)}
+                                        className={`${status === false ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
                                     >
                                         Inactive
                                     </Button>
@@ -157,7 +158,7 @@ const Roles = () => {
                                                         {data?.permissions}
                                                     </td> */}
                                                             <td>
-                                                                <Form.Switch onClick={() => handleUpdateDoctorStatus(data)} checked={data?.status === 'active'} />
+                                                                <Form.Switch onClick={() => handleUpdateDoctorStatus(data)} checked={data?.status === true} />
                                                             </td>
                                                             <td>
                                                                 <Link to="#" className="action-icon" onClick={() => {

@@ -7,7 +7,9 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
-const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
+const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
+    console.log(typeof (multiple))
+    console.log(multiple)
     const {
         register,
         handleSubmit,
@@ -21,7 +23,12 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const [amount, setAmount] = useState((null));
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Store the selected date
+
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
+    // console.log(subscriptionsData, 'subscriptionsDatasubscriptionsDatasubscriptionsData')
+    console.log(amount, 'amountamountamountamount')
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
     useEffect(() => {
@@ -55,6 +62,42 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
             dispatch(stateEmptydAction());
         }
     }, [billingAddResponse]);
+
+
+    // useEffect(() => {
+    //     if (amount?.months) {
+    //         const calculateEndDate = () => {
+    //             const currentDate = new Date();
+    //             let newDate = new Date();
+
+    //             // Add the number of months from `amount?.months`
+    //             newDate.setMonth(currentDate.getMonth() + amount.months);
+
+    //             return newDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    //         };
+
+    //         setEndDate(calculateEndDate());
+    //     }
+    // }, [amount?.months]);
+    useEffect(() => {
+        if (amount?.months && selectedDate) {
+            const calculateEndDate = () => {
+                const currentDate = new Date(selectedDate); // Use selected date
+                let newDate = new Date(currentDate);
+
+                // Add the number of months from `amount?.months`
+                newDate.setMonth(currentDate.getMonth() + amount.months);
+
+                return newDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            };
+
+            setEndDate(calculateEndDate());
+        }
+    }, [amount?.months, selectedDate]);
+
+    const handleDateChange = (e) => {
+        setSelectedDate(e.target.value);
+    };
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <Row>
@@ -69,6 +112,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
                                 setAmount(selectedSubscription || 0);
+                                // console.log(selectedSubscription, 'selectedSubscription')
                             }}
                         >
                             <option value="">Select plan type</option>
@@ -91,8 +135,11 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                         </Form.Label>
                         <Form.Control
                             type="text"
-                            defaultValue={
-                                amount?.amount
+                            value={
+                                multiple > 0 ?
+                                    amount?.totalAmount * multiple
+                                    :
+                                    amount?.totalAmount
                             }
                             readOnly
                             // {...register('amount', { required: 'This field is required' })}
@@ -113,11 +160,30 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                 <Col sm={6}>
                     <Form.Group className="mb-2">
                         <Form.Label className='mb-1'>Implemented Date</Form.Label>
-                        <Form.Control
-                            type="text"
+                        {/* <Form.Control
+                            type="date"
                             placeholder='Implemented Date'
-                            defaultValue={amount?.implimentFrom ? new Date(amount.implimentFrom).toLocaleDateString() : ''}
-                            readOnly />
+                            defaultValue={new Date().toISOString().split('T')[0]}
+                            min={new Date().toISOString().split('T')[0]}
+                        /> */}
+                        <Form.Control
+                            type="date"
+                            placeholder="Implemented Date"
+                            value={selectedDate} // Controlled input
+                            onChange={handleDateChange} // Update state on change
+                            min={new Date().toISOString().split('T')[0]} // Min date is today
+                        />
+                    </Form.Group>
+                </Col>
+                <Col sm={6}>
+                    <Form.Group className="mb-2">
+                        <Form.Label className='mb-1'>End Date</Form.Label>
+                        <Form.Control
+                            type="date"
+                            placeholder='End Date'
+                            defaultValue={amount ? endDate : ''}
+                            readOnly
+                        />
                     </Form.Group>
                 </Col>
                 <Col sm={6}>
@@ -158,22 +224,22 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                                                 required: 'This field is required'
                                             })}
                                             onChange={(e) => setPaymentType(e.target.value)}>
-                                            <option>Select payment method</option>
+                                            <option value=''>Select payment method</option>
                                             <option value='card'>Card</option>
                                             <option value='online'>Online banking</option>
                                             <option value='cheque'>Cheque</option>
                                         </Form.Select>
+                                        {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
                                     </Form.Group>
-                                    {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
                                 </Col>
                                 <Col sm={12}>
                                     <Form.Group className="mb-2">
                                         <Form.Label className='mb-1'>Billing Address</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            // {...register('billingaddress', { required: 'This field is required' })}
+                                            {...register('billingaddress', { required: 'This field is required' })}
                                             placeholder="Billing Address" />
-                                        {/* {errors.billingaddress && <span className="text-danger">{errors.billingaddress.message}</span>} */}
+                                        {errors.billingaddress && <span className="text-danger">{errors.billingaddress.message}</span>}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
@@ -241,19 +307,41 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
                                         <Form.Label className='mb-1'>Billing Contact Email</Form.Label>
                                         <Form.Control
                                             type='email'
-                                            {...register('email')}
+                                            {...register('email', {
+                                                required: 'This field is required',
+                                                pattern: {
+                                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
+                                                    message: 'Please enter a valid email address'
+                                                }
+                                            })}
                                             placeholder='Billing Contact Email' />
                                     </Form.Group>
-                                    {errors.name && <span className="text-danger">{errors.name.message}</span>}
+                                    {errors.email && <span className="text-danger">{errors.email.message}</span>}
                                 </Col>
                                 <Col sm={12} className='mb-2'>
                                     <Form.Group className="">
                                         <Form.Label className='mb-1'>Billing Contact Phone Number</Form.Label>
                                         <Form.Control
                                             type='text'
-                                            {...register('contact')}
+                                            {...register('contact', {
+                                                required: 'This field is required',
+                                                pattern: {
+                                                    value: /^[0-9]*$/,
+                                                    message: 'Contact must be a number'
+                                                },
+                                                maxLength: {
+                                                    value: 10,
+                                                    message: 'Contact must not exceed 10 digits'
+                                                },
+                                                minLength: {
+                                                    value: 10,
+                                                    message: 'Contact must not be less than 10 digits '
+                                                }
+                                            })}
+                                            maxLength={10}
                                             placeholder='Billing Contact Phone Number' />
                                     </Form.Group>
+                                    {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
                                 </Col>
                             </Row>
                         </Col>
@@ -265,8 +353,8 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId }) => {
             <Row className='mt-2'>
                 <Col sm={12} className='text-end'>
                     <Button type='submit' className='custom-button' disabled={store?.createSubscriptionPlanReducer?.loading}>
-                        {store?.store?.createSubscriptionPlanReducer?.loading ?
-                            <Spinner />
+                        {store?.createSubscriptionPlanReducer?.loading ?
+                            <Spinner className='spinner-border-sm' color='white' />
                             :
                             'Generate Contract'
                         }

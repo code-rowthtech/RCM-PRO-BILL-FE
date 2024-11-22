@@ -10,6 +10,11 @@ const GET_MASTERS_DATA_INITIAL_STATE = {
     data: [],
     loading: false
 }
+
+const GET_TENURE_DATA_INITIAL_STATE = {
+    data: [],
+    loading: false
+}
 const UPDATE_MASTERS_DATA_INITIAL_STATE = {
     data: [],
     loading: false
@@ -54,6 +59,32 @@ export const getMastersDataReducer = (state = GET_MASTERS_DATA_INITIAL_STATE, ac
                 loading: false
             }
         case SettingsActionTypes.GET_MASTERS_DATA_ERROR:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.STATE_EMPTY_INTIAL_STATE:
+            return {
+                data: [],
+                loading: false
+            }
+        default: return state
+    }
+}
+
+export const getTenureReducer = (state = GET_TENURE_DATA_INITIAL_STATE, action) => {
+    switch (action.type) {
+        case SettingsActionTypes.GET_TENURE_LOADING:
+            return {
+                data: state.data,
+                loading: true
+            }
+        case SettingsActionTypes.GET_TENURE_SUCCESS:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.GET_TENURE_ERROR:
             return {
                 data: action.payload,
                 loading: false

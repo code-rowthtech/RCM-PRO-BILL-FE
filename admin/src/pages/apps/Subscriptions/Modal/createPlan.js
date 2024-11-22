@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { createSubscriptionsAction, updateRolesAction, updateSubscriptionsAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { IoMdClose } from 'react-icons/io';
-import { getMastersDataAction } from '../../../../redux/settings/actions';
+import { getMastersDataAction, getTenureAction } from '../../../../redux/settings/actions';
 import { formatDate } from '../../../../helpers/dateFormat';
+import Spinner from '../../../../constants/Spinner';
 
 const calculateFinalAmount = (price, taxPercentage) => {
     const taxAmount = (price * taxPercentage) / 100;
@@ -25,6 +26,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const [finalAmount, setFinalAmount] = useState(0);
+    const [tenureMonth, setTenureMonth] = useState(null);
     const isUpdateMode = Boolean(data); // Determines if this is "update" mode
     const watchedPrice = watch('amount');
     const watchedTax = watch('tax');
@@ -38,13 +40,22 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
     useEffect(() => {
         // if (show) {
         dispatch(getMastersDataAction({ status: true, category: 'plan_name', search: '', skip: '', limit: '' }));
+        dispatch(getTenureAction({ status: true, search: '', skip: '', limit: '' }));
         if (isUpdateMode && data) {
             reset();
         }
         // }
     }, [data])
     const plans = store?.getMastersDataReducer?.data?.clinicTypes;
-
+    const tenure = store?.getTenureReducer?.data?.tenure;
+    const updateResponse = store?.updateSubscriptionsReducer?.data?.status;
+    const createResponse = store?.createSubscriptionsReducer?.data?.status;
+    useEffect(() => {
+        if (updateResponse === 200 || createResponse === 201) {
+            closeModal();
+            reset();
+        }
+    }, [createResponse, updateResponse])
     // const onSubmit = (formData) => {
     //     const payload = {
     //         name: formData.name,
@@ -74,6 +85,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         if (formData.name !== data?.name) payload.name = formData.name;
         if (formData.amount !== data?.amount) payload.amount = formData.amount;
         if (formData.tenure !== data?.billingFrequency) payload.billingFrequency = formData.tenure;
+        if (formData.tenure !== data?.months) payload.months = tenureMonth;
         if (formData.description !== data?.description) payload.description = formData.description;
         if (formData.doctorcount !== data?.doctorLimit) payload.doctorLimit = formData.doctorcount;
         if (formData.patientcount !== data?.patientLimit) payload.patientLimit = formData.patientcount;
@@ -81,6 +93,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         if (formData.tax !== data?.tax) payload.tax = formData.tax;
         if (formData.discount !== data?.discount) payload.discount = formData.discount;
         payload.totalAmount = finalAmount;
+        payload.months = tenureMonth;
 
         // If it's an update, include the ID
         if (isUpdateMode) {
@@ -89,8 +102,6 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         } else {
             dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
         }
-
-        closeModal();
     };
 
     return (
@@ -126,15 +137,19 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
+
                                 <Form.Label>Plan Tenure <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.billingFrequency : ''}
                                     {...register('tenure', { required: 'This field is required' })}
-                                >
+                                    onChange={(e) => {
+                                        const selectedOption = tenure?.find(option => option.name === e.target.value);
+                                        setTenureMonth(selectedOption?.months)
+                                    }}                                >
                                     <option value="">Select tenure</option>
-                                    <option value="monthly">Monthly</option>
-                                    <option value="half-yearly">Half yearly</option>
-                                    <option value="yearly">Yearly</option>
+                                    {tenure?.map((data) => (
+                                        <option value={data?.name} key={data?.months}>{data?.name}</option>
+                                    ))}
                                 </Form.Select>
                                 {errors.tenure && <span className="text-danger fs-6">{errors.tenure.message}</span>}
                             </Form.Group>
@@ -253,8 +268,12 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         <Button className="custom-buttons" onClick={closeModal}>
                             Cancel
                         </Button>
-                        <Button type="submit" className="custom-buttons">
-                            Save
+                        <Button disabled={store?.createSubscriptionsReducer?.loading || store?.updateSubscriptionsReducer?.loading} type="submit" className="custom-buttons">
+                            {store?.createSubscriptionsReducer?.loading || store?.updateSubscriptionsReducer?.loading ?
+                                <Spinner color='white' className='spinner-border-sm' />
+                                :
+                                'Save'
+                            }
                         </Button>
                     </Modal.Footer>
                 </Form>
