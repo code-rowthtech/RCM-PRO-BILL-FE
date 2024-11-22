@@ -31,7 +31,7 @@ const RoleManagement = () => {
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body>
+                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className="mb-2 d-flex justify-content-between">
                                 <Col sm={6}>
                                     <Button

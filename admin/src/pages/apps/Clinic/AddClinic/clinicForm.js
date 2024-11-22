@@ -9,7 +9,7 @@ import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
 
-const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setContractId, setResetEmail, resetEmail }) => {
+const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, resetEmail }) => {
     const dispatch = useDispatch();
     const {
         register,
@@ -265,7 +265,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
             }
         }
     };
-
+    const deleteResponse = store?.deleteClinicOnboardingReducer?.data?.status;
     // create Response
     useEffect(() => {
         if (createResponse === 200) {
@@ -290,15 +290,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                 }
 
             }
-            if (parentClinic) {
-                const payload = {
-                    parentClinic: parentClinic,
-                }
-                dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-            }
-        }
-    }, [createResponse, parentClinic]);
 
+        }
+        if (parentClinic || deleteResponse === 200) {
+            const payload = {
+                parentClinic: parentClinic,
+            }
+            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
+        }
+
+    }, [createResponse, parentClinic, deleteResponse, counter]);
     // Submit Button 
 
     const [formValid, setFormValid] = useState(false)
@@ -306,14 +307,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
     const email = watch('email');
     const contact = watch('contact');
     const clinicType = watch('clinicType');
-
+    // console.log(clinicname, email, contact, clinicType)
     // Determine form validity
     const isFormValid = clinicname && email && contact && clinicType;
     useEffect(() => {
-        if (isFormValid) {
+        if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
             setFormValid(true)
         }
-    }, [isFormValid])
+    }, [resetEmail])
     const onSubmit = (data) => {
         const newPayload = {
             isParent: counter === 1 ? true : false, // Conditional property assignment using a ternary operator
@@ -349,7 +350,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
         if (createData) {
             setCreateTableData(createData)
         }
-    }, [createData])
+    }, [createData]);
+
+    const handleDeleteClinic = (data) => {
+        const payload = {
+            id: data
+        }
+        dispatch(deleteClinicAction({ key: encryptMessage(payload) }))
+    }
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -363,13 +371,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 onChange={(e) => setResetEmail({ ...resetEmail, name: e.target.value })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.name : ''}
                                 placeholder="Clinic name"
-                                onKeyPress={(e) => {
-                                    // Allow only numbers and one decimal point
-                                    const regex = /^[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*|(?: [A-Za-z0-9]+)*$/;
-                                    if (!regex.test(e.target.value + e.key) && e.key !== "Backspace") {
-                                        e.preventDefault();
-                                    }
-                                }}
+                            // onKeyPress={(e) => {
+                            //     // Allow only numbers and one decimal point
+                            //     const regex = /^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/;
+                            //     if (!regex.test(e.target.value + e.key) && e.key !== "Backspace") {
+                            //         e.preventDefault();
+                            //     }
+                            // }}
                             />
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
 
@@ -486,6 +494,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                             style={{ display: 'none' }}
                             // {...register('logoimage', { required: 'This field is required' })}
                             ref={logoFileInputRef}
+                            accept=".png, .jpg, .jpeg, .svg" // Allow only specific file types
                             onChange={handleFileChange}
                         />
                         {/* {errors.logoimage && <span className="text-danger">{errors.logoimage.message}</span>} */}
@@ -671,7 +680,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 <Row>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>State <span className='text-danger'>*</span></Form.Label>
+                                            <Form.Label className='mb-1'>State</Form.Label>
                                             <Form.Select
                                                 {...register('stateName')}
                                                 onChange={(e) => handleStateSelection(e)}
@@ -760,7 +769,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                         {'POS ' + `${index + 1}`}
                                         <span
                                             onClick={() => handleRemovePOS(index)}
-                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
+                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer  fs-5 fw-bold text-danger`}>
                                         </span>
                                     </Col>
                                     <Col sm={6}>
@@ -817,31 +826,35 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                     </Col>
                     <hr />
                     <Col md={12} className='mt-2 d-flex gap-2 justify-content-end'>
-                        {store?.createClinicsReducer?.loading ?
-                            <Spinner />
-                            :
-                            <>
-                                <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid} onClick={() => { setSingleOrMultiple(true); setCounter(counter + 1) }} >
-                                    Add Multiple
-                                </Button>
-                                <Button
-                                    variant="primary"
-                                    type={counter > 0 ? 'button' : 'submit'}
-                                    className='custom-buttons'
-                                    disabled={!formValid}
-                                    onClick={() => {
-                                        setSingleOrMultiple(false);
-                                        if (counter > 0) {
-                                            setActiveTab('billing');
-                                            setSingleOrMultiple(false);
-                                            setCounter(0);
-                                        }
-                                    }}
-                                >
-                                    Next
-                                </Button>
-                            </>
-                        }
+
+                        <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid || store?.createClinicsReducer?.loading} onClick={() => { setSingleOrMultiple(true); setCounter(counter + 1) }} >
+                            {store?.createClinicsReducer?.loading && counter > 1 ?
+                                <Spinner color='white' className='spinner-border-sm' />
+                                :
+                                'Add Multiple'
+                            }
+                        </Button>
+                        <Button
+                            variant="primary"
+                            type={counter > 0 ? 'button' : 'submit'}
+                            className='custom-buttons'
+                            disabled={!formValid || store?.createClinicsReducer?.loading}
+                            onClick={() => {
+                                setSingleOrMultiple(false);
+                                if (counter > 0) {
+                                    setMultiple(counter)
+                                    setActiveTab('billing');
+                                    setSingleOrMultiple(false);
+                                    setCounter(0);
+                                }
+                            }}
+                        >
+                            {store?.createClinicsReducer?.loading && counter === 0 ?
+                                <Spinner color='white' className='spinner-border-sm' />
+                                :
+                                'Next'
+                            }
+                        </Button>
                     </Col>
                 </Row >
             </Form >
@@ -868,11 +881,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                     </td>
                                 </tr>
                                 :
-
                                 clinicsList?.map((multipleData, index) => (
                                     <tr key={multipleData?._id}>
                                         <td className='text-capitalize'>{multipleData?.name}</td>
-                                        <td>{multipleData?.userId?.address?.city?.state_code + ' / ' + multipleData?.userId?.address?.city?.name}</td>
+                                        <td>{(multipleData?.userId?.address?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.address?.city?.name || 'N/A')}</td>
                                         {/* <td>{multipleData?.clinicType}</td> */}
                                         <td className='text-lowercase'>{multipleData?.userId?.email}</td>
                                         <td>{multipleData?.userId?.phone}</td>
@@ -906,7 +918,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setCont
                                 <td>{createTableData?.phone}</td>
                                 <td>
                                     <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
-                                    <i className="mdi mdi-delete cursor-pointer"></i>
+                                    <i onClick={() => handleDeleteClinic(createTableData?._id)} className="mdi mdi-delete cursor-pointer"></i>
                                 </td>
                             </tr>
                         </tbody>

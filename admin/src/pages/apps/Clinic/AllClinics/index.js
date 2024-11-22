@@ -6,7 +6,6 @@ import { Badge, Button, Card, Col, Form, Modal, Row, Table } from 'react-bootstr
 import PageTitle from '../../../../components/PageTitle';
 import { FormInput } from '../../../../components';
 // dummy data
-import { orderData } from './data';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +26,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
+    console.log(clinicsData, 'clinicsDataclinicsDataclinicsDataclinicsDataclinicsData   ')
     useEffect(() => {
         const payload = {
             name: name,
@@ -65,12 +65,15 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setDeleteModal(true);
         setDeleteData(data);
     }
+
+    const element = document.getElementById('hoverElement')
+    console.log(element, 'element   ')
     return (
         <>
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body>
+                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className="mb-2">
                                 <Col sm={6}>
                                     <Button variant={status === false ? 'outlined' : ''}
@@ -110,6 +113,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                         <th>Clinic Type</th>
                                         <th>End Date <span className=' uil-info-circle mb-0 cursor-pointer'
                                             data-toggle="tooltip"
+                                            id="hoverElement"
                                             data-placement="top"
                                             title="Last Date of Subscription" /></th>
                                         <th>Countdown</th>
@@ -152,10 +156,23 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td>{data?.clinicType}</td>
                                                         <td>
-                                                            12/11/2024
+                                                            {data?.userId?.subscription?.subscriptionRenewalDate
+                                                                ? new Date(data.userId.subscription.subscriptionRenewalDate).toLocaleDateString('en-GB')
+                                                                : 'N/A'}
                                                         </td>
                                                         <td>
-                                                            5 days
+                                                            {data?.userId?.subscription?.subscriptionRenewalDate
+                                                                ? (() => {
+                                                                    const today = new Date();
+                                                                    const renewalDate = new Date(data.userId.subscription.subscriptionRenewalDate);
+                                                                    const diffTime = renewalDate - today; // Difference in milliseconds
+                                                                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
+                                                                    return diffDays >= 0
+                                                                        ? `${diffDays} day${diffDays !== 1 ? 's' : ''}`
+                                                                        : 'Expired';
+                                                                })()
+                                                                : 'N/A'}
+
                                                         </td>
                                                         <td>
                                                             <span className='bg-secondary rounded-1 text-white py-0 px-1'>

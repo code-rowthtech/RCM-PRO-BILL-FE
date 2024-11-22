@@ -54,6 +54,7 @@ const AddRoles = ({ show, closeModal }) => {
             leavingDate: '',
             role: '',
         };
+        console.log(payload)
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }))
     };
 
@@ -90,7 +91,7 @@ const AddRoles = ({ show, closeModal }) => {
                     <Row >
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Name</Form.Label>
+                                <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Name"
@@ -101,7 +102,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Email ID</Form.Label>
+                                <Form.Label>Email ID <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="email"
                                     placeholder="Email ID"
@@ -123,7 +124,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Reporting</Form.Label>
+                                <Form.Label>Reporting <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select>
                                     <option>Reporting</option>
                                     <option value="">1</option>
@@ -135,7 +136,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Password</Form.Label>
+                                <Form.Label>Password  <span className='text-danger'>*</span></Form.Label>
                                 <div className="position-relative">
                                     <Form.Control
                                         type={showPassword ? "text" : "password"}
@@ -154,7 +155,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Confirm Password</Form.Label>
+                                <Form.Label>Confirm Password <span className='text-danger'>*</span></Form.Label>
                                 <div className="position-relative">
                                     <Form.Control
                                         type={showConfirmPassword ? "text" : "password"}
@@ -177,7 +178,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Date of Joining</Form.Label>
+                                <Form.Label>Date of Joining <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
                                     {...register('joiningDate', { required: 'This field is required' })}
@@ -187,7 +188,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Date of Leaving</Form.Label>
+                                <Form.Label>Date of Leaving <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
                                     {...register('leavingDate', { required: 'This field is required' })}
@@ -197,7 +198,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Designation</Form.Label>
+                                <Form.Label>Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select>
                                     <option value={''} key={''}>Designation</option>
                                     {clinicTypeData?.map((data, i) => (
@@ -209,7 +210,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Re-Enter Designation</Form.Label>
+                                <Form.Label>Re-Enter Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select>
                                     <option value={''} key={''}>Re-Enter Designation</option>
                                     {clinicTypeData?.map((data, i) => (
@@ -224,7 +225,7 @@ const AddRoles = ({ show, closeModal }) => {
                     <Row >
                         <Col sm={6} >
                             <Form.Group className='mb-2'>
-                                <Form.Label>Permissions</Form.Label>
+                                <Form.Label>Permissions <span className='text-danger'>*</span></Form.Label>
 
                                 <Multiselect
                                     options={decryptedPermissionsData}

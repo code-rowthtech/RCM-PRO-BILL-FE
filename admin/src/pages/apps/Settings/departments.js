@@ -10,6 +10,7 @@ import { createMastersDataAction, getMastersDataAction, stateEmptydAction, updat
 import { IoMdClose } from 'react-icons/io'
 import Paginations from '../../../helpers/Paginations'
 import { formatDate } from '../../../helpers/dateFormat'
+import { createdBy } from './userId'
 const Departments = () => {
     const store = useSelector((state) => state);
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
@@ -28,6 +29,8 @@ const Departments = () => {
             name: data?.name,
             description: data?.description,
             category: 'departments',
+            createdBy: createdBy,
+
         }
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
 
@@ -66,7 +69,7 @@ const Departments = () => {
         <Row className='mt-2'>
             <Col xs={12}>
                 <Card>
-                    <Card.Body>
+                    <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                         <Row className="mb-2">
                             <Col sm={6}>
                                 <Button variant={status === false ? 'outlined' : ''}
@@ -242,7 +245,7 @@ const Departments = () => {
                             <Button type='submit' className='custom-buttons' disabled={store?.createMastersDataReducer?.loading}>
                                 {store?.createMastersDataReducer?.loading
                                     ?
-                                    < Spinner />
+                                    < Spinner color='white' className='spinner-border-sm' />
                                     :
                                     'Submit'
                                 }

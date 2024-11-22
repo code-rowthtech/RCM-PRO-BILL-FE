@@ -103,10 +103,10 @@ const Login = (): React$Element<any> => {
                         name="username"
                         placeholder={t('Enter your Email')}
                         containerClass={'mb-3'}
-                    // onChange={(e) => {
-                    //     const value = e.target.value.replace(/\s/g, ''); // Remove spaces
-                    //     e.target.value = value; 
-                    // }}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                            e.target.value = value;
+                        }}
                     />
                     <FormInput
                         label={t('Password')}
