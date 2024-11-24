@@ -35,7 +35,7 @@ const LockScreen2 = React.lazy(() => import('../pages/account2/LockScreen2'));
 const ProjectDashboard = React.lazy(() => import('../pages/dashboard/Project'));
 const AllClinics = React.lazy(() => import('../pages/apps/Clinic/AllClinics'));
 const AddClinics = React.lazy(() => import('../pages/apps/Clinic/AddClinic/index'));
-const UpdateClinic = React.lazy(() => import('../pages/apps/Clinic/AllClinics/updateClinic'));
+const UpdateClinic = React.lazy(() => import('../pages/apps/Clinic/UpdateClinic/index'));
 const AppointmentsList = React.lazy(() => import('../pages/apps/Appointments/index'));
 const Subscriptions = React.lazy(() => import('../pages/apps/Subscriptions/index'));
 // const AddSubscriptions = React.lazy(() => import('../pages/apps/Subscriptions/Addsubscriptions/index'));

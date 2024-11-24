@@ -26,7 +26,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
-    console.log(clinicsData, 'clinicsDataclinicsDataclinicsDataclinicsDataclinicsData   ')
     useEffect(() => {
         const payload = {
             name: name,
@@ -66,8 +65,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setDeleteData(data);
     }
 
-    const element = document.getElementById('hoverElement')
-    console.log(element, 'element   ')
     return (
         <>
             <Row className='mt-2'>
@@ -190,7 +187,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                                 checked={data?.status === true} />
                                                         </td>
                                                         <td>
-                                                            <Link to={`/apps/crm/addclinic?updateid=${data?._id}`} className="action-icon">
+                                                            <Link to={`/apps/crm/updateclinic?updateid=${data?._id}`} className="action-icon">
                                                                 <i className="mdi mdi-square-edit-outline"></i>
                                                             </Link>
                                                         </td>

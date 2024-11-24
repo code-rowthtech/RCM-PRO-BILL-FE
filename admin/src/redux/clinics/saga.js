@@ -93,7 +93,6 @@ function* getClinicByIdFunction(data) {
             });
         }
     } catch (error) {
-        // console.log({ error })
         yield put({
             type: ClinicsActionTypes.GET_CLINIC_BY_ID_ERROR,
             payload: error,
@@ -220,8 +219,6 @@ function* createSubscriptionPlanFunction(data) {
         });
         const response = yield call(addSubscriptionPlanApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-        console.log({ response });
-        console.log({ decryptedData });
         if (response.status === 200) {
             yield put({
                 type: ClinicsActionTypes.CREATE_SUBSCRIPTION_SUCCESS,
