@@ -50,7 +50,6 @@ const Login = (): React$Element<any> => {
         error: state.Auth.error,
         userLoggedIn: state.Auth.userLoggedIn,
     }));
-
     useEffect(() => {
         if (error) {
             ToastHandle(error, 'danger')
@@ -103,10 +102,10 @@ const Login = (): React$Element<any> => {
                         name="username"
                         placeholder={t('Enter your Email')}
                         containerClass={'mb-3'}
-                        onChange={(e) => {
-                            const value = e.target.value.replace(/\s/g, ''); // Remove spaces
-                            e.target.value = value;
-                        }}
+                    // onChange={(e) => {
+                    //     const value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                    //     e.target.value = value;
+                    // }}
                     />
                     <FormInput
                         label={t('Password')}
@@ -114,9 +113,9 @@ const Login = (): React$Element<any> => {
                         name="password"
                         placeholder={t('Enter your password')}
                         containerClass={'mb-3'}
-                        onInput={(e) => {
-                            e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces
-                        }}
+                    // onInput={(e) => {
+                    //     e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces
+                    // }}
                     >
                         <Link to="/account/forget-password" className="text-muted float-end">
                             <small>{t('Forgot your password?')}</small>

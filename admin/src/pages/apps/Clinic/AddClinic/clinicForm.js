@@ -8,6 +8,7 @@ import { createClinicAction, deleteClinicAction, getCitiesAction, getClinicById,
 import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
+import ToastHandle from '../../../../helpers/ToastMessage';
 
 const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, resetEmail }) => {
     const dispatch = useDispatch();
@@ -175,6 +176,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
 
     const handleAddAccreditation = () => {
+        const isIncomplete = accreditationDetails.some(
+            (accreditation) =>
+                !accreditation.name || !accreditation.number || !accreditation.url
+        );
+
+        if (isIncomplete) {
+            // Show a toast message if any field is incomplete
+            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            return;
+        }
         setAccreditationDetails([
             ...accreditationDetails,
             { name: '', number: '', url: null }
@@ -189,6 +200,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
 
     const handleAddMedical = () => {
+        const isIncomplete = medicalDetails.some(
+            (medical) =>
+                !medical.name || !medical.number || !medical.url
+        );
+
+        if (isIncomplete) {
+            // Show a toast message if any field is incomplete
+            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            return;
+        }
         setMedicalDetails([
             ...medicalDetails,
             { name: '', number: '', url: null }
@@ -203,6 +224,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
 
     const handleAddState = () => {
+        const isIncomplete = stateDetails.some(
+            (state) =>
+                !state.name || !state.number || !state.url
+        );
+
+        if (isIncomplete) {
+            // Show a toast message if any field is incomplete
+            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            return;
+        }
         setStateDetails([
             ...stateDetails,
             { name: '', number: '', url: null }
@@ -217,6 +248,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
 
     const handleAddPOS = () => {
+        const isIncomplete = posDetails.some(
+            (pos) =>
+                !pos.name || !pos.role || !pos.contact || !pos.email
+        );
+
+        if (isIncomplete) {
+            // Show a toast message if any field is incomplete
+            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            return;
+        }
         setPosDetails([
             ...posDetails,
             { name: '', email: '', role: null, contact: '' }
@@ -341,6 +382,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 longitude: selectedCity?.longitude,
             }
         };
+        // console.log(newPayload, 'newPayloadnewPayloadnewPayload')
         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -367,18 +409,21 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>Clinic Name <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('clinicname', { required: 'This field is required' })}
-                                onChange={(e) => setResetEmail({ ...resetEmail, name: e.target.value })}
-                                defaultValue={updatePage ? clinicDataToUpdate?.name : ''}
+                                {...register('clinicname', {
+                                    required: 'This field is required',
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                })}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.startsWith(' ')) {
+                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                    }
+                                    setResetEmail({ ...resetEmail, name: e.target.value });
+                                }}
                                 placeholder="Clinic name"
-                            // onKeyPress={(e) => {
-                            //     // Allow only numbers and one decimal point
-                            //     const regex = /^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/;
-                            //     if (!regex.test(e.target.value + e.key) && e.key !== "Backspace") {
-                            //         e.preventDefault();
-                            //     }
-                            // }}
                             />
+
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
 
                         </Form.Group>
@@ -387,7 +432,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         <Form.Group className="mb-2">
                             <Form.Label className='mb-1'>Clinic type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
-                                defaultValue={updatePage ? clinicDataToUpdate?.clinicType : ''}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.clinicType : ''}
                                 {...register('clinicType', { required: 'This field is required' })}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
@@ -401,10 +446,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Email<span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Email ID<span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                defaultValue={updatePage ? clinicDataToUpdate?.email : ''}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.email : ''}
                                 {...register('email', {
                                     required: 'This field is required',
                                     pattern: {
@@ -413,7 +458,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     }
                                 })}
                                 onChange={(e) => setResetEmail({ ...resetEmail, email: e.target.value })}
-                                placeholder="Email"
+                                placeholder="Email ID"
                             />
 
                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
@@ -425,7 +470,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Control
                                 type="text"
                                 {...register('taxId')}
-                                defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
                                 placeholder="Tax ID / EIN" />
                         </Form.Group>
                     </Col>
@@ -482,10 +527,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         </Form.Group>
                     </Col>
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
-                        <Form.Label>Logo</Form.Label>
+                        <Form.Label>Upload Logo</Form.Label>
                         <div onClick={handleLogoClick}
                             className={`custom-file-upload justify-content-between cursor-pointer ${logoName ? '' : 'custom-form-fields'}`}>
-                            {logoName ? logoName : 'Upload Document'}
+                            {logoName ? logoName : 'Upload Logo'}
                             <p className='mb-0'><FiDownloadCloud /></p>
                         </div>
                         <Form.Control
@@ -529,14 +574,17 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
-                                <div onClick={() => accreditationFileInputRef.current.click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${accreditation.fileName ? '' : 'custom-form-fields'}`}>
+                                <div
+                                    onClick={() => document.getElementById(`fileInput-accreditation=${index}`).click()}
+                                    //  onClick={() => accreditationFileInputRef.current.click()}
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${accreditation.fileName ? 'form-control' : 'custom-form-fields'}`}>
                                     {accreditation.fileName ? accreditation.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
                                 {/* <img className={`${accreditation ? "" : "d-none"}`} src={accreditation?.url} alt='...' /> */}
                                 <Form.Control
                                     type="file"
+                                    id={`fileInput-accreditation=${index}`}
                                     className="rounded-circle "
                                     style={{ display: 'none' }}
                                     ref={accreditationFileInputRef}
@@ -581,14 +629,17 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative ">
-                                <div onClick={() => medicalFileInputRef.current.click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${medical.fileName ? '' : 'custom-form-fields'}`}>
+                                <div
+                                    onClick={() => document.getElementById(`fileInput-medical=${index}`).click()}
+                                    // onClick={() => medicalFileInputRef.current.click()}
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${medical.fileName ? 'form-control' : 'custom-form-fields'}`}>
                                     {medical.fileName ? medical.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
                                 <Form.Control
                                     type="file"
                                     className="rounded-circle "
+                                    id={`fileInput-medical=${index}`}
                                     style={{ display: 'none' }}
                                     ref={medicalFileInputRef}
                                     onChange={(e) => handleMedicalChange(e, index)}
@@ -637,13 +688,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
-                                <div onClick={() => stateFileInputRef.current.click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName ? '' : 'custom-form-fields'}`}>
+                                <div
+                                    onClick={() => document.getElementById(`fileInput-state=${index}`).click()}
+                                    // onClick={() => stateFileInputRef.current.click()}
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName ? 'form-control' : 'custom-form-fields'}`}>
                                     {data.fileName ? data.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
                                 <Form.Control
                                     type="file"
+                                    id={`fileInput-state=${index}`}
                                     className="rounded-circle "
                                     style={{ display: 'none' }}
                                     ref={stateFileInputRef}
@@ -662,7 +716,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     <Col sm={12}>
                         <Row>
                             <Col sm={12} className='mb-2'>
-                                <span className='text-black fw-semibold'>Address Details</span>
+                                <span className='text-black fw-semibold form-label'>Address Details</span>
                             </Col>
                             <Col sm={6}>
                                 <Form.Group className="mb-2">
@@ -755,7 +809,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     <Col sm={12}>
                         <Row>
                             <Col sm={12} className="mb-2">
-                                <span className="text-black fw-semibold">
+                                <span className="text-black fw-semibold form-label">
                                     POC (Point of contact)
                                     <span
                                         onClick={handleAddPOS}
@@ -765,7 +819,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             </Col>
                             {posDetails.map((data, index) => (
                                 <React.Fragment key={index}>
-                                    <Col sm={12}>
+                                    <Col sm={12} className='form-label'>
                                         {'POS ' + `${index + 1}`}
                                         <span
                                             onClick={() => handleRemovePOS(index)}
@@ -797,15 +851,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
                                             <Form.Label className="mb-1">Job Title / Role</Form.Label>
-                                            <Form.Select
-                                                value={data.role}
+                                            <Form.Control
+                                                type='text'
+                                                placeholder='Job Title / Role'
                                                 onChange={(e) => handlePOSInputChange(e, 'role', index)}
-                                            >
-                                                <option value="">Job title / role</option>
-                                                <option value="admin">Admin</option>
-                                                <option value="doctor">Doctor</option>
-                                                <option value="receptionist">Receptionist</option>
-                                            </Form.Select>
+                                            />
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
@@ -831,7 +881,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             {store?.createClinicsReducer?.loading && counter > 1 ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
-                                'Add Multiple'
+                                'Add Multiple Clinics'
                             }
                         </Button>
                         <Button
@@ -865,7 +915,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <tr>
                                 <th>Clinic Name</th>
                                 <th>Location</th>
-                                {/* <th>Specialist</th> */}
+                                <th>Clinic Type</th>
                                 <th>Email</th>
                                 <th>Contact</th>
                                 {/* <th>Tax / EIN Id</th> */}
@@ -885,7 +935,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     <tr key={multipleData?._id}>
                                         <td className='text-capitalize'>{multipleData?.name}</td>
                                         <td>{(multipleData?.userId?.address?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.address?.city?.name || 'N/A')}</td>
-                                        {/* <td>{multipleData?.clinicType}</td> */}
+                                        <td>{multipleData?.clinicType}</td>
                                         <td className='text-lowercase'>{multipleData?.userId?.email}</td>
                                         <td>{multipleData?.userId?.phone}</td>
                                         {/* <td>{multipleData?.taxIdOrEIN}</td> */}
@@ -914,6 +964,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <tr key={createTableData?._id}>
                                 <td className='text-capitalize'>{createTableData?.clinicId?.name}</td>
                                 <td>{(createTableData?.address?.state?.state_code || "N/A") + " / " + (createTableData?.address?.city?.name || "N/A")}</td>
+                                <td>{createTableData?.clinicId?.clinicType}</td>
                                 <td>{createTableData?.email}</td>
                                 <td>{createTableData?.phone}</td>
                                 <td>

@@ -26,11 +26,14 @@ function* login({ payload }) {
         }
         const response = yield call(loginApi, encryptedPayload);
         const user = JSON.parse(decryptMessage(response?.data?.data));
+        console.log(response, 'response')
+        console.log(user, 'user')
         const userData = {
-            name: user?.name,
-            email: user?.email,
+            name: user?.data?.firstName,
+            email: user?.data?.email,
             token: user?.accessToken,
-            role: user?.role,
+            role: user?.role?.name,
+            permissions: user?.role?.permissions,
             _id: user?._id
         }
         // NOTE - You can change this according to response format from your api
@@ -51,9 +54,10 @@ function* login({ payload }) {
  */
 function* logout() {
     try {
-        yield call(logoutApi);
+        // yield call(logoutApi);
         api.setLoggedInUser(null);
         setAuthorization(null);
+        sessionStorage.removeItem('hyper_user')
         yield put(authApiResponseSuccess(AuthActionTypes.LOGOUT_USER, {}));
     } catch (error) {
         yield put(authApiResponseError(AuthActionTypes.LOGOUT_USER, error));

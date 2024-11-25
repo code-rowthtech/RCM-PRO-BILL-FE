@@ -118,7 +118,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/apps/roles/list': 'Role Management',
         '/apps/crm/orders': 'Clinics',
         '/apps/crm/addclinic': 'Add Clinic',
-        '/apps/crm/addclinic?updateid=': 'Update Clinic',
+        '/apps/crm/updateclinic': 'Update Clinic',
     };
 
     // Get the title for the current path or use a default value

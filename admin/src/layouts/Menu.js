@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import { findAllParent, findMenuItem } from '../helpers/menu';
 import { logoutUser, resetAuth } from '../redux/actions';
 import { useDispatch } from 'react-redux';
+import { APICore, setAuthorization } from '../helpers/api/apiCore';
 
 const MenuItemWithChildren = ({ item, linkClassName, subMenuClassNames, activeMenuItems, toggleMenu }) => {
     const [open, setOpen] = useState(activeMenuItems.includes(item.key));
@@ -90,6 +91,8 @@ const MenuItem = ({ item, className, linkClassName }) => {
 };
 
 const MenuItemLink = ({ item, className }) => {
+    const api = new APICore();
+
     const [show, setShow] = useState(false)
     const handleCheckLogout = (data) => {
         if (data === 'Logout') {
@@ -103,6 +106,8 @@ const MenuItemLink = ({ item, className }) => {
     const handleLogout = () => {
         dispatch(logoutUser())
         navigate('account/logout')
+        // api.setLoggedInUser(null);
+        // setAuthorization(null);
     }
     const closeModal = () => {
         setShow(false);

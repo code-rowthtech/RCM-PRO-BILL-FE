@@ -111,17 +111,17 @@ const Subscriptions = () => {
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody >
                                             {store?.getSubscriptionsReducer?.loading ?
                                                 <tr>
-                                                    <td colSpan={7} className='text-center'>
+                                                    <td colSpan={9} className='text-center'>
                                                         <Spinner />
                                                     </td>
                                                 </tr>
                                                 :
                                                 subscriptionsResponse?.totalPages === 0 ?
                                                     <tr>
-                                                        <td colSpan={7} className='text-center'>
+                                                        <td colSpan={9} className='text-center'>
                                                             <h3 className='my-5'>No Data Found</h3>
                                                         </td>
                                                     </tr>

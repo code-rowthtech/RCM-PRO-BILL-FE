@@ -5,14 +5,19 @@
 .headers {
     background-color: #010101 !important;
 }
+.form-label {
+    color: black;
+    font-weight: 650 !important;
+}
+.form-control,
+.form-select {
+    color: black !important;
+    font-weight: 550 !important;
+}
 
-/* .form-control::placeholder {
-    color: #a9a9a9;
-    opacity: 0.8;
-} */
-
-.custom-form-fields {
-    color: #a9a9a9 !important;
+.custom-form-fields,
+.form-control::placeholder {
+    color: #a9a9a982 !important;
 }
 
 .plusicon {
@@ -121,4 +126,29 @@ body::-webkit-scrollbar {
 }
 .searchWrapper input {
     border: none !important;
+}
+
+.allclinics-info:hover::after {
+    content: 'Last Date of Subscription';
+    background-color: rgb(44, 42, 42);
+    border-radius: 7px;
+    padding: 0.5rem 0.8rem;
+    margin-top: 1.3rem;
+    margin-bottom: 10rem;
+    z-index: 111;
+    position: absolute;
+}
+.billing-info:hover::after {
+    content: 'The amount displayed is inclusive of all applicable taxes and covers all added clinics.';
+    background-color: rgb(44, 42, 42);
+    color: white;
+    border-radius: 7px;
+    padding: 0.5rem 1.5rem;
+    z-index: 111;
+    font-size: 1rem;
+    position: absolute;
+}
+
+.uil-info-circle {
+    font-size: 1rem;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { getClinicById } from '../../../../redux/actions';
+import { getClinicById, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { Card, Col, Row } from 'react-bootstrap';
 import Contract from '../AddClinic/contract';
@@ -10,17 +10,27 @@ import ClinicForm from '../AddClinic/clinicForm';
 import Clinic from './clinic';
 import Billing from './billing';
 import Contracttable from './contract';
+import { getMastersDataAction } from '../../../../redux/settings/actions';
 
 const Updateclinic = () => {
     const dispatch = useDispatch();
     const [searchParams] = useSearchParams();
     const id = searchParams.get('updateid');
     const [activeTab, setActiveTab] = useState('clinic');
-
+    const store = useSelector((state) => state);
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
-    }, [dispatch])
+        dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
+        dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
+        dispatch(getStatesByCountryAction());
 
+    }, [dispatch, activeTab, id])
+    useEffect(() => {
+        if (store?.updateClinicsReducer?.data?.status === 200) {
+            dispatch(getClinicById({ key: encryptMessage({ id }) }));
+
+        }
+    }, [store?.updateClinicsReducer?.data?.status])
     const handleActiveTab = (data) => {
         setActiveTab(data)
     }
@@ -49,15 +59,17 @@ const Updateclinic = () => {
                                     </span>
                                 </Col>
                             </Row>
-                            <Row>
-                                {activeTab === 'clinic' ?
-                                    <Clinic />
-                                    :
-                                    activeTab === 'billing' ?
-                                        <Billing />
+                            <Row className='scroll-container w pt-2' style={{ height: '93%' }}>
+                                <Col>
+                                    {activeTab === 'clinic' ?
+                                        <Clinic id={id} />
                                         :
-                                        <Contracttable />
-                                }
+                                        activeTab === 'billing' ?
+                                            <Billing setActiveTab={setActiveTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} activeTab={activeTab} />
+                                            :
+                                            <Contracttable activeTab={activeTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} />
+                                    }
+                                </Col>
                             </Row>
                         </Card.Body>
                     </Card>

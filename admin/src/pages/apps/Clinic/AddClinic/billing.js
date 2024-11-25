@@ -128,10 +128,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                 <Col sm={6}>
                     <Form.Group className="mb-2">
                         <Form.Label className='mb-1'>Amount&nbsp;
-                            <span className=' uil-info-circle mb-0 cursor-pointer'
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                title="The amount displayed is inclusive of all applicable taxes and covers all added clinics." />
+                            <span className=' uil-info-circle billing-info mb-0 cursor-pointer' />
                         </Form.Label>
                         <Form.Control
                             type="text"
@@ -160,18 +157,12 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                 <Col sm={6}>
                     <Form.Group className="mb-2">
                         <Form.Label className='mb-1'>Implemented Date</Form.Label>
-                        {/* <Form.Control
-                            type="date"
-                            placeholder='Implemented Date'
-                            defaultValue={new Date().toISOString().split('T')[0]}
-                            min={new Date().toISOString().split('T')[0]}
-                        /> */}
                         <Form.Control
                             type="date"
                             placeholder="Implemented Date"
-                            value={selectedDate} // Controlled input
-                            onChange={handleDateChange} // Update state on change
-                            min={new Date().toISOString().split('T')[0]} // Min date is today
+                            value={selectedDate}
+                            onChange={handleDateChange}
+                            min={new Date().toISOString().split('T')[0]}
                         />
                     </Form.Group>
                 </Col>

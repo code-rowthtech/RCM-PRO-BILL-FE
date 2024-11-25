@@ -65,6 +65,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setDeleteData(data);
     }
 
+
     return (
         <>
             <Row className='mt-2'>
@@ -108,11 +109,12 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                         <th >Clinic Name</th>
                                         <th>Location</th>
                                         <th>Clinic Type</th>
-                                        <th>End Date <span className=' uil-info-circle mb-0 cursor-pointer'
-                                            data-toggle="tooltip"
-                                            id="hoverElement"
-                                            data-placement="top"
-                                            title="Last Date of Subscription" /></th>
+                                        <th>End Date&nbsp; <span className=' uil-info-circle allclinics-info mb-0 cursor-pointer'
+                                        // data-toggle="tooltip"
+                                        // data-placement="top"
+                                        // data-delay='{"show":"0", "hide":"3000"}'
+                                        // title="Last Date of Subscription"
+                                        /></th>
                                         <th>Countdown</th>
                                         <th>Contract</th>
                                         <th>Status</th>
@@ -172,8 +174,13 @@ const OrderList = (): React$Element<React$FragmentType> => {
 
                                                         </td>
                                                         <td>
-                                                            <span className='bg-secondary rounded-1 text-white py-0 px-1'>
-                                                                Pending
+                                                            <span
+                                                                className={`${data?.userId?.contractId?.clinicSignStatus === true && data?.userId?.contractId?.adminSignStatus === true ? 'bg-success' : 'bg-secondary'} rounded-1 text-white py-0 px-1`}>
+                                                                {data?.userId?.contractId?.clinicSignStatus === true && data?.userId?.contractId?.adminSignStatus === true ?
+                                                                    'Signed'
+                                                                    :
+                                                                    'Pending'
+                                                                }
                                                             </span>
                                                         </td>
                                                         <td>

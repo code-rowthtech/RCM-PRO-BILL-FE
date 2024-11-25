@@ -63,11 +63,14 @@ const Index = () => {
     const [showMailModal, setShowMailModal] = useState(false);
     const closeMailModal = () => {
         setShowMailModal(false);
-        setResetEmail({
-            name: null, email: null, role: null, phone: null
-        })
+        if (store?.createClinicsReducer?.data?.status === 200) {
+            setResetEmail({
+                name: null, email: null, role: null, phone: null
+            })
+        }
         setResetEmailError(null)
     }
+
     return (
         <>
             <Row className='mt-2'>
@@ -132,7 +135,6 @@ const Index = () => {
                                     </Button>
 
                                     <SendEmailModal show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} />
-                                    <Button className='custom-buttons' disabled>View</Button>
                                 </Col>
                             </Row>
                             <Row className='scroll-container pt-2' style={{ height: '93%' }}>
