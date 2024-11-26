@@ -475,6 +475,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 type="text"
                                 {...register('taxId')}
                                 // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 placeholder="Tax ID / EIN" />
                         </Form.Group>
                     </Col>
@@ -505,6 +506,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                 placeholder="1234-234-234"
                                 maxLength={10}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
                             />
                             <div
                                 className='position-absolute ' style={{ top: '52%', left: '1%' }}
@@ -526,7 +528,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 type="text"
                                 {...register('npi')}
                                 defaultValue={updatePage ? clinicDataToUpdate?.npiNumber : ''}
-                                placeholder="NPI Number" />
+                                placeholder="NPI Number"
+                                onKeyPress={(event) => handleFirstSpace(event, 0)} />
                             {/* {errors.npi && <span className="text-danger">{errors.npi.message}</span>} */}
                         </Form.Group>
                     </Col>
@@ -567,6 +570,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={accreditation.name}
                                     placeholder="Name"
                                     onChange={(e) => handleAccreditationInputChange(e, 'name', index)}
+                                    onKeyPress={handleFirstSpace}
                                 />
                             </Col>
                             <Col sm={4}>
@@ -575,6 +579,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={accreditation.number}
                                     placeholder="Document Number"
                                     onChange={(e) => handleAccreditationInputChange(e, 'number', index)}
+                                    onKeyPress={handleFirstSpace}
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
@@ -622,6 +627,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={medical.name}
                                     placeholder="Name"
                                     onChange={(e) => handleMedicalInputChange(e, 'name', index)}
+                                    onKeyPress={handleFirstSpace}
                                 />
                             </Col>
                             <Col sm={4}>
@@ -630,6 +636,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={medical.number}
                                     placeholder="Document Number"
                                     onChange={(e) => handleMedicalInputChange(e, 'number', index)}
+                                    onKeyPress={handleFirstSpace}
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative ">
@@ -689,6 +696,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={data.number}
                                     placeholder="Document Number"
                                     onChange={(e) => handleStateInputChange(e, 'number', index)}
+                                    onKeyPress={handleFirstSpace}
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
@@ -790,6 +798,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 defaultValue={updatePage ? clinicDataToUpdate?.address?.street : ''}
                                                 type="text"
                                                 {...register('street')}
+                                                onKeyPress={handleFirstSpace}
                                                 placeholder="Street" />
                                             {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
                                         </Form.Group>
@@ -801,6 +810,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
                                                 type="text"
                                                 {...register('zip')}
+                                                onKeyPress={handleFirstSpace}
                                                 placeholder="Zip" />
                                             {/* {errors.zip && <span className="text-danger">{errors.zip.message}</span>} */}
                                         </Form.Group>
@@ -838,6 +848,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="text"
                                                 value={data.name}
                                                 onChange={(e) => handlePOSInputChange(e, 'name', index)}
+                                                onKeyPress={handleFirstSpace}
                                                 placeholder="Full Name"
                                             />
                                         </Form.Group>
@@ -849,6 +860,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="email"
                                                 value={data.email}
                                                 onChange={(e) => handlePOSInputChange(e, 'email', index)}
+                                                onKeyPress={handleFirstSpace}
                                                 placeholder="Contact Email"
                                             />
                                         </Form.Group>
@@ -859,6 +871,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Control
                                                 type='text'
                                                 placeholder='Job Title / Role'
+                                                onKeyPress={handleFirstSpace}
                                                 onChange={(e) => handlePOSInputChange(e, 'role', index)}
                                             />
                                         </Form.Group>
@@ -870,7 +883,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="text"
                                                 value={data.contact}
                                                 onChange={(e) => handlePOSInputChange(e, 'contact', index)}
+                                                onKeyPress={handleFirstSpace}
                                                 placeholder="Phone Number"
+                                                maxLength={10}
                                             />
                                         </Form.Group>
                                     </Col>

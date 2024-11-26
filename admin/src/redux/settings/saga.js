@@ -113,6 +113,7 @@ function* updateMastersDataFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger')
         yield put({
             type: SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR,
             payload: error,

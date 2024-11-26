@@ -1,4 +1,4 @@
-export const handleFirstSpace = (event) => {
+export const handleFirstSpace = (event, maxSpaces = 12) => {
     const inputValue = event.target.value;
 
     // Prevent the first key from being a space
@@ -10,7 +10,7 @@ export const handleFirstSpace = (event) => {
     // Prevent adding more than 2 spaces
     if (event.key === ' ') {
         const spaceCount = inputValue.split(' ').length - 1; // Count spaces in the input value
-        if (spaceCount >= 12) {
+        if (spaceCount >= maxSpaces) {
             event.preventDefault();  // Prevent adding more than 2 spaces
         }
     }

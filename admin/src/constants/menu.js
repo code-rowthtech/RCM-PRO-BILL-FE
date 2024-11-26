@@ -110,24 +110,24 @@ const MENU_ITEMS = [
             //     url: '/settings/speciality',
             //     parentKey: 'settings',
             // },
-            {
-                key: 'department',
-                label: 'Departments',
-                url: '/settings/department',
-                parentKey: 'settings',
-            },
+            // {
+            //     key: 'department',
+            //     label: 'Departments',
+            //     url: '/settings/department',
+            //     parentKey: 'settings',
+            // },
             // {
             //     key: 'contractformat',
             //     label: 'Contract Format',
             //     url: '/settings/contractFormat',
             //     parentKey: 'settings',
             // },
-            {
-                key: 'designation',
-                label: 'Designation',
-                url: '/settings/designation',
-                parentKey: 'settings',
-            },
+            // {
+            //     key: 'designation',
+            //     label: 'Designation',
+            //     url: '/settings/designation',
+            //     parentKey: 'settings',
+            // },
             // {
             //     key: 'bloodGroup',
             //     label: 'Blood Group',
@@ -153,7 +153,7 @@ const MENU_ITEMS = [
         key: 'logout',
         label: 'Logout',
         icon: 'mdi mdi-logout',
-        // url: '#',
+        // url: '#'s,
     },
     // { key: 'components', label: 'Components', isTitle: true },
     // {

@@ -1,21 +1,19 @@
 // @flow
 import React, { useEffect, useState } from 'react';
 import { Badge, Button, Card, Col, Form, Modal, Row, Table } from 'react-bootstrap';
-
-// component
 import PageTitle from '../../../../components/PageTitle';
 import { FormInput } from '../../../../components';
-// dummy data
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
-import { getClinicAction, stateEmptydAction, updateClinicAction } from '../../../../redux/clinics/actions'
+import { getClinicAction, stateEmptydAction, updateClinicAction } from '../../../../redux/clinics/actions';
 import Spinner from '../../../../constants/Spinner';
 import Paginations from '../../../../helpers/Paginations';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { IoMdClose } from 'react-icons/io';
 import { GoAlert } from 'react-icons/go';
-
+import { userPermissions } from '../../../../helpers/userPermissions';
+import ToastHandle from '../../../../helpers/ToastMessage'
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
     const [name, setName] = useState('');
@@ -26,6 +24,9 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
+    // auth checks
+    const isAddPresent = userPermissions.includes('add clinic');
+    const isUpdatePresent = userPermissions.includes('update clinic');
     useEffect(() => {
         const payload = {
             name: name,
@@ -34,12 +35,20 @@ const OrderList = (): React$Element<React$FragmentType> => {
             status: status,
         }
         dispatch(getClinicAction({ payload }));
+
+    }, [dispatch, name, skip, status])
+    useEffect(() => {
+        const payload = {
+            name: name,
+            skip: skip,
+            limit: 10,
+            status: status,
+        }
         if (updateSuccess === 200) {
             dispatch(getClinicAction({ payload }))
             closeDeleteModal();
         }
-    }, [dispatch, name, updateSuccess, skip, status])
-
+    }, [updateSuccess])
     const handleStatusUpdate = () => {
         const payload = {
             id: deleteData?._id,
@@ -61,10 +70,14 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setDeleteModal(false);
     }
     const handleOpenDeleteModal = (data) => {
-        setDeleteModal(true);
-        setDeleteData(data);
-    }
+        if (isUpdatePresent) {
+            setDeleteModal(true);
+            setDeleteData(data);
+        } else {
+            ToastHandle("You are not authorized to update a clinic.", 'danger')
+        }
 
+    }
 
     return (
         <>
@@ -95,9 +108,15 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                 type="text"
                                                 onChange={(e) => setName(e.target.value)}
                                                 placeholder="Search..." />
-                                            <Button as={Link} to="/apps/crm/addclinic" className="custom-buttons">
-                                                New Clinic
-                                            </Button>
+                                            {isAddPresent ?
+                                                <Button as={Link} to="/apps/crm/addclinic" className="custom-buttons">
+                                                    New Clinic
+                                                </Button>
+                                                :
+                                                <Button onClick={() => ToastHandle('You dont have permission to add a clinic.', 'danger')} className="custom-buttons">
+                                                    New Clinic
+                                                </Button>
+                                            }
                                         </Col>
                                     </Row>
                                 </Col>
@@ -184,19 +203,21 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            {/* <span
-                                                                //  onClick={() => handleStatusUpdate(data)}
-                                                                className='bg-secondary rounded-1 text-white py-0 px-1'>
-                                                                {data?.status === true ? 'Active' : 'Inactive'}
-                                                            </span> */}
                                                             <Form.Switch
                                                                 onClick={() => handleOpenDeleteModal(data)}
-                                                                checked={data?.status === true} />
+                                                                checked={data?.status === true}
+                                                            />
                                                         </td>
                                                         <td>
-                                                            <Link to={`/apps/crm/updateclinic?updateid=${data?._id}`} className="action-icon">
-                                                                <i className="mdi mdi-square-edit-outline"></i>
-                                                            </Link>
+                                                            {isUpdatePresent ?
+                                                                <Link to={`/apps/crm/updateclinic?updateid=${data?._id}`} className="action-icon">
+                                                                    <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
+                                                                </Link>
+                                                                :
+                                                                <i
+                                                                    onClick={() => ToastHandle('You are not authorized to udate a clinic.', 'danger')}
+                                                                    className="mdi cursor-pointer mdi-square-edit-outline fs-4"></i>
+                                                            }
                                                         </td>
                                                     </tr>
                                                 );

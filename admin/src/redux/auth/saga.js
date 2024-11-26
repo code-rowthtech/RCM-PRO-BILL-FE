@@ -26,14 +26,13 @@ function* login({ payload }) {
         }
         const response = yield call(loginApi, encryptedPayload);
         const user = JSON.parse(decryptMessage(response?.data?.data));
-        console.log(response, 'response')
         console.log(user, 'user')
         const userData = {
             name: user?.data?.firstName,
             email: user?.data?.email,
             token: user?.accessToken,
-            role: user?.role?.name,
-            permissions: user?.role?.permissions,
+            role: user?.data?.role?.name,
+            permissions: user?.data?.role?.permissions?.map(permission => permission.name) || [],
             _id: user?._id
         }
         // NOTE - You can change this according to response format from your api

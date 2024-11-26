@@ -25,11 +25,11 @@ const AddRoles = ({ show, closeModal }) => {
     }));
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     useEffect(() => {
-        if (show) {
-            dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
-            dispatch(getPermissionAction({ search: '', limit: 10 }));
-        }
-    }, [show])
+        // if (show) {
+        dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
+        dispatch(getPermissionAction({ search: '', limit: '' }));
+        // }
+    }, [dispatch])
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
 
     const {
@@ -52,10 +52,9 @@ const AddRoles = ({ show, closeModal }) => {
             reportingTo: createdBy,
             createdById: createdBy,
             joiningDate: data.joiningDate,
-            // leavingDate: data.leavingDate,
+            designation: data.designation,
             role: data.role,
         };
-        // console.log(payload)
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }))
     };
 
@@ -114,7 +113,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Contact No</Form.Label>
+                                <Form.Label>Contact No <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     maxLength={10}
@@ -201,7 +200,8 @@ const AddRoles = ({ show, closeModal }) => {
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Designation <span className='text-danger'>*</span></Form.Label>
-                                <Form.Select>
+                                <Form.Select
+                                    {...register('designation')}>
                                     <option value={''} key={''}>Designation</option>
                                     {designation?.map((data, i) => (
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
