@@ -24,12 +24,14 @@ const AddRoles = ({ show, closeModal }) => {
         name: `${item?.name}`,
     }));
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
+    const updateResponse = store?.updateUserRolesReducer?.data?.status;
+
     useEffect(() => {
         // if (show) {
         dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
         dispatch(getPermissionAction({ search: '', limit: '' }));
         // }
-    }, [dispatch])
+    }, [dispatch, createResponse, updateResponse])
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
 
     const {
@@ -43,6 +45,7 @@ const AddRoles = ({ show, closeModal }) => {
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
+    const creatorId = createdBy
     const onSubmit = (data) => {
         const payload = {
             firstName: data.name,
