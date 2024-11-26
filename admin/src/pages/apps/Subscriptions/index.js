@@ -11,6 +11,8 @@ import AddSubscriptions from './Modal/createPlan'
 import { encryptMessage } from '../../../cryptoUtils'
 import UpdateSubscriptions from './Modal/updatePlan';
 import { formatDate } from '../../../helpers/dateFormat'
+import { userPermissions } from '../../../helpers/userPermissions'
+import ToastHandle from '../../../helpers/ToastMessage'
 
 const Subscriptions = () => {
     const [skip, setSkip] = useState(1);
@@ -24,6 +26,8 @@ const Subscriptions = () => {
     const subscriptionsResponse = store?.getSubscriptionsReducer?.data;
     const createSuccess = store?.createSubscriptionsReducer?.data?.status;
     const updateSuccess = store?.updateSubscriptionsReducer?.data?.status;
+    const isAddPresent = userPermissions.includes('add subscription');
+    const isUpdatePresent = userPermissions.includes('edit subscription');
     useEffect(() => {
         dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
         if (createSuccess === 201 || updateSuccess === 200) {
@@ -47,7 +51,11 @@ const Subscriptions = () => {
     }
 
     const handleStatusUpdate = (data) => {
-        dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive }) }))
+        if (isUpdatePresent) {
+            dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive }) }))
+        } else {
+            ToastHandle('You are not authoized for updating subscription plans.', 'danger')
+        }
     }
 
 
@@ -87,7 +95,13 @@ const Subscriptions = () => {
                                                     setSkip(1);
                                                 }}
                                                 placeholder="Search..." />
-                                            <Button onClick={() => setShowModal(true)} className="custom-buttons">
+                                            <Button onClick={() => {
+                                                if (isAddPresent) {
+                                                    setShowModal(true)
+                                                } else {
+                                                    ToastHandle('You are not authoized for adding subscription plans.', 'danger')
+                                                }
+                                            }} className="custom-buttons">
                                                 New Plan
                                             </Button>
                                             <AddSubscriptions data={dataToUpdate} show={showModal} closeModal={handleCloseModal} />
@@ -160,8 +174,12 @@ const Subscriptions = () => {
                                                             </td>
                                                             <td>
                                                                 <Link to="#" className="action-icon" onClick={() => {
-                                                                    setShowModal(true);
-                                                                    setDataToUpdate(data);
+                                                                    if (isUpdatePresent) {
+                                                                        setShowModal(true);
+                                                                        setDataToUpdate(data);
+                                                                    } else {
+                                                                        ToastHandle('You are not authoized for updating subscription plans.', 'danger')
+                                                                    }
                                                                 }}>
                                                                     <i className="mdi mdi-square-edit-outline"></i>
                                                                 </Link>

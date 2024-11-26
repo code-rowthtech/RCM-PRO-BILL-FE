@@ -7,6 +7,7 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
 
     const {
@@ -301,6 +302,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                             {...register('name', {
                                                 required: 'This field is required.'
                                             })}
+                                            onKeyPress={handleFirstSpace}
                                             placeholder='Billing Contact Name' />
                                     </Form.Group>
                                     {errors.name && <span className="text-danger">{errors.name.message}</span>}
@@ -342,6 +344,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                                 }
                                             })}
                                             maxLength={10}
+
                                             placeholder='Billing Contact Phone Number' />
                                     </Form.Group>
                                     {errors.contact && <span className="text-danger">{errors.contact.message}</span>}

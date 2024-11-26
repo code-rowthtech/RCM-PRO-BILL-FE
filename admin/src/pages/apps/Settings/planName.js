@@ -153,7 +153,7 @@ const PlanName = () => {
                                                         </td>
                                                         <td>
                                                             {/* <Link to="#" className="action-icon"> */}
-                                                            <i className="mdi mdi-square-edit-outline"></i>
+                                                            <i className="mdi fs-4 mdi-square-edit-outline"></i>
                                                             {/* </Link> */}
                                                         </td>
                                                     </tr>

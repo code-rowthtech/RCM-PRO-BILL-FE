@@ -11,6 +11,7 @@ import ToastHandle from '../../../../helpers/ToastMessage';
 import { getCitiesAction, updateClinicAction } from '../../../../redux/actions';
 import Spinner from '../../../../constants/Spinner';
 import { encryptMessage } from '../../../../cryptoUtils';
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const Clinic = ({ id }) => {
     const {
@@ -242,6 +243,7 @@ const Clinic = ({ id }) => {
                             <Form.Control
                                 placeholder="Enter clinic name"
                                 {...register('name', { required: 'This field is required' })}
+                                onKeyPress={handleFirstSpace}
                             />
                             {errors.name && <span className="text-danger">{errors.name.message}</span>}
                         </Form.Group>

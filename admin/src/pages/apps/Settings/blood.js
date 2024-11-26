@@ -101,7 +101,7 @@ const Blood = () => {
                                         <Button className="custom-buttons ">
                                             <FiFileText className='fs-4' />
                                         </Button>
-                                        <Button onClick={() => setAddBloodGroupModal(true)} className="custom-buttons">
+                                        <Button onClick={() => { setAddBloodGroupModal(true) }} className="custom-buttons">
                                             New Blood Group
                                         </Button>
                                     </Col>

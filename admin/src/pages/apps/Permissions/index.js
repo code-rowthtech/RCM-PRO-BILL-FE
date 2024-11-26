@@ -21,6 +21,7 @@ const Permissions = () => {
     const [skip, setSkip] = useState(1)
     const store = useSelector((state) => state);
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data;
+    console.log(decryptedPermissionsData, 'decryptedPermissionsDatadecryptedPermissionsData')
     const deleteSuccess = store?.deletePermissionsDataReducer?.data?.success;
     const updateSuccess = store?.updatePermissionsDataReducer?.data?.success;
     const handleClosemodal = () => {
