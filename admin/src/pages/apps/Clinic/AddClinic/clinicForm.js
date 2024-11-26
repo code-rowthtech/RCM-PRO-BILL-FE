@@ -9,6 +9,7 @@ import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, resetEmail }) => {
     const dispatch = useDispatch();
@@ -424,6 +425,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     setResetEmail({ ...resetEmail, name: e.target.value });
                                 }}
                                 placeholder="Clinic name"
+                                onKeyPress={handleFirstSpace}
                             />
 
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}

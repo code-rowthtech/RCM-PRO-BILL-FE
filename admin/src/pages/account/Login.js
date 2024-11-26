@@ -117,9 +117,9 @@ const Login = (): React$Element<any> => {
                     //     e.target.value = e.target.value.replace(/\s/g, ''); // Remove spaces
                     // }}
                     >
-                        <Link to="/account/forget-password" className="text-muted float-end">
+                        {/* <Link to="/account/forget-password" className="text-muted float-end">
                             <small>{t('Forgot your password?')}</small>
-                        </Link>
+                        </Link> */}
                     </FormInput>
 
                     <div className="mb-3 mb-0 text-center">

@@ -8,8 +8,7 @@ import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
 const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
-    console.log(typeof (multiple))
-    console.log(multiple)
+
     const {
         register,
         handleSubmit,
@@ -28,7 +27,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
 
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
     // console.log(subscriptionsData, 'subscriptionsDatasubscriptionsDatasubscriptionsData')
-    console.log(amount, 'amountamountamountamount')
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
     useEffect(() => {
@@ -41,7 +39,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
     }, [dispatch, activeTab]);
     const adminData = JSON.parse(sessionStorage.getItem('hyper_user'));
     const onSubmit = (data) => {
-
         const payload = {
             subscription: data?.subscription,
             userId: billingId,
@@ -211,16 +208,16 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                     <Form.Group className="mb-2">
                                         <Form.Label className='mb-1'>Payment Method <span className='text-danger'>*</span></Form.Label>
                                         <Form.Select
-                                            {...register('method', {
-                                                required: 'This field is required'
-                                            })}
+                                            // {...register('method', {
+                                            //     required: 'This field is required'
+                                            // })}
                                             onChange={(e) => setPaymentType(e.target.value)}>
                                             <option value=''>Select payment method</option>
                                             <option value='card'>Card</option>
                                             <option value='online'>Online banking</option>
                                             <option value='cheque'>Cheque</option>
                                         </Form.Select>
-                                        {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
+                                        {/* {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12}>
@@ -238,27 +235,27 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                         <Form.Label className='mb-1'>Cardholder Name <span className='text-danger'>*</span></Form.Label>
                                         <Form.Control
                                             type="text"
-                                            {...register('cardholder', { required: 'This field is required' })}
+                                            // {...register('cardholder', { required: 'This field is required' })}
                                             placeholder="Name on card" />
-                                        {errors.cardholder && <span className="text-danger">{errors.cardholder.message}</span>}
+                                        {/* {errors.cardholder && <span className="text-danger">{errors.cardholder.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Credit / Debit Card Number <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className='mb-1'>Credit / Debit Card Number</Form.Label>
                                         <Form.Control
                                             type="text"
                                             placeholder="xxxx-xxxx-xxxx"
-                                            {...register('cardnumber', {
-                                                required: 'This field is required',
-                                                minLength: {
-                                                    value: 12,
-                                                    message: 'Card number must be at least 12 characters',
-                                                },
-                                            })}
+                                            // {...register('cardnumber', {
+                                            //     // required: 'This field is required',
+                                            //     minLength: {
+                                            //         value: 12,
+                                            //         message: 'Card number must be at least 12 characters',
+                                            //     },
+                                            // })}
                                             maxLength={12}
                                         />
-                                        {errors.cardnumber && <span className='text-danger'>{errors.cardnumber.message}</span>}
+                                        {/* {errors.cardnumber && <span className='text-danger'>{errors.cardnumber.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
@@ -266,16 +263,16 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                         <Form.Label className='mb-1'>CVV (Security Code)</Form.Label>
                                         <Form.Control
                                             type="text"
-                                            {...register('cvv', {
-                                                required: 'This field is required',
-                                                minLength: {
-                                                    value: 3,
-                                                    message: 'CVV must be at least 3 characters',
-                                                },
-                                            })}
+                                            // {...register('cvv', {
+                                            //     // required: 'This field is required',
+                                            //     minLength: {
+                                            //         value: 3,
+                                            //         message: 'CVV must be at least 3 characters',
+                                            //     },
+                                            // })}
                                             maxLength={3}
                                             placeholder="---" />
-                                        {errors.cvv && <span className="text-danger">{errors.cvv.message}</span>}
+                                        {/* {errors.cvv && <span className="text-danger">{errors.cvv.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
@@ -283,9 +280,9 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                         <Form.Label className='mb-1'>Expiration Date (Security Code)</Form.Label>
                                         <Form.Control
                                             type="date"
-                                            {...register('expiration', { required: 'This field is required' })}
+                                            // {...register('expiration', { required: 'This field is required' })}
                                             placeholder="---" />
-                                        {errors.expiration && <span className="text-danger">{errors.expiration.message}</span>}
+                                        {/* {errors.expiration && <span className="text-danger">{errors.expiration.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                             </Row>
