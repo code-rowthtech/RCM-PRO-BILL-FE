@@ -4,14 +4,18 @@ import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import us from '../../../../assets/images/flags/us.jpg'
-import { createClinicAction, deleteClinicAction, getCitiesAction, getClinicById, getClinicByParentAction, getStatesByCountryAction, stateEmptydAction, updateClinicAction } from '../../../../redux/clinics/actions';
+import {
+    createClinicAction, deleteClinicAction, getCitiesAction, getClinicById,
+    getClinicByParentAction, getStatesByCountryAction,
+    stateEmptydAction, updateClinicAction
+} from '../../../../redux/clinics/actions';
 import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
-const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, resetEmail }) => {
+const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, setIsModalRequest, isModalRequest, resetEmail }) => {
     const dispatch = useDispatch();
     const {
         register,
@@ -20,6 +24,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         reset,
         watch,
         setError,
+        setValue,
         clearErrors
     } = useForm();
     const [updatePage, setUpdatePage] = useState(false);
@@ -29,6 +34,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [logo, setLogo] = useState(null);
     const [parentClinic, setParentclinic] = useState(null);
     const [logoName, setLogoName] = useState(null);
+    const [focused, setFocused] = useState(false);
     const [singleOrMultiple, setSingleOrMultiple] = useState(false);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
@@ -51,6 +57,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
+    // const state = statesData?.states && statesData?.states.find((data) => data?.state_code === 'NY')
+    // console.log(state)
     const cities = store?.getCitiesReducer?.data?.cities;
     // ref init
     const logoFileInputRef = useRef(null);
@@ -282,9 +290,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             return updatedDetails;
         });
     };
-
     const handleStateSelection = (e) => {
         setSelectedState(e.target.value)
+        alert('ljhbvcbn')
         try {
             const selectedState = JSON.parse(e.target.value);
             if (selectedState?.state_code) {
@@ -320,7 +328,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setSelectedCity(null);
             setSelectedState(null);
 
-            if (!singleOrMultiple) {
+            if (!singleOrMultiple && !isModalRequest) {
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
                 setActiveTab('billing');
@@ -360,6 +368,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         }
     }, [resetEmail])
     const onSubmit = (data) => {
+        setIsModalRequest(false);
         const newPayload = {
             isParent: counter === 1 ? true : false, // Conditional property assignment using a ternary operator
             parentClinic: parentClinic,
@@ -381,8 +390,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 state: selectedState?._id,
                 street: data?.street,
                 zip: data?.zip,
-                latitude: selectedCity?.latitude,
-                longitude: selectedCity?.longitude,
+                latitude: latitude,
+                longitude: longitude,
             }
         };
         // console.log(newPayload, 'newPayloadnewPayloadnewPayload')
@@ -403,6 +412,62 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         }
         dispatch(deleteClinicAction({ key: encryptMessage(payload) }))
     }
+
+    const [searchedLocations, setSearchedLocations] = useState(null)
+    const getGeolocation = (e) => {
+        const addressToSearch = e.target.value;
+        async function fetchGeocodeData(location) {
+            const apiKey = '2a77840d874f4c35848e37042ce7c8ed'; // Replace with your API key
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}&language=en&pretty=1&countrycode=us`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data; // Return the geocoding data
+            } catch (error) {
+                console.error("Failed to fetch geocode data:", error);
+                return null; // Return null in case of error
+            }
+        }
+        fetchGeocodeData(addressToSearch)
+            .then((data) => {
+                if (data) {
+                    setSearchedLocations(data?.results)
+                } else {
+                    console.log("No data returned.");
+                }
+            });
+    }
+
+    // Example usage
+
+    const [longitude, setLongitude] = useState(null);
+    const [latitude, setLatitude] = useState(null);
+    const [stateToSelect, setStateToSelect] = useState(null);
+    useEffect(() => {
+        if (latitude && longitude) {
+            setFocused(false);
+        }
+    }, [latitude, longitude])
+
+    const stateGeoLocation = watch('stateName');
+    useEffect(() => {
+        if (stateGeoLocation) {
+            setStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation));
+        }
+    }, [stateGeoLocation])
+
+    useEffect(() => {
+        if (stateToSelect) {
+            console.log('called')
+            dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: '', limit: 25, skip: '' }));
+        }
+    }, [stateToSelect])
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -731,16 +796,91 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <span className='text-black fw-semibold form-label'>Address Details</span>
                             </Col>
                             <Col sm={6}>
-                                <Form.Group className="mb-2">
-                                    <Form.Label className='mb-1'>Address 1</Form.Label>
-                                    <Form.Control
-                                        defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
-                                        as={'textarea'}
-                                        rows={5}
-                                        {...register('address')}
-                                        placeholder="Address 1" />
-                                    {/* {errors.address1 && <span className="text-danger">{errors.address1.message}</span>} */}
-                                </Form.Group>
+                                <Row className='position-relative'>
+                                    <Col sm={12}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Form.Control
+                                                    type="text"
+                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
+                                                    {...register('address')}
+                                                    onChange={(e) => {
+                                                        getGeolocation(e);
+                                                        setFocused(true); // Open dropdown on input
+                                                    }}
+                                                    onFocus={() => setFocused(true)} // Open dropdown when the field is focused
+                                                    onBlur={() => {
+                                                        setTimeout(() => setFocused(false), 200); // Delay to allow selection before hiding dropdown
+                                                    }}
+                                                    placeholder="Search for address"
+                                                    autoComplete="off"
+                                                />
+                                                {/* Dropdown suggestions */}
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '100%',
+                                                        left: 0,
+                                                        width: '100%',
+                                                        maxHeight: '150px',
+                                                        zIndex: 111,
+                                                        backgroundColor: '#fff',
+                                                        border: '1px solid #ced4da',
+                                                        borderTop: 'none',
+                                                    }}
+                                                    className={`scroll-container hover-bg-change ${searchedLocations?.length === 0 || !focused ? 'd-none' : ''}`}
+                                                >
+                                                    {searchedLocations?.map((data, index) => (
+                                                        <p
+                                                            key={index}
+                                                            onClick={() => {
+                                                                console.log(data)
+                                                                setValue('zip', data?.components?.postcode)
+                                                                setValue('stateName', data?.components?.state_code)
+                                                                setLatitude(data?.bounds?.southwest?.lat);
+                                                                setLongitude(data?.bounds?.southwest?.lng);
+                                                                setValue('address', data?.formatted)
+                                                                setFocused(false); // Close dropdown after selection
+                                                            }}
+                                                            style={{
+                                                                margin: 0,
+                                                                padding: '8px 12px',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            className="hover-bg-change text-black"
+                                                        >
+                                                            {data?.formatted}
+                                                        </p>
+                                                    ))}
+                                                    {searchedLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
+                                                </div>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Latitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={latitude}
+                                                placeholder="Latitude"
+                                            />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Longitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={longitude}
+                                                placeholder="Longitude" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
                             </Col>
                             <Col sm={6}>
                                 <Row>
@@ -755,7 +895,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 {statesData?.states?.map((data) => (
                                                     <option
                                                         key={data?.state_code} // Unique key for each option
-                                                        value={JSON.stringify({ name: data?.name, state_code: data?.state_code, id: data?.id, _id: data?._id })}
+                                                        // defau={JSON.stringify({ name: data?.name, state_code: data?.state_code, id: data?.id, _id: data?._id }) || data?.state_code}
+                                                        value={data?.state_code}
                                                     >
                                                         {data?.name}
                                                     </option>
@@ -911,7 +1052,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             disabled={!formValid || store?.createClinicsReducer?.loading}
                             onClick={() => {
                                 setSingleOrMultiple(false);
-                                if (counter > 0) {
+                                if (counter > 0 && !isModalRequest) {
                                     setMultiple(counter)
                                     setActiveTab('billing');
                                     setSingleOrMultiple(false);

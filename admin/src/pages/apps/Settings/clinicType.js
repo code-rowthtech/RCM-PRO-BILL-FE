@@ -16,11 +16,13 @@ import { createdBy } from './userId'
 
 const ClinicType = () => {
     const store = useSelector((state) => state);
-    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm();
     const dispatch = useDispatch();
     const nameValue = watch("name");
     const [skip, setSkip] = useState(1);
     const [addDepartmentModal, setAddDepartmentModal] = useState(false);
+    const [updateClinicTypeModal, setUpdateClinicTypeModal] = useState(false);
+    const [updateData, setUpdateData] = useState(null);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(true);
     const closeAddModal = () => {
@@ -36,6 +38,11 @@ const ClinicType = () => {
         }
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
     };
+    const closeUpdateModal = () => {
+        setUpdateClinicTypeModal(false);
+        setUpdateData(null);
+        reset();
+    }
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const updateResponse = store?.updateMastersDataReducer?.data?.status;
@@ -48,6 +55,7 @@ const ClinicType = () => {
         }
         if (updateResponse === 200) {
             dispatch(getMastersDataAction({ status: status, category: 'clinic_type', search: search, limit: 10, skip: skip }));
+            closeUpdateModal()
             dispatch(stateEmptydAction());
         }
     }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip, updateResponse]);
@@ -66,6 +74,21 @@ const ClinicType = () => {
         }
         dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     }
+    useEffect(() => {
+        if (updateData) {
+            setValue('name', updateData?.name)
+            setValue('description', updateData?.description)
+        }
+    }, [updateData])
+    const updateClinicType = (data) => {
+        const payload = {
+            name: data?.name,
+            id: updateData?._id,
+            description: data?.description,
+            category: 'clinic_type',
+        }
+        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
+    };
     return (
         <Row className='mt-2'>
             <Col xs={12}>
@@ -158,7 +181,11 @@ const ClinicType = () => {
                                                         </td>
                                                         <td>
                                                             {/* <Link to="#" className="action-icon"> */}
-                                                            <i className="mdi mdi-square-edit-outline"></i>
+                                                            <i className="mdi fs-4 mdi-square-edit-outline cursor-pointer"
+                                                                onClick={() => {
+                                                                    setUpdateData(data)
+                                                                    setUpdateClinicTypeModal(true);
+                                                                }} />
                                                             {/* </Link> */}
                                                         </td>
                                                     </tr>
@@ -182,11 +209,6 @@ const ClinicType = () => {
                 </Card>
             </Col>
             <Modal centered show={addDepartmentModal} onHide={closeAddModal}>
-                {/* <Modal.Header
-                    onHide={closeAddModal}
-                    closeButton
-                    className={'modal-colored-header pb-0 border-0 text-center'}>
-                </Modal.Header> */}
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -202,7 +224,7 @@ const ClinicType = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Name *</Form.Label>
+                                    <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter name"
@@ -214,7 +236,7 @@ const ClinicType = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Name *</Form.Label>
+                                    <Form.Label>Re-Enter Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter name"
@@ -255,6 +277,74 @@ const ClinicType = () => {
                 </Modal.Body>
             </Modal>
 
+            <Modal centered show={updateClinicTypeModal} onHide={closeUpdateModal}>
+                <Modal.Body>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Edit Clinic Type</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={closeUpdateModal} />
+                        </Col>
+                    </Row>
+                    {/* <h4 className="mt-0 text-center">New Clinic Type</h4> */}
+                    <Form onSubmit={handleSubmit(updateClinicType)}>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter plan name"
+                                        {...register("name", { required: "Plan name is required" })}
+                                    />
+                                    {errors.name && <p className="text-danger">{errors.name.message}</p>}
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Re-Enter Name</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Re-enter Plan Name"
+                                        {...register("reEnterName", {
+                                            required: "Please re-enter plan name",
+                                            validate: value => value === nameValue || "Plan names do not match"
+                                        })}
+                                    />
+                                    {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={12}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Description</Form.Label>
+                                    <Form.Control
+                                        as={'textarea'}
+                                        rows={3}
+                                        placeholder="Enter description"
+                                        {...register("description")}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Modal.Footer>
+                            <Button onClick={closeUpdateModal} className='custom-buttons'>
+                                Close
+                            </Button>
+                            <Button type='submit' className='custom-buttons' disabled={store?.updateMastersDataReducer?.loading}>
+                                {store?.updateMastersDataReducer?.loading
+                                    ?
+                                    < Spinner color='white' className='spinner-border-sm' />
+                                    :
+                                    'Update'
+                                }
+                            </Button>
+                        </Modal.Footer>
+                    </Form>
+                </Modal.Body>
+            </Modal>
         </Row>
     )
 }

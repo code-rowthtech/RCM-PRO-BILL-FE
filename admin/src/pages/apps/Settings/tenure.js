@@ -14,15 +14,22 @@ import { createdBy } from './userId'
 
 const Tenure = () => {
     const store = useSelector((state) => state);
-    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm();
     const dispatch = useDispatch();
     const nameValue = watch("name");
     const [addTenureModal, setAddTenureModal] = useState(false);
+    const [updateTenureModal, setUpdateTenureModal] = useState(false);
+    const [updateData, setUpdateData] = useState(null);
     const [skip, setSkip] = useState(1);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(true);
     const closeAddModal = () => {
         setAddTenureModal(false);
+    }
+    const closeUpdateModal = () => {
+        setUpdateTenureModal(false);
+        setUpdateData(null);
+        reset();
     }
     const addTenure = (data) => {
         // Handle form submission logic, e.g., API call
@@ -35,6 +42,16 @@ const Tenure = () => {
         // console.log(payload, 'payloadpayload')
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
     };
+    const updateTenure = (data) => {
+        const payload = {
+            name: data?.name,
+            id: updateData?._id,
+            months: parseInt(data?.months),
+            category: 'tenure',
+        }
+        // console.log(payload)
+        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
+    };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const updateResponse = store?.updateMastersDataReducer?.data?.status;
@@ -46,6 +63,7 @@ const Tenure = () => {
         }
         if (updateResponse === 200) {
             dispatch(getMastersDataAction({ status: status, category: 'tenure', search: search, limit: 10, skip: skip }));
+            closeUpdateModal()
             dispatch(stateEmptydAction());
         }
     }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip, updateResponse]);
@@ -64,6 +82,12 @@ const Tenure = () => {
         }
         dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     }
+    useEffect(() => {
+        if (updateData) {
+            setValue('name', updateData?.name)
+            setValue('months', updateData?.months)
+        }
+    }, [updateData])
     return (
         <Row className='mt-2'>
             <Col xs={12}>
@@ -152,7 +176,11 @@ const Tenure = () => {
                                                         </td>
                                                         <td>
                                                             {/* <Link to="#" className="action-icon"> */}
-                                                            <i className="mdi mdi-square-edit-outline"></i>
+                                                            <i className="mdi fs-4 mdi-square-edit-outline cursor-pointer"
+                                                                onClick={() => {
+                                                                    setUpdateData(data)
+                                                                    setUpdateTenureModal(true);
+                                                                }} />
                                                             {/* </Link> */}
                                                         </td>
                                                     </tr>
@@ -177,11 +205,6 @@ const Tenure = () => {
                 </Card>
             </Col>
             <Modal centered show={addTenureModal} onHide={closeAddModal}>
-                {/* <Modal.Header
-                    onHide={closeAddModal}
-                    // closeButton
-                    className={'modal-colored-header pb-0 border-0 text-center'}>
-                </Modal.Header> */}
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -256,6 +279,80 @@ const Tenure = () => {
                 </Modal.Body>
             </Modal>
 
+            <Modal centered show={updateTenureModal} onHide={closeUpdateModal}>
+                <Modal.Body>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Edit Tenure</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={closeUpdateModal} />
+                        </Col>
+                    </Row>
+                    <Form onSubmit={handleSubmit(updateTenure)}>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Tenure Name</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter Tenure Name"
+                                        {...register("name", { required: "Tenure name is required" })}
+                                    />
+                                    {errors.name && <p className="text-danger">{errors.name.message}</p>}
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Re-Enter Name</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Re-enter tenure name"
+                                        {...register("reEnterName", {
+                                            required: "Please re-enter tenure name",
+                                            validate: value => value === nameValue || "Names do not match"
+                                        })}
+                                    />
+                                    {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
+                                </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Months</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter no of months"
+                                        {...register("months", {
+                                            required: "Number of months for plan validity are required",
+                                            pattern: {
+                                                value: /^[1-9]\d*$/, // Matches numbers greater than 0
+                                                message: "Only numbers greater than 0 are allowed",
+                                            },
+                                        })}
+                                    />
+
+                                    {errors.months && <p className="text-danger">{errors.months.message}</p>}
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Modal.Footer>
+                            <Button onClick={closeUpdateModal} className='custom-buttons'>
+                                Close
+                            </Button>
+                            <Button type='submit' className='custom-buttons' disabled={store?.updateMastersDataReducer?.loading}>
+                                {store?.updateMastersDataReducer?.loading
+                                    ?
+                                    <Spinner color='white' className='spinner-border-sm' />
+                                    :
+                                    'Update'
+                                }
+                            </Button>
+                        </Modal.Footer>
+                    </Form>
+                </Modal.Body>
+            </Modal>
         </Row>
     )
 }

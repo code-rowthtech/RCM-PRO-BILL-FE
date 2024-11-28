@@ -19,7 +19,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const dispatch = useDispatch();
     const [selectedPermissions, setSelectedPermissions] = useState([]);
     const [initialPermissions, setInitialPermissions] = useState([]);
-    const updateSuccess = store?.updateRolesReducer?.data?.status
+    const updateSuccess = store?.updateRolesReducer?.data?.status;
 
     useEffect(() => {
         if (show) {
@@ -31,6 +31,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
         ...item,
         name: `${item?.name}`,
     }));
+
     useEffect(() => {
         if (data) {
             setValue('name', data.name || '');
@@ -39,7 +40,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
             setSelectedPermissions(data?.permissions?.map(permission => ({ name: permission?.name })) || []);
         }
         if (updateSuccess === 200) {
-            closeModal()
+            closeModal();
         }
     }, [data, setValue, updateSuccess]);
 
@@ -47,25 +48,24 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const onRemove = (selectedList) => setSelectedPermissions(selectedList);
 
     const onSubmit = (formData) => {
+        // Ensure the selected permissions are only the ones that changed
         const changedPermissions = selectedPermissions.filter(
             (permission) => !initialPermissions.some((p) => p.name === permission.name)
         );
+
+        // If no permissions changed, use the initial permissions
         const payload = {
             id: data?._id,
             name: formData.name,
             description: formData.description,
-            permissions: changedPermissions,
+            permissions: changedPermissions.length > 0 ? changedPermissions : initialPermissions,
         };
+
         dispatch(updateRolesAction({ key: encryptMessage(payload) }));
     };
 
     return (
         <Modal centered show={show} onHide={closeModal}>
-            {/* <Modal.Header
-                onHide={closeModal}
-                closeButton
-                className={'modal-colored-header pb-0 border-0 text-center'}>
-            </Modal.Header> */}
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
@@ -76,7 +76,6 @@ const UpdateRole = ({ show, closeModal, data }) => {
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
                     </Col>
                 </Row>
-                {/* <h4 className="mt-0 text-center">Update Role</h4> */}
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md={12}>
@@ -103,6 +102,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
                                 {errors.description && <span className="text-danger">{errors.description.message}</span>}
                             </Form.Group>
                         </Col>
+
                         <Col md={12}>
                             <Form.Group className="mb-2">
                                 <Form.Label>Permissions</Form.Label>
@@ -121,8 +121,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
                     <Modal.Footer>
                         <Button type='submit' className='custom-buttons' disabled={store?.updateRolesReducer?.loading}>
                             {store?.updateRolesReducer?.loading ?
-                                <Spinner className="spinner-border-sm" />
-                                :
+                                <Spinner className="spinner-border-sm" color='white' /> :
                                 'Update'
                             }
                         </Button>
