@@ -7,7 +7,7 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import Spinner from '../../../../constants/Spinner';
 import { IoMdClose } from 'react-icons/io';
 import ToastHandle from '../../../../helpers/ToastMessage';
-const SendEmailModal = ({ show, closeModal, mailId }) => {
+const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest }) => {
     const dispatch = useDispatch();
     // Using useForm hook for form handling and validation
     const {
@@ -20,10 +20,12 @@ const SendEmailModal = ({ show, closeModal, mailId }) => {
     const createResponse = store?.createClinicsReducer?.data?.status;
     useEffect(() => {
         if (createResponse === 200) {
+            setIsModalRequest(false);
             closeModal();
         }
     }, [createResponse])
     const onSubmit = () => {
+        setIsModalRequest(true)
         dispatch(createClinicAction({ key: encryptMessage(mailId) }))
     }
     return (

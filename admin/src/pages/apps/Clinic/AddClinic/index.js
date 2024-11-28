@@ -39,6 +39,7 @@ const Index = () => {
     const [resetEmail, setResetEmail] = useState({
         name: null, email: null, role: null, phone: null, clinicType: null
     });
+    const [isModalRequest, setIsModalRequest] = useState(false); // Track whether the API was triggered by the modal
     const [resetEmailError, setResetEmailError] = useState(null);
     const store = useSelector((state) => state);
     const navigate = useNavigate()
@@ -63,11 +64,11 @@ const Index = () => {
     const [showMailModal, setShowMailModal] = useState(false);
     const closeMailModal = () => {
         setShowMailModal(false);
-        if (store?.createClinicsReducer?.data?.status === 200) {
-            setResetEmail({
-                name: null, email: null, role: null, phone: null
-            })
-        }
+        // if (store?.createClinicsReducer?.data?.status === 200) {
+        //     setResetEmail({
+        //         name: null, email: null, role: null, phone: null
+        //     })
+        // }
         setResetEmailError(null)
     }
 
@@ -134,13 +135,14 @@ const Index = () => {
                                         Email to Clinic
                                     </Button>
 
-                                    <SendEmailModal show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} />
+                                    <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} />
                                 </Col>
                             </Row>
                             <Row className='scroll-container pt-2' style={{ height: '93%' }}>
                                 <Col>
                                     {activeTab === 'clinic' ?
                                         <ClinicForm
+                                            setIsModalRequest={setIsModalRequest} isModalRequest={isModalRequest}
                                             setResetEmail={setResetEmail} resetEmailError={resetEmailError}
                                             resetEmail={resetEmail} showMailModal={showMailModal}
                                             setActiveTab={setActiveTab} activeTab={activeTab}

@@ -21,6 +21,7 @@ const Roles = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
+    console.log(decryptedRolesData)
     const updateSuccess = store?.updateRolesReducer?.data?.status;
     const createSuccess = store?.createRolesReducer?.data?.status;
     const handleClosemodal = () => {
@@ -56,11 +57,18 @@ const Roles = () => {
         setStatus(data);
         setSearch('');
     };
+
+    const [expandedRowIndex, setExpandedRowIndex] = useState(null);
+
+    const toggleRow = (index) => {
+        setExpandedRowIndex((prevIndex) => (prevIndex === index ? null : index));
+    };
+
     return (
         <div>
             {/* <PageTitle
                 breadCrumbItems={[
-                    { label: 'Roles', path:     '/apps/Roles/list', active: true },
+                    { label: 'Roles', path:'/apps/Roles/list', active: true },
                 ]}
                 title={'Roles'}
             /> */}
@@ -111,8 +119,6 @@ const Roles = () => {
                                                     S.no
                                                 </th>
                                                 <th>Name</th>
-                                                <th>Role</th>
-                                                <th>Username</th>
                                                 <th>Description</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
@@ -134,46 +140,94 @@ const Roles = () => {
                                                     </tr>
                                                     :
                                                     decryptedRolesData?.map((data, index) => (
-                                                        <tr key={index}>
-                                                            <td>
-                                                                {index + 1}
-                                                            </td>
-                                                            <td className='cursor-pointer'>
-                                                                <span
-                                                                    data-bs-toggle="tooltip"
-                                                                    title={'Permissions' + ' : ' + data?.permissions?.map(permission => permission?.name).join(', ') || ''}
-                                                                    className="d-inline-block text-truncate text-capitalize">
-                                                                    {data?.name}
-                                                                </span>
-                                                            </td>
-                                                            <td>Sub Admin</td>
-                                                            <td>x24@probillRCm</td>
+                                                        <>
+                                                            <tr
+                                                                className='cursor-pointer'
+                                                                key={index}>
+                                                                <td>
+                                                                    {index + 1}
+                                                                </td>
+                                                                <td className='cursor-pointer'>
+                                                                    <span
+                                                                        data-bs-toggle="tooltip"
+                                                                        title={'Permissions' + ' : ' + data?.permissions?.map(permission => permission?.name).join(', ') || ''}
+                                                                        className="d-inline-block text-truncate text-capitalize">
+                                                                        {data?.name}
+                                                                    </span>
+                                                                </td>
 
-                                                            <td>
-                                                                <span className='text-truncate cursor-pointer' title={data?.description}>
-                                                                    {data?.description?.substring(0, 12) + '...'}
-                                                                </span>
-                                                            </td>
-                                                            {/* <td>
-                                                        {data?.permissions}
-                                                    </td> */}
-                                                            <td>
-                                                                <Form.Switch onClick={() => handleUpdateDoctorStatus(data)} checked={data?.status === true} />
-                                                            </td>
-                                                            <td>
-                                                                <Link to="#" className="action-icon" onClick={() => {
-                                                                    setShowUpdateModal(true);
-                                                                    setDataToUpdate(data);
-                                                                }}>
-                                                                    <i className="mdi mdi-square-edit-outline"></i>
-                                                                </Link>
-                                                                <UpdateRole show={showUpdateModal} closeModal={closeUpdateModal} data={dataToUpdate} />
-                                                            </td>
-                                                        </tr>
+
+                                                                <td>
+                                                                    <span className='text-truncate cursor-pointer' title={data?.description}>
+                                                                        {data?.description?.substring(0, 12) + '...'}
+                                                                    </span>
+                                                                </td>
+
+                                                                <td>
+                                                                    <Form.Switch onClick={() => handleUpdateDoctorStatus(data)} checked={data?.status === true} />
+                                                                </td>
+                                                                <td>
+                                                                    <Link to="#" className="action-icon" onClick={() => {
+                                                                        setShowUpdateModal(true);
+                                                                        setDataToUpdate(data);
+                                                                    }}>
+                                                                        <i className="mdi  mdi-square-edit-outline"></i>
+                                                                    </Link>
+                                                                    <i onClick={() => toggleRow(index)} className="mdi mdi-eye fs-4"></i>
+                                                                    <UpdateRole show={showUpdateModal} closeModal={closeUpdateModal} data={dataToUpdate} />
+                                                                </td>
+                                                            </tr>
+                                                            {expandedRowIndex === index && (
+                                                                <tr>
+                                                                    <td colSpan="7">
+                                                                        <div className="expanded-content px-5">
+                                                                            <div className={`permissions-header fs-4 d-flex align-items-center font-weight-bold ${data?.permissions?.length === 0 ? 'd-none' : ''}`}>
+                                                                                <div className="col-1"></div>
+                                                                                <div className="permission-name text-black fw-bold col-2">Permission</div>
+                                                                                <div className="action-name col-2 text-black fw-bold  text-center">Add</div>
+                                                                                <div className="action-name col-2 text-black fw-bold  text-center">View</div>
+                                                                                <div className="action-name col-2 text-black fw-bold  text-center">Delete</div>
+                                                                                <div className="action-name col-2 text-black fw-bold  text-center">Update</div>
+                                                                                <div className="col-1"></div>
+                                                                            </div>
+                                                                            <div className="permissions-body scroll-container">
+                                                                                {data?.permissions?.length === 0 ? (
+                                                                                    <div className="no-permissions-message text-center py-2">
+                                                                                        No permissions are available for this role
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    data?.permissions?.map((permission, idx) => (
+                                                                                        <div key={idx} className="permissions-row py-2 d-flex align-items-center">
+                                                                                            <div className="col-1"></div>
+                                                                                            <div className="permission-name text-black fw-bold col-2 text-capitalize">{permission?.name}</div>
+                                                                                            <div className="action-name col-2 text-center">
+                                                                                                {/(add|create)/i.test(permission?.name) ? '✅' : '❌'}
+                                                                                            </div>
+                                                                                            <div className="action-name col-2 text-center">
+                                                                                                {/view/i.test(permission?.name) ? '✅' : '❌'}
+                                                                                            </div>
+                                                                                            <div className="action-name col-2 text-center">
+                                                                                                {/(delete|remove)/i.test(permission?.name) ? '✅' : '❌'}
+                                                                                            </div>
+                                                                                            <div className="action-name col-2 text-center">
+                                                                                                {/(update|edit)/i.test(permission?.name) ? '✅' : '❌'}
+                                                                                            </div>
+                                                                                            <div className="col-1"></div>
+                                                                                        </div>
+                                                                                    ))
+                                                                                )}
+
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </td>
+                                                                </tr>
+                                                            )}
+                                                        </>
                                                     ))
                                             }
                                         </tbody>
-                                    </Table>
+                                    </Table >
                                 </Col>
                                 <Row>
                                     <Col className='mt-2 d-flex justify-content-end'>
