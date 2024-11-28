@@ -45,20 +45,22 @@ const AddRoles = ({ show, closeModal }) => {
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
-    const creatorId = createdBy
+    const creatorId = JSON.parse(sessionStorage.getItem('hyper_user'))?._id;
     const onSubmit = (data) => {
         const payload = {
             firstName: data.name,
             email: data.email,
             password: data.password,
             phone: data?.phone,
-            reportingTo: createdBy,
-            createdById: createdBy,
+            reportingTo: creatorId,
+            createdById: creatorId,
             joiningDate: data.joiningDate,
             designation: data.designation,
             role: data.role,
         };
+        // console.log(payload)
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }))
+        // dispatch(createUserRolesAction(payload))
     };
 
     const handleSelect = (selectedList) => {
@@ -145,7 +147,13 @@ const AddRoles = ({ show, closeModal }) => {
                                     <Form.Control
                                         type={showPassword ? "text" : "password"}
                                         placeholder="Password"
-                                        {...register('password', { required: 'This field is required' })}
+                                        {...register('password', {
+                                            required: 'This field is required',
+                                            pattern: {
+                                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+                                                message: 'At least 8 characters required, including 1 uppercase letter, 1 number, and 1 special character',
+                                            },
+                                        })}
                                     />
                                     <span
                                         className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
@@ -166,6 +174,10 @@ const AddRoles = ({ show, closeModal }) => {
                                         placeholder="Confirm Password"
                                         {...register('confirmPassword', {
                                             required: 'This field is required',
+                                            pattern: {
+                                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+                                                message: 'At least 8 characters required, including 1 uppercase letter, 1 number, and 1 special character',
+                                            },
                                             validate: value =>
                                                 value === password || 'Passwords do not match'
                                         })}
