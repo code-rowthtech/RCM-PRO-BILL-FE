@@ -113,12 +113,17 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/dashboard': 'Dashboard',
         '/dashboard/project': 'Dashboard', // Example of multiple paths mapping to the same title
         '/profile': 'Profile',
-        '/settings': 'Settings',
         '/apps/subscriptions/list': 'Subscriptions',
         '/apps/roles/list': 'Role Management',
         '/apps/crm/orders': 'Clinics',
         '/apps/crm/addclinic': 'Add Clinic',
         '/apps/crm/updateclinic': 'Update Clinic',
+        '/settings/planName': 'Plans',
+        '/settings/tenure': 'Tenures',
+        '/settings/permissions': 'Permissions',
+        '/settings/roles': 'Roles',
+        '/settings/clinicType': 'Clinic Types',
+
     };
 
     // Get the title for the current path or use a default value

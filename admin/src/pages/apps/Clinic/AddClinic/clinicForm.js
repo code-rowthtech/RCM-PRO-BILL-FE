@@ -292,7 +292,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
     const handleStateSelection = (e) => {
         setSelectedState(e.target.value)
-        alert('ljhbvcbn')
         try {
             const selectedState = JSON.parse(e.target.value);
             if (selectedState?.state_code) {
@@ -464,10 +463,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
     useEffect(() => {
         if (stateToSelect) {
-            console.log('called')
             dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: '', limit: 25, skip: '' }));
         }
     }, [stateToSelect])
+
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -644,7 +643,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={accreditation.number}
                                     placeholder="Document Number"
                                     onChange={(e) => handleAccreditationInputChange(e, 'number', index)}
-                                    onKeyPress={handleFirstSpace}
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
@@ -701,7 +700,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={medical.number}
                                     placeholder="Document Number"
                                     onChange={(e) => handleMedicalInputChange(e, 'number', index)}
-                                    onKeyPress={handleFirstSpace}
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative ">
@@ -761,7 +760,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={data.number}
                                     placeholder="Document Number"
                                     onChange={(e) => handleStateInputChange(e, 'number', index)}
-                                    onKeyPress={handleFirstSpace}
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">

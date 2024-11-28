@@ -38,6 +38,7 @@ function* createRolesFunction(data) {
 }
 
 function* updateRolesFunction(data) {
+    const updateApiData = JSON.parse(decryptMessage(data.data.key));
     try {
         yield put({
             type: RolesActionTypes.UPDATE_ROLES_LOADING,
@@ -46,7 +47,13 @@ function* updateRolesFunction(data) {
         const response = yield call(updateRolesApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
-            ToastHandle(decryptedData?.message, 'success')
+            if (updateApiData?.status === true) {
+                ToastHandle('Role successfully activated', 'success')
+            } else if (updateApiData?.status === false) {
+                ToastHandle('Role successfully deactivated', 'success')
+            } else {
+                ToastHandle(decryptedData?.message, 'success')
+            }
             yield put({
                 type: RolesActionTypes.UPDATE_ROLES_SUCCESS,
                 payload: { ...decryptedData },

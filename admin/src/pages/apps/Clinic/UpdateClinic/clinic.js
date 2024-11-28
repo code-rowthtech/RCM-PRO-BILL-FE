@@ -40,7 +40,7 @@ const Clinic = ({ id }) => {
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
-    console.log(posDetails)
+    console.log(clinicData)
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -170,7 +170,10 @@ const Clinic = ({ id }) => {
     const onSubmit = (data) => {
         const newPayload = {
             name: data?.name || clinicData?.name, // Clinic name
-            email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(), // Email
+            // email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(), // Email
+            ...(data?.email.toLowerCase() !== clinicData?.userId?.email.toLowerCase() && {
+                email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(),
+            }),
             phone: data?.contact || clinicData?.userId?.phone, // Phone number
             clinicType: data?.clinicType || clinicData?.clinicType, // Clinic Type
             taxIdOrEIN: data?.taxId || clinicData?.taxIdOrEIN, // Tax ID/EIN
@@ -183,7 +186,7 @@ const Clinic = ({ id }) => {
             address: {
                 address1: data?.address || clinicData?.userId?.address?.address1, // Address 1
                 city: selectedCity?._id || clinicData?.userId?.address?.city, // City ID
-                state: selectedState?._id || clinicData?.userId?.address?.state, // State ID
+                state: JSON.parse(selectedState)?._id || clinicData?.userId?.address?.state, // State ID
                 street: data?.street || clinicData?.userId?.address?.street, // Street
                 zip: data?.zip || clinicData?.userId?.address?.zip, // Zip Code
                 latitude: selectedCity?.latitude || clinicData?.userId?.address?.latitude, // Latitude
@@ -192,7 +195,7 @@ const Clinic = ({ id }) => {
             pos: posDetails,
         };
 
-        // console.log(newPayload, 'newPayload');
+        console.log(newPayload, 'newPayload');
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -418,6 +421,7 @@ const Clinic = ({ id }) => {
                                             type="text"
                                             value={item.number}
                                             placeholder="Document Number"
+                                            onKeyPress={(event) => handleFirstSpace(event, 0)}
                                             onChange={(e) => handleInputChange(e, 'number', type, index)}
                                         />
                                     </Col>
@@ -627,7 +631,7 @@ const Clinic = ({ id }) => {
                         </Button>
                     </Col>
                 </Row>
-            </Form>
+            </Form >
         </>
 
     );

@@ -25,6 +25,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const clinicsData = store?.getClinicsReducer?.data?.data;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
+    console.log(clinicsData, 'clinicsDataclinicsData')
     const isAddPresent = userPermissions.includes('add clinic');
     const isUpdatePresent = userPermissions.includes('update clinic');
     useEffect(() => {

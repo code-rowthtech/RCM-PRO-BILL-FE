@@ -21,7 +21,6 @@ const Roles = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
-    console.log(decryptedRolesData)
     const updateSuccess = store?.updateRolesReducer?.data?.status;
     const createSuccess = store?.createRolesReducer?.data?.status;
     const handleClosemodal = () => {
@@ -33,7 +32,6 @@ const Roles = () => {
             dispatch(stateEmptydAction());
             dispatch(getRolesAction({ limit: 10, skip: skip, search: search, status: status }));
         }
-        console.log(status)
     }, [dispatch, updateSuccess, skip, search, createSuccess, status])
     const [dataToUpdate, setDataToUpdate] = useState(null);
 
@@ -126,14 +124,14 @@ const Roles = () => {
                                         </thead>
                                         <tbody>
                                             {store?.getRolesDataReducer?.loading ?
-                                                <tr>
+                                                <tr key={''}>
                                                     <td colSpan={7} className='py-5 text-center'>
                                                         <Spinner />
                                                     </td>
                                                 </tr>
                                                 :
                                                 store?.getRolesDataReducer?.data?.total === 0 ?
-                                                    <tr>
+                                                    <tr key={''}>
                                                         <td colSpan={7} className='text-center'>
                                                             <h3 className='my-5'>No Data Found</h3>
                                                         </td>

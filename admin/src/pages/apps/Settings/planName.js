@@ -11,6 +11,7 @@ import { IoMdClose } from 'react-icons/io'
 import Paginations from '../../../helpers/Paginations'
 import { formatDate } from '../../../helpers/dateFormat'
 import { createdBy } from './userId'
+import { handleFirstSpace } from '../../../helpers/noBeginningSpace'
 
 const PlanName = () => {
     const store = useSelector((state) => state);
@@ -52,6 +53,7 @@ const PlanName = () => {
     };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
+    console.log(clinicTypeData)
     const updateResponse = store?.updateMastersDataReducer?.data?.status;
     useEffect(() => {
         dispatch(getMastersDataAction({ status: status, category: 'plan_name', search: search, skip: skip, limit: 10 }));
@@ -75,7 +77,8 @@ const PlanName = () => {
     const handleUpdate = (data) => {
         const payload = {
             id: data?._id,
-            isActive: !data?.isActive
+            isActive: !data?.isActive,
+            settingType: 'plan'
         }
         dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     }
@@ -171,7 +174,7 @@ const PlanName = () => {
                                                                 {data?.description.substring(0, 20) + '...'}
                                                             </span>
                                                         </td> */}
-                                                        <td className='text-capitalize'>{formatDate(data?.createdAt)}</td>
+                                                        <td className='text-capitalize'>{new Date(data.createdAt).toLocaleDateString('en-GB')}</td>
                                                         <td>
                                                             <Form.Switch checked={data?.isActive} onChange={() => handleUpdate(data)} />
                                                         </td>
@@ -220,10 +223,11 @@ const PlanName = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Plan Name *</Form.Label>
+                                    <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter plan name"
+                                        onKeyPress={handleFirstSpace}
                                         {...register("name", { required: "Plan name is required" })}
                                     />
                                     {errors.name && <p className="text-danger">{errors.name.message}</p>}
@@ -232,7 +236,7 @@ const PlanName = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Plan Name *</Form.Label>
+                                    <Form.Label>Re-Enter Plan Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Plan Name"
@@ -240,6 +244,7 @@ const PlanName = () => {
                                             required: "Please re-enter plan name",
                                             validate: value => value === nameValue || "Plan names do not match"
                                         })}
+                                        onKeyPress={handleFirstSpace}
                                     />
                                     {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
                                 </Form.Group>
