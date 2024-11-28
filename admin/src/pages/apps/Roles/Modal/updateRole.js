@@ -14,6 +14,13 @@ import { createdBy } from '../../Settings/userId';
 const UpdateRoles = ({ show, closeModal, data }) => {
 
     const dispatch = useDispatch();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+        watch, setValue
+    } = useForm();
     const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
     const [showPassword, setShowPassword] = useState(false);
@@ -27,14 +34,29 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
 
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
+    console.log(data, 'dataaaaaaaaaaa')
+    useEffect(() => {
+        if (data) {
+            setValue('name', data?.name)
+            setValue('email', data?.email)
+            setValue('phone', data?.phone)
+            // if (data?.joiningDate) {
+            //     const formattedJoiningDate = new Date(data.joiningDate)
+            //         .toISOString()
+            //         .split('T')[0]; // Format as YYYY-MM-DD
+            //     setValue('joiningDate', formattedJoiningDate);
+            // }
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset,
-        watch, setValue
-    } = useForm();
+            setValue('designation', data?.designation)
+            setValue('role', data?.role?._id)
+            const formattedLeavingDate = data?.leavingDate
+                ? new Date(data?.leavingDate).toISOString().split('T')[0]
+                : '';
+
+            setValue('leavingDate', formattedLeavingDate);
+        }
+    }, [data, setValue])
+
     const [updateId, setUpdateId] = useState(null);
     useEffect(() => {
         if (data?._id) {
@@ -65,8 +87,8 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             email: data.email,
             password: data.password,
             phone: data?.phone,
-            reportingTo: createdBy,
-            createdById: createdBy,
+            // reportingTo: createdBy,
+            // createdById: createdBy,
             ...(data.leavingDate ? { leavingDate: data.leavingDate } : {}),// Add conditionally
             role: data.role,
         };
@@ -106,41 +128,41 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                     <Row >
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Name</Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Name"
-                                    {...register('name', { required: 'This field is required' })}
+                                    {...register('name')}
                                 />
                                 {errors.name && <span className="text-danger">{errors.name.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Email ID <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Email ID</Form.Label>
                                 <Form.Control
                                     type="email"
                                     placeholder="Email ID"
-                                    {...register('email', { required: 'This field is required' })}
+                                    {...register('email')}
                                 />
                                 {errors.email && <span className="text-danger">{errors.email.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Contact No <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Contact No</Form.Label>
                                 <Form.Control
                                     type="text"
                                     maxLength={10}
                                     placeholder="Contact No"
-                                    {...register('phone', { required: 'This field is required' })}
+                                    {...register('phone')}
                                 />
                                 {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Reporting <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Reporting</Form.Label>
                                 <Form.Select disabled>
                                     <option>Reporting</option>
                                     <option value="">1</option>
@@ -150,57 +172,16 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
                         </Col>
-                        {/* <Col sm={6}>
-                            <Form.Group className='mb-2'>
-                                <Form.Label>Password  <span className='text-danger'>*</span></Form.Label>
-                                <div className="position-relative">
-                                    <Form.Control
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Password"
-                                        {...register('password', { required: 'This field is required' })}
-                                    />
-                                    <span
-                                        className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                    </span>
-                                    {errors.password && <span className="text-danger">{errors.password.message}</span>}
-                                </div>
-                            </Form.Group>
-                        </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Confirm Password <span className='text-danger'>*</span></Form.Label>
-                                <div className="position-relative">
-                                    <Form.Control
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        placeholder="Confirm Password"
-                                        {...register('confirmPassword', {
-                                            required: 'This field is required',
-                                            validate: value =>
-                                                value === password || 'Passwords do not match'
-                                        })}
-                                    />
-                                    <span
-                                        className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    >
-                                        {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                                    </span>
-                                    {errors.confirmPassword && <span className="text-danger">{errors.confirmPassword.message}</span>}
-                                </div>
-                            </Form.Group>
-                        </Col> */}
-                        <Col sm={6}>
-                            <Form.Group className='mb-2'>
-                                <Form.Label>Date of Joining <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Date of Joining</Form.Label>
                                 <Form.Control
                                     type="date"
                                     readOnly
-                                    {...register('joiningDate', { required: 'This field is required' })}
+                                    value={data?.joiningDate ? new Date(data.joiningDate).toISOString().split('T')[0] : ''}
+                                    {...register('joiningDate')}
                                 />
-                                {errors.joiningDate && <span className="text-danger">{errors.joiningDate.message}</span>}
+
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
@@ -229,9 +210,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                             <Form.Group className='mb-2'>
                                 <Form.Label>Role <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
-                                    {...register('role', {
-                                        required: 'This field is required'
-                                    })}
+                                    {...register('role')}
                                     className='text-capitalize'>
                                     <option value='' key=''>Select role</option>
                                     {decryptedRolesData?.map((data) => (
