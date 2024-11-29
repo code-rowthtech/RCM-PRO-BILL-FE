@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Col, Form, Row, Button, Table } from 'react-bootstrap';
+import { Col, Form, Row, Button, Table, InputGroup } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
@@ -30,6 +30,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [updatePage, setUpdatePage] = useState(false);
     const [counter, setCounter] = useState(0);
     const [selectedState, setSelectedState] = useState(null);
+
     const [selectedCity, setSelectedCity] = useState(null);
     const [logo, setLogo] = useState(null);
     const [parentClinic, setParentclinic] = useState(null);
@@ -291,29 +292,29 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         });
     };
     const handleStateSelection = (e) => {
+
         setSelectedState(e.target.value)
-        alert('ljhbvcbn')
-        try {
-            const selectedState = JSON.parse(e.target.value);
-            if (selectedState?.state_code) {
-                setSelectedState(selectedState);
-                dispatch(getCitiesAction({ state_code: selectedState.id, name: '', limit: 25 }));
-            }
-        } catch (error) {
-            console.error('Error parsing selected state:', error);
-        }
+        dispatch(getCitiesAction({ state_code: e.target.value, name: '', limit: 25 }));
+        // try {
+        //     const selectedState = JSON.parse(e.target.value);
+        //     if (selectedState?.state_code) {
+        //         setSelectedState(selectedState);
+        //     }
+        // } catch (error) {
+        //     console.error('Error parsing selected state:', error);
+        // }
     };
 
     const handleCitySelection = (e) => {
         const value = e.target.value;
-        if (value) {
-            try {
-                const citySelected = JSON.parse(value);
-                setSelectedCity(citySelected);
-            } catch (error) {
-                console.error('Invalid JSON:', value);
-            }
-        }
+        setSelectedCity(value)
+        // if (value) {
+        //     try {
+        //         setSelectedCity(citySelected);
+        //     } catch (error) {
+        //         console.error('Invalid JSON:', value);
+        //     }
+        // }
     };
     const deleteResponse = store?.deleteClinicOnboardingReducer?.data?.status;
     // create Response
@@ -375,24 +376,28 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             name: data?.clinicname,
             email: data?.email,
             role: decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id,
-            phone: data?.contact,
+            phone: '+1' + data?.contact,
             clinicType: data?.clinicType,
-            taxIdOrEIN: data?.taxId,
+            taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2'),
             npiNumber: data?.npi,
             medicalLicenses: medicalDetails,
             stateOfLicensing: stateDetails,
             accreditationDetails: accreditationDetails,
-            logo: logo?.url.split('?')[0],
+            // logo: logo?.url.split('?')[0],
             pos: posDetails,
             address: {
                 address1: data?.address,
-                city: selectedCity?._id,
-                state: selectedState?._id,
+                city: data?.city,
+                state: stateToSelect?._id,
                 street: data?.street,
                 zip: data?.zip,
                 latitude: latitude,
                 longitude: longitude,
-            }
+            },
+            logo: {
+                url: logo?.url.split('?')[0],
+                fileName: logoName
+            },
         };
         // console.log(newPayload, 'newPayloadnewPayloadnewPayload')
         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
@@ -400,6 +405,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
     const createData = store?.createClinicsReducer?.data?.data;
     const [createTableData, setCreateTableData] = useState(null);
+    // console.log({ createTableData })
     useEffect(() => {
         if (createData) {
             setCreateTableData(createData)
@@ -456,18 +462,25 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     }, [latitude, longitude])
 
     const stateGeoLocation = watch('stateName');
+
     useEffect(() => {
         if (stateGeoLocation) {
             setStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation));
         }
     }, [stateGeoLocation])
 
+    const [citySearch, setCitySearch] = useState(null);
+    useEffect(() => {
+        if (citySearch) {
+            setValue('city', cities && cities.find((data) => data?.name === citySearch)?._id)
+        }
+    }, [citySearch, cities])
     useEffect(() => {
         if (stateToSelect) {
-            console.log('called')
-            dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: '', limit: 25, skip: '' }));
+            dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: citySearch ? citySearch : '', limit: 25, skip: '' }));
         }
-    }, [stateToSelect])
+    }, [stateToSelect, citySearch])
+    // console.log(cities)
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -538,41 +551,53 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('taxId')}
+                                {...register('taxId', {
+                                    minLength: {
+                                        value: 9,
+                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                    },
+                                })}
                                 // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                maxLength={9}
                                 placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-0 position-relative">
                             <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                style={{ paddingLeft: '5%' }}
-                                {...register('contact', {
-                                    required: 'This field is required',
-                                    pattern: {
-                                        value: /^[0-9]*$/,
-                                        message: 'Contact must be a number'
-                                    },
-                                    maxLength: {
-                                        value: 10,
-                                        message: 'Contact must not exceed 10 digits'
-                                    },
-                                    minLength: {
-                                        value: 10,
-                                        message: 'Contact must not be less than 10 digits '
-                                    }
-                                })}
-                                onChange={(e) => {
-                                    setResetEmail({ ...resetEmail, phone: e.target.value });
-                                }}
-                                defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
-                                placeholder="1234-234-234"
-                                maxLength={10}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                            />
+                            <Form.Group>
+                                <InputGroup>
+                                    <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
+                                    <Form.Control
+                                        type="tel"
+                                        {...register('contact', {
+                                            required: 'This field is required',
+                                            pattern: {
+                                                value: /^[0-9]*$/,
+                                                message: 'Contact must be a number'
+                                            },
+                                            maxLength: {
+                                                value: 10,
+                                                message: 'Contact must not exceed 10 digits'
+                                            },
+                                            minLength: {
+                                                value: 10,
+                                                message: 'Contact must not be less than 10 digits'
+                                            }
+                                        })}
+                                        onChange={(e) => {
+                                            setResetEmail({ ...resetEmail, phone: e.target.value });
+                                        }}
+                                        defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
+                                        placeholder="1234-234-234"
+                                        maxLength={10}
+                                        onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                    />
+                                </InputGroup>
+                            </Form.Group>
+
                             <div
                                 className='position-absolute ' style={{ top: '52%', left: '1%' }}
                             >
@@ -591,11 +616,17 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>NPI Number</Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('npi')}
+                                {...register('npi', {
+                                    minLength: {
+                                        value: 10,
+                                        message: 'NPI must be at least 10 characters long', // Error message
+                                    },
+                                })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.npiNumber : ''}
                                 placeholder="NPI Number"
+                                maxLength={10}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)} />
-                            {/* {errors.npi && <span className="text-danger">{errors.npi.message}</span>} */}
+                            {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
@@ -642,17 +673,24 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Form.Control
                                     type="text"
                                     value={accreditation.number}
+                                    {...register('accDocno', {
+                                        pattern: {
+                                            value: /^[0-9]*$/,
+                                            message: 'Document no must be a number'
+                                        },
+                                    })}
                                     placeholder="Document Number"
                                     onChange={(e) => handleAccreditationInputChange(e, 'number', index)}
-                                    onKeyPress={handleFirstSpace}
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
+                                {errors.accDocno && <span className="text-danger">{errors.accDocno.message}</span>}
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
                                 <div
                                     onClick={() => document.getElementById(`fileInput-accreditation=${index}`).click()}
                                     //  onClick={() => accreditationFileInputRef.current.click()}
                                     className={`custom-file-upload justify-content-between cursor-pointer ${accreditation.fileName ? 'form-control' : 'custom-form-fields'}`}>
-                                    {accreditation.fileName ? accreditation.fileName : 'Upload Document'}
+                                    {accreditation.fileName ? accreditation?.fileName?.length > 30 ? accreditation?.fileName?.slice(0, 25) + '...' : accreditation?.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
                                 {/* <img className={`${accreditation ? "" : "d-none"}`} src={accreditation?.url} alt='...' /> */}
@@ -700,16 +738,23 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     type="text"
                                     value={medical.number}
                                     placeholder="Document Number"
+                                    {...register('medDocno', {
+                                        pattern: {
+                                            value: /^[0-9]*$/,
+                                            message: 'Document no must be a number'
+                                        },
+                                    })}
                                     onChange={(e) => handleMedicalInputChange(e, 'number', index)}
-                                    onKeyPress={handleFirstSpace}
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
+                                {errors.medDocno && <span className="text-danger">{errors.medDocno.message}</span>}
                             </Col>
                             <Col sm={4} className="mb-2 position-relative ">
                                 <div
                                     onClick={() => document.getElementById(`fileInput-medical=${index}`).click()}
                                     // onClick={() => medicalFileInputRef.current.click()}
                                     className={`custom-file-upload justify-content-between cursor-pointer ${medical.fileName ? 'form-control' : 'custom-form-fields'}`}>
-                                    {medical.fileName ? medical.fileName : 'Upload Document'}
+                                    {medical.fileName ? medical?.fileName?.length > 30 ? medical?.fileName?.slice(0, 25) + '...' : medical?.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
                                 <Form.Control
@@ -760,16 +805,24 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     type="text"
                                     value={data.number}
                                     placeholder="Document Number"
+                                    {...register('stateDocno', {
+                                        pattern: {
+                                            value: /^[0-9]*$/,
+                                            message: 'Document no must be a number'
+                                        },
+                                    })}
                                     onChange={(e) => handleStateInputChange(e, 'number', index)}
-                                    onKeyPress={handleFirstSpace}
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
+                                {errors.stateDocno && <span className="text-danger">{errors.stateDocno.message}</span>}
+
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
                                 <div
                                     onClick={() => document.getElementById(`fileInput-state=${index}`).click()}
                                     // onClick={() => stateFileInputRef.current.click()}
                                     className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName ? 'form-control' : 'custom-form-fields'}`}>
-                                    {data.fileName ? data.fileName : 'Upload Document'}
+                                    {data.fileName ? data?.fileName?.length > 30 ? data?.fileName?.slice(0, 25) + '...' : data?.fileName : 'Upload Document'}
                                     <p className='mb-0'><FiDownloadCloud /></p>
                                 </div>
                                 <Form.Control
@@ -840,6 +893,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                                 setValue('stateName', data?.components?.state_code)
                                                                 setLatitude(data?.bounds?.southwest?.lat);
                                                                 setLongitude(data?.bounds?.southwest?.lng);
+                                                                setCitySearch(data?.components?.county)
                                                                 setValue('address', data?.formatted)
                                                                 setFocused(false); // Close dropdown after selection
                                                             }}
@@ -923,7 +977,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             >
                                                 <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
                                                 {cities?.map((data) => (
-                                                    <option key={data?._id} value={JSON.stringify({ _id: data?._id, name: data?.name, latitude: data?.latitude, longitude: data?.longitude })}>
+                                                    <option key={data?._id} value={data?._id}>
                                                         {data?.name}
                                                     </option>
                                                 ))}
@@ -1069,7 +1123,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                 </Row >
             </Form >
-            <Row className={`${clinicsList?.length > 0 || counter === 1 ? '' : 'd-none'}`}>
+            <Row className={`${clinicsList?.length > 0 || counter === 1 && createResponse === 200 ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
                         <thead>

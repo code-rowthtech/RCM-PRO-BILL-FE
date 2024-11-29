@@ -40,7 +40,7 @@ const Clinic = ({ id }) => {
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
-    console.log(posDetails)
+    console.log(clinicData)
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -149,7 +149,7 @@ const Clinic = ({ id }) => {
         setField('street', clinicData?.userId?.address?.street);
         setField('zip', clinicData?.userId?.address?.zip);
         if (clinicData?.logo) {
-            setLogoName(clinicData?.logo)
+            setLogoName(clinicData?.logo?.fileName)
         }
         const stateName = clinicData?.userId?.address?.state;
         if (stateName) {
@@ -165,12 +165,16 @@ const Clinic = ({ id }) => {
                 }));
             }
         }
+
     }, [clinicData, statesData, setValue]);
 
     const onSubmit = (data) => {
         const newPayload = {
             name: data?.name || clinicData?.name, // Clinic name
-            email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(), // Email
+            // email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(), // Email
+            ...(data?.email.toLowerCase() !== clinicData?.userId?.email.toLowerCase() && {
+                email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(),
+            }),
             phone: data?.contact || clinicData?.userId?.phone, // Phone number
             clinicType: data?.clinicType || clinicData?.clinicType, // Clinic Type
             taxIdOrEIN: data?.taxId || clinicData?.taxIdOrEIN, // Tax ID/EIN
@@ -179,11 +183,15 @@ const Clinic = ({ id }) => {
             stateOfLicensing: formDetails.stateDetails || clinicData?.stateOfLicensing, // State Licensing
             accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails, // Accreditation Details
             logo: logo?.url?.split('?')[0] || clinicData?.logo, // Logo
+            logo: {
+                url: logo?.url.split('?')[0],
+                fileName: logoName
+            },
             id: id || clinicData?._id, // Clinic ID
             address: {
                 address1: data?.address || clinicData?.userId?.address?.address1, // Address 1
                 city: selectedCity?._id || clinicData?.userId?.address?.city, // City ID
-                state: selectedState?._id || clinicData?.userId?.address?.state, // State ID
+                state: JSON.parse(selectedState)?._id || clinicData?.userId?.address?.state, // State ID
                 street: data?.street || clinicData?.userId?.address?.street, // Street
                 zip: data?.zip || clinicData?.userId?.address?.zip, // Zip Code
                 latitude: selectedCity?.latitude || clinicData?.userId?.address?.latitude, // Latitude
@@ -192,7 +200,7 @@ const Clinic = ({ id }) => {
             pos: posDetails,
         };
 
-        // console.log(newPayload, 'newPayload');
+        console.log(newPayload, 'newPayload');
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -288,8 +296,17 @@ const Clinic = ({ id }) => {
                             <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('taxId')}
+                                {...register('taxId', {
+                                    minLength: {
+                                        value: 9,
+                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                    },
+                                })}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                maxLength={9}
                                 placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
@@ -345,7 +362,7 @@ const Clinic = ({ id }) => {
                         <Form.Label>Upload Logo</Form.Label>
                         <div onClick={handleLogoClick}
                             className={`custom-file-upload justify-content-between cursor-pointer ${logoName ? 'form-control' : 'custom-form-fields'}`}>
-                            {clinicData?.logo ? `${clinicData?.logo.split('').slice(0, 40).join('') + '...'}` : logoName ? logoName : 'Upload Logo'}
+                            {logoName ? logoName : 'Upload Document'}
                             <p className='mb-0'><FiDownloadCloud /></p>
                         </div>
                         <Form.Control
@@ -418,6 +435,7 @@ const Clinic = ({ id }) => {
                                             type="text"
                                             value={item.number}
                                             placeholder="Document Number"
+                                            onKeyPress={(event) => handleFirstSpace(event, 0)}
                                             onChange={(e) => handleInputChange(e, 'number', type, index)}
                                         />
                                     </Col>
@@ -627,7 +645,7 @@ const Clinic = ({ id }) => {
                         </Button>
                     </Col>
                 </Row>
-            </Form>
+            </Form >
         </>
 
     );

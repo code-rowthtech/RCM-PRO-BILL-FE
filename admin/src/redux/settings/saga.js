@@ -31,6 +31,7 @@ function* createMastersDataFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger')
         yield put({
             type: SettingsActionTypes.CREATE_MASTERS_DATA_ERROR,
             payload: error,
@@ -93,6 +94,7 @@ function* getTenureDataFunction(data) {
 }
 
 function* updateMastersDataFunction(data) {
+    const dataFromApi = JSON.parse(decryptMessage(data?.data?.key));
     try {
         yield put({
             type: SettingsActionTypes.UPDATE_MASTERS_DATA_LOADING,
@@ -102,6 +104,15 @@ function* updateMastersDataFunction(data) {
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
 
         if (response.status === 200) {
+            const ifStatus = dataFromApi?.isActive;
+            const setting = dataFromApi?.settingType;
+            if (ifStatus === true) {
+                ToastHandle(`${setting.charAt(0).toUpperCase() + setting.slice(1)} activated successfully`, 'success');
+            } else if (ifStatus === false) {
+                ToastHandle(`${setting.charAt(0).toUpperCase() + setting.slice(1)} deactivated successfully`, 'success');
+            } else {
+                ToastHandle(decryptedData?.message, 'success');
+            }
             yield put({
                 type: SettingsActionTypes.UPDATE_MASTERS_DATA_SUCCESS,
                 payload: { ...decryptedData },

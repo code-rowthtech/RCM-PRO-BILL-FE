@@ -54,6 +54,7 @@ const ClinicType = React.lazy(() => import('../pages/apps/Settings/clinicType'))
 const Location = React.lazy(() => import('../pages/apps/Settings/location'))
 const Roles = React.lazy(() => import('../pages/apps/Settings/roles'))
 const Tenure = React.lazy(() => import('../pages/apps/Settings/tenure'))
+const JobTitle = React.lazy(() => import('../pages/apps/Settings/jobTitle'))
 
 
 
@@ -376,6 +377,10 @@ const AllRoutes = () => {
                         {
                             path: 'tenure',
                             element: <LoadComponent component={Tenure} />,
+                        },
+                        {
+                            path: 'jobtitle',
+                            element: <LoadComponent component={JobTitle} />,
                         },
                         {
                             path: 'roles',

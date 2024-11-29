@@ -10,6 +10,7 @@ import { createMastersDataAction, getMastersDataAction, stateEmptydAction, updat
 import { IoMdClose } from 'react-icons/io'
 import Paginations from '../../../helpers/Paginations'
 import { createdBy } from './userId'
+import { handleFirstSpace } from '../../../helpers/noBeginningSpace'
 
 
 const Tenure = () => {
@@ -78,7 +79,8 @@ const Tenure = () => {
     const handleUpdate = (data) => {
         const payload = {
             id: data?._id,
-            isActive: !data?.isActive
+            isActive: !data?.isActive,
+            settingType: 'tenure'
         }
         dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     }
@@ -222,6 +224,7 @@ const Tenure = () => {
                                     <Form.Label>Tenure Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
+                                        onKeyPress={handleFirstSpace}
                                         placeholder="Enter Tenure Name"
                                         {...register("name", { required: "Tenure name is required" })}
                                     />
@@ -231,26 +234,28 @@ const Tenure = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Name<span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>Re-Enter Tenure Name<span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter tenure name"
+                                        onKeyPress={handleFirstSpace}
                                         {...register("reEnterName", {
                                             required: "Please re-enter tenure name",
-                                            validate: value => value === nameValue || "Names do not match"
+                                            validate: value => value === nameValue || "Tenure name does not match"
                                         })}
                                     />
                                     {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-0">
                                     <Form.Label>Months <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter no of months"
+                                        onKeyPress={handleFirstSpace}
                                         {...register("months", {
-                                            required: "Number of months for plan validity are required",
+                                            required: "Please enter the tenure validity months",
                                             pattern: {
                                                 value: /^[1-9]\d*$/, // Matches numbers greater than 0
                                                 message: "Only numbers greater than 0 are allowed",
@@ -258,9 +263,9 @@ const Tenure = () => {
                                         })}
                                     />
 
-                                    {errors.months && <p className="text-danger">{errors.months.message}</p>}
                                 </Form.Group>
                             </Col>
+                            {errors.months && <p className="text-danger">{errors.months.message}</p>}
                         </Row>
                         <Modal.Footer>
                             <Button onClick={closeAddModal} className='custom-buttons'>
@@ -298,6 +303,7 @@ const Tenure = () => {
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter Tenure Name"
+                                        onKeyPress={handleFirstSpace}
                                         {...register("name", { required: "Tenure name is required" })}
                                     />
                                     {errors.name && <p className="text-danger">{errors.name.message}</p>}
@@ -306,13 +312,14 @@ const Tenure = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Name</Form.Label>
+                                    <Form.Label>Re-Enter Tenure Name</Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter tenure name"
+                                        onKeyPress={handleFirstSpace}
                                         {...register("reEnterName", {
                                             required: "Please re-enter tenure name",
-                                            validate: value => value === nameValue || "Names do not match"
+                                            validate: value => value === nameValue || "Tenure name does not match"
                                         })}
                                     />
                                     {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
@@ -324,8 +331,9 @@ const Tenure = () => {
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter no of months"
+                                        onKeyPress={handleFirstSpace}
                                         {...register("months", {
-                                            required: "Number of months for plan validity are required",
+                                            required: "Please enter the tenure validity months",
                                             pattern: {
                                                 value: /^[1-9]\d*$/, // Matches numbers greater than 0
                                                 message: "Only numbers greater than 0 are allowed",

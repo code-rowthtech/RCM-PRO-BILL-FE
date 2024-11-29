@@ -7,18 +7,19 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import Multiselect from "multiselect-react-dropdown";
 import { IoMdClose } from 'react-icons/io';
 import Spinner from '../../../../constants/Spinner';
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const AddRoles = ({ show, closeModal }) => {
     const dispatch = useDispatch();
     const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
+    const [permissionError, setPermissionError] = useState(false)
     const store = useSelector((state) => state);
     const createResponse = store?.createRolesReducer?.data?.status;
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
         ...item,
         name: `${item?.name}`,
     }));
-
     const {
         register,
         handleSubmit,
@@ -32,16 +33,21 @@ const AddRoles = ({ show, closeModal }) => {
         }
     }, [show])
 
+
     const onSubmit = (data) => {
-        const payload = {
-            name: data.name,
-            description: data.description,
-            permissions: selectedPermissionIds,
-            createdById: idFromStorage?._id,
-            parentId: idFromStorage?._id,
-            showto: 'super-admin'
+        if (selectedPermissionIds?.length === 0) {
+            setPermissionError(true);
+        } else {
+            const payload = {
+                name: data.name,
+                description: data.description,
+                permissions: selectedPermissionIds,
+                createdById: idFromStorage?._id,
+                parentId: idFromStorage?._id,
+                showto: 'super-admin'
+            }
+            dispatch(createRolesAction({ key: `${encryptMessage(payload)}` }));
         }
-        dispatch(createRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
     const handleSelect = (selectedList) => {
@@ -70,7 +76,7 @@ const AddRoles = ({ show, closeModal }) => {
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
                     <Col sm={10}>
-                        <h4 className="mb-0 text-center">Add Roles</h4>
+                        <h4 className="mb-0 text-center">Add Role</h4>
                     </Col>
                     <Col sm={1}>
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
@@ -80,10 +86,11 @@ const AddRoles = ({ show, closeModal }) => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Name</Form.Label>
+                                <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Enter role name"
+                                    onKeyPress={(event) => handleFirstSpace(event, 12)}
                                     {...register('name', { required: 'Name is required' })}
                                 />
                                 {errors.name && <span className="text-danger">{errors.name.message}</span>}
@@ -92,11 +99,12 @@ const AddRoles = ({ show, closeModal }) => {
 
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Description</Form.Label>
+                                <Form.Label>Description <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
                                     placeholder="Enter role description"
+                                    onKeyPress={(event) => handleFirstSpace(event, 300)}
                                     {...register('description', { required: 'Description is required' })}
                                 />
                                 {errors.description && <span className="text-danger">{errors.description.message}</span>}
@@ -104,7 +112,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Permissions</Form.Label>
+                                <Form.Label>Permissions <span className='text-danger'>*</span></Form.Label>
 
                                 <Multiselect
                                     options={decryptedPermissionsData}
@@ -114,7 +122,12 @@ const AddRoles = ({ show, closeModal }) => {
                                     onSelect={handleSelect}
                                     onRemove={handleRemove}
                                 />
-
+                                {permissionError ?
+                                    <span className='text-danger'>
+                                        Atleast one permission has to be selected
+                                    </span> :
+                                    ''
+                                }
                             </Form.Group>
                         </Col>
 

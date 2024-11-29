@@ -41,23 +41,23 @@ const ProfileDropdown = (props: ProfileDropdownProps, state: ProfileDropdownStat
                 as={Link}
                 to="#"
                 onClick={toggleDropdown}
-                className="nav-link bg-white border-0 dropdown-toggle nav-user arrow-none me-0">
+                className="nav-link  border-0 dropdown-toggle nav-user d-flex align-items-center arrow-none me-0">
                 <span className="account-user-avatar">
-                    <FaUserCircle className="rounded-circle fs-1 text-dark" />
+                    <FaUserCircle className="rounded-circle fs-1  text-dark" />
                     {/* <img src={profilePic} className="rounded-circle" alt="user" /> */}
                 </span>
-                {/* <span>
-                    <span className="account-user-name">Admin</span>
-                    <span className="account-position">{props.userTitle}</span>
-                </span> */}
+                <span>
+                    <span className="account-user-name text-capitalize">{JSON.parse(sessionStorage.getItem('hyper_user'))?.name}</span>
+                    <span className="account-position text-capitalize">{JSON.parse(sessionStorage.getItem('hyper_user'))?.role}</span>
+                </span>
             </Dropdown.Toggle>
             <Dropdown.Menu align={'end'} className="dropdown-menu-animated topbar-dropdown-menu profile-dropdown">
                 <div onClick={toggleDropdown}>
                     {/* <div className="dropdown-header noti-title">
                         <h6 className="text-overflow m-0">Welcome !</h6>
                     </div> */}
-                    <p className='mb-0 ps-2 text-start fw-bold'>Admin</p>
-                    <hr className='my-0' />
+                    {/* <p className='mb-0 ps-2 text-start fw-bold'>{JSON.parse(sessionStorage.getItem('hyper_user'))?.email}</p>
+                    <hr className='my-0' /> */}
                     {props.menuItems.map((item, i) => {
                         return (
                             <Link to={item.redirectTo} className="dropdown-item notify-item" key={i + '-profile-menu'}>

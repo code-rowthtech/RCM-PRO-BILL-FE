@@ -70,7 +70,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
                     <Col sm={10}>
-                        <h4 className="mb-0 text-center">Edit Roles</h4>
+                        <h4 className="mb-0 text-center">Edit Role</h4>
                     </Col>
                     <Col sm={1}>
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
