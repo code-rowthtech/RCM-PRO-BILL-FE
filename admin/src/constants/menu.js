@@ -93,6 +93,12 @@ const MENU_ITEMS = [
                 parentKey: 'settings',
             },
             {
+                key: 'jobtitle',
+                label: 'Job Title',
+                url: '/settings/jobtitle',
+                parentKey: 'settings',
+            },
+            {
                 key: 'permissions',
                 label: 'Permissions',
                 url: '/settings/permissions',

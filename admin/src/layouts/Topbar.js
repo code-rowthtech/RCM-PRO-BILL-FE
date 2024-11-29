@@ -162,8 +162,6 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
                             <ProfileDropdown
                                 profilePic={profilePic}
                                 menuItems={ProfileMenus}
-                                username={'Dominic Keller'}
-                                userTitle={'Founder'}
                             />
                         </li>
                     </ul>

@@ -31,6 +31,7 @@ function* createMastersDataFunction(data) {
             });
         }
     } catch (error) {
+        ToastHandle(error, 'danger')
         yield put({
             type: SettingsActionTypes.CREATE_MASTERS_DATA_ERROR,
             payload: error,

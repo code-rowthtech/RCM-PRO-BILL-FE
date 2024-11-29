@@ -163,7 +163,7 @@ const PlanName = () => {
 
                                                 clinicTypeData?.map((data, index) => (
                                                     <tr key={index}>
-                                                        <td>
+                                                        <td className='text-capitalize'>
                                                             {data?.name}
                                                         </td>
                                                         {/* <td className='text-capitalize'>

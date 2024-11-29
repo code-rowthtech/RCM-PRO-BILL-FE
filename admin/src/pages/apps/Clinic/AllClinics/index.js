@@ -14,6 +14,7 @@ import { IoMdClose } from 'react-icons/io';
 import { GoAlert } from 'react-icons/go';
 import { userPermissions } from '../../../../helpers/userPermissions';
 import ToastHandle from '../../../../helpers/ToastMessage'
+import { getMastersDataAction } from '../../../../redux/settings/actions';
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
     const [name, setName] = useState('');
@@ -21,29 +22,33 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [status, setStatus] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
+    const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
-    console.log(clinicsData, 'clinicsDataclinicsData')
+    const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const isAddPresent = userPermissions.includes('add clinic');
     const isUpdatePresent = userPermissions.includes('update clinic');
+
     useEffect(() => {
         const payload = {
             name: name,
             skip: skip,
             limit: 10,
             status: status,
+            clinicType: selectedClinicType,
         }
         dispatch(getClinicAction({ payload }));
-
-    }, [dispatch, name, skip, status])
+        dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', skip: '', limit: '' }));
+    }, [dispatch, name, skip, status, selectedClinicType])
     useEffect(() => {
         const payload = {
             name: name,
             skip: skip,
             limit: 10,
             status: status,
+            clinicType: selectedClinicType,
         }
         if (updateSuccess === 200) {
             dispatch(getClinicAction({ payload }))
@@ -80,6 +85,11 @@ const OrderList = (): React$Element<React$FragmentType> => {
 
     }
 
+    const handleClinicTypeChange = (event) => {
+        const selectedValue = event.target.value;
+        setSelectedClinicType(selectedValue);
+    };
+
     return (
         <>
             <Row className='mt-2'>
@@ -105,6 +115,12 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                 <Col sm={6} className='text-end'>
                                     <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
                                         <Col xs="auto" className='d-flex gap-2'>
+                                            <FormInput type='select' onChange={handleClinicTypeChange}>
+                                                <option value={''} key={''}>All Clinics</option>
+                                                {clinicTypeData?.map((data, index) => (
+                                                    <option className='text-capitalize' value={data?.name} key={data?._id}>{data?.name}</option>
+                                                ))}
+                                            </FormInput>
                                             <FormInput
                                                 type="text"
                                                 onChange={(e) => setName(e.target.value)}

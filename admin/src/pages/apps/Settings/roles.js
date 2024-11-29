@@ -157,7 +157,12 @@ const Roles = () => {
 
                                                                 <td>
                                                                     <span className='text-truncate cursor-pointer' title={data?.description}>
-                                                                        {data?.description?.substring(0, 12) + '...'}
+                                                                        {data?.description
+                                                                            ? (data?.description?.length > 20
+                                                                                ? data?.description.slice(0, 20) + '...'
+                                                                                : data?.description)
+                                                                            : 'N/A'}
+
                                                                     </span>
                                                                 </td>
 
