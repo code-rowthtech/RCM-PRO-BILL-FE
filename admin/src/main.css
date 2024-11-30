@@ -160,3 +160,6 @@ body::-webkit-scrollbar {
 #search_input::placeholder {
     color: #a9a9a982;
 }
+.form-check-input {
+    cursor: pointer !important;
+}

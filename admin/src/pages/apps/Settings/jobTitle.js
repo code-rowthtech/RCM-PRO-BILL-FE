@@ -212,7 +212,7 @@ const JobTitle = () => {
                     </Card.Body>
                 </Card>
             </Col>
-            <Modal centered show={addJobTitleModal} onHide={closeAddModal}>
+            <Modal centered show={addJobTitleModal} >
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -283,7 +283,7 @@ const JobTitle = () => {
                 </Modal.Body>
             </Modal>
 
-            <Modal centered show={updateJobTitleModal} onHide={closeUpdateModal}>
+            <Modal centered show={updateJobTitleModal} >
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>

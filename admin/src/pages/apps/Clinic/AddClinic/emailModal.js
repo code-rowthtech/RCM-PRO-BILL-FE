@@ -24,6 +24,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest }) => {
             closeModal();
         }
     }, [createResponse])
+    console.log(mailId, 'mailIdmailId')
     const onSubmit = () => {
         setIsModalRequest(true)
         dispatch(createClinicAction({ key: encryptMessage(mailId) }))

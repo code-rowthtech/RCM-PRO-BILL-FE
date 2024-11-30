@@ -158,11 +158,11 @@ const Roles = () => {
                                                                 <td>
                                                                     <span className='text-truncate cursor-pointer' title={data?.description}>
                                                                         {data?.description
-                                                                            ? (data?.description?.length > 20
-                                                                                ? data?.description.slice(0, 20) + '...'
+                                                                            ? (data?.description?.length > 50
+                                                                                ? data?.description.slice(0, 49) + '...'
                                                                                 : data?.description)
                                                                             : 'N/A'}
-
+                                                                        {/* {data?.description} */}
                                                                     </span>
                                                                 </td>
 

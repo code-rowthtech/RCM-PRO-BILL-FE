@@ -376,15 +376,16 @@ const Clinic = ({ id }) => {
                         />
                         {/* {errors.logoimage && <span className="text-danger">{errors.logoimage.message}</span>} */}
                     </Col>
+                    <hr />
                     {/* Dynamic Fields Section */}
-                    {['accreditationDetails', 'stateDetails', 'medicalDetails'].map((type) => (
+                    {['accreditationDetails', 'medicalDetails', 'stateDetails'].map((type) => (
                         <React.Fragment key={type}>
                             <Col sm={12}>
                                 <Form.Label>
                                     {type === 'accreditationDetails'
                                         ? 'Accreditation Details'
                                         : type === 'stateDetails'
-                                            ? 'State Details'
+                                            ? 'State of Licensing'
                                             : 'Medical Details'}
                                     <span
                                         onClick={() => {
@@ -464,6 +465,7 @@ const Clinic = ({ id }) => {
                                     </Col>
                                 </React.Fragment>
                             ))}
+                            <hr />
                         </React.Fragment>
                     ))}
 
@@ -600,9 +602,17 @@ const Clinic = ({ id }) => {
                                             <Form.Control
                                                 type="email"
                                                 value={data.email}
+                                                {...register('contactemail', {
+                                                    pattern: {
+                                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
+                                                        message: 'Please enter a valid email address'
+                                                    }
+                                                })}
                                                 onChange={(e) => handlePOSInputChange(e, 'email', index)}
                                                 placeholder="Contact Email"
                                             />
+                                            {errors.contactemail && <span className="text-danger">{errors.contactemail.message}</span>}
+
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>

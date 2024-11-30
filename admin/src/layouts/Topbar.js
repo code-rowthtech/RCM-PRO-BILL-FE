@@ -123,6 +123,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/settings/permissions': 'Permissions',
         '/settings/roles': 'Roles',
         '/settings/clinicType': 'Clinic Types',
+        '/settings/jobtitle': 'Job Title',
 
     };
 

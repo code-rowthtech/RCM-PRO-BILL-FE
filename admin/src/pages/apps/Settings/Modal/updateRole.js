@@ -65,7 +65,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
     };
 
     return (
-        <Modal centered show={show} onHide={closeModal}>
+        <Modal centered show={show} >
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>

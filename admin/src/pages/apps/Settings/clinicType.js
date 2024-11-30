@@ -213,7 +213,7 @@ const ClinicType = () => {
                     </Card.Body>
                 </Card>
             </Col>
-            <Modal centered show={addDepartmentModal} onHide={closeAddModal}>
+            <Modal centered show={addDepartmentModal} >
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -282,7 +282,7 @@ const ClinicType = () => {
                 </Modal.Body>
             </Modal>
 
-            <Modal centered show={updateClinicTypeModal} onHide={closeUpdateModal}>
+            <Modal centered show={updateClinicTypeModal} >
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
