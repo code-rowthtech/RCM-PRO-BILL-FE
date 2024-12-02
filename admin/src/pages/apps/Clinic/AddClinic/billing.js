@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions'
@@ -7,9 +7,10 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
+import us from '../../../../assets/images/flags/us.jpg'
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
-
+    console.log({ billingId })
     const {
         register,
         handleSubmit,
@@ -27,7 +28,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Store the selected date
 
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
-    // console.log(subscriptionsData, 'subscriptionsDatasubscriptionsDatasubscriptionsData')
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
     useEffect(() => {
@@ -44,10 +44,12 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
             subscription: data?.subscription,
             userId: billingId,
             billingContactName: data?.name,
-            billingContactPhone: data?.contact,
+            billingContactPhone: '+1' + data?.contact,
             billingContactemail: data?.email,
             adminId: adminData?._id,
+            clinicCount: multiple === 0 ? 1 : multiple,
         }
+        console.log(payload)
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
     };
 
@@ -324,8 +326,45 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                     {errors.email && <span className="text-danger">{errors.email.message}</span>}
                                 </Col>
                                 <Col sm={12} className='mb-2'>
-                                    <Form.Group className="">
+                                    <Form.Group className="mb-0 position-relative">
                                         <Form.Label className='mb-1'>Billing Contact Phone Number <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Group>
+                                            <InputGroup>
+                                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
+                                                <Form.Control
+                                                    type="tel"
+                                                    {...register('contact', {
+                                                        required: 'This field is required',
+                                                        pattern: {
+                                                            value: /^[0-9]*$/,
+                                                            message: 'Contact must be a number'
+                                                        },
+                                                        maxLength: {
+                                                            value: 10,
+                                                            message: 'Contact must not exceed 10 digits'
+                                                        },
+                                                        minLength: {
+                                                            value: 10,
+                                                            message: 'Contact must not be less than 10 digits'
+                                                        }
+                                                    })}
+
+                                                    placeholder="1234-234-234"
+                                                    maxLength={10}
+                                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                                />
+                                            </InputGroup>
+                                        </Form.Group>
+                                        <div
+                                            className='position-absolute ' style={{ top: '52%', left: '1%' }}
+                                        >
+                                            <img
+                                                src={us}
+                                                alt="country code flag"
+                                                width={20} />
+                                        </div>
+                                    </Form.Group>
+                                    {/* <Form.Group className="">
                                         <Form.Control
                                             type='text'
                                             {...register('contact', {
@@ -346,7 +385,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                             maxLength={10}
 
                                             placeholder='Billing Contact Phone Number' />
-                                    </Form.Group>
+                                    </Form.Group> */}
                                     {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
                                 </Col>
                             </Row>

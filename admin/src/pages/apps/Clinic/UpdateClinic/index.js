@@ -18,6 +18,8 @@ const Updateclinic = () => {
     const id = searchParams.get('updateid');
     const [activeTab, setActiveTab] = useState('clinic');
     const store = useSelector((state) => state);
+    const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    console.log(clinicData, 'ccccccccccccc')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -49,12 +51,14 @@ const Updateclinic = () => {
                                     </span>
                                     <span
                                         onClick={() => handleActiveTab('billing')}
-                                        className={`fw-semibold cursor-pointer ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                        className={`fw-semibold cursor-pointer
+                                         ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Billing and Subscription Information
                                     </span>
                                     <span
                                         onClick={() => handleActiveTab('contract')}
-                                        className={`fw-semibold cursor-pointer ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                        className={`fw-semibold cursor-pointer 
+                                        ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Contract
                                     </span>
                                 </Col>

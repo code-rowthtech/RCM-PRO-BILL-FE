@@ -53,19 +53,25 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId 
                                     <Spinner />
                                 </td>
                             </tr>
-                            :
-                            contracts?.map((item, index) => (
-                                <tr key={item?._id}>
-                                    <td>{item?.contractName}</td>
-                                    <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                    <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                    <td>8:00 AM 26th Sep, 2024</td>
-                                    <td>
-                                        <i className="fs-5 mdi mdi-eye"></i>
-                                        <i className="fs-5 mdi mdi-download"></i>
+                            : contracts?.length === 0 ? (
+                                <tr>
+                                    <td className="text-center" colSpan={5}>
+                                        No data found
                                     </td>
                                 </tr>
-                            ))
+                            ) :
+                                contracts?.map((item, index) => (
+                                    <tr key={item?._id}>
+                                        <td>{item?.contractName}</td>
+                                        <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                        <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                        <td>8:00 AM 26th Sep, 2024</td>
+                                        <td>
+                                            <i className="fs-5 mdi mdi-eye"></i>
+                                            <i className="fs-5 mdi mdi-download"></i>
+                                        </td>
+                                    </tr>
+                                ))
                     }
 
 

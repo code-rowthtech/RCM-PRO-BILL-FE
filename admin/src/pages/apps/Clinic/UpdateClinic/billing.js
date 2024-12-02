@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Row, Table } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Row, Table } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions'
@@ -8,6 +8,8 @@ import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
 import { createdBy } from '../../Settings/userId';
+import us from '../../../../assets/images/flags/us.jpg'
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 const Billing = ({ activeTab, setActiveTab, id }) => {
 
     const {
@@ -48,7 +50,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
             subscription: data?.subscription,
             userId: id,
             billingContactName: data?.name,
-            billingContactPhone: data?.contact,
+            billingContactPhone: '+1' + data?.contact,
             billingContactemail: data?.email.toLowerCase(),
             adminId: createdBy,
         }
@@ -140,7 +142,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                             <Row>
                                 <Col sm={6} className="mb-2">
                                     <Form.Group >
-                                        <Form.Label className='mb-1'>Subscription Plan</Form.Label>
+                                        <Form.Label className='mb-1'>Subscription Plan <span className='text-danger'>*</span></Form.Label>
                                         <Form.Select
                                             {...register('subscription', {
                                                 required: 'This field is required'
@@ -149,7 +151,6 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                 const selectedId = e.target.value;
                                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
                                                 setAmount(selectedSubscription || 0);
-                                                // console.log(selectedSubscription, 'selectedSubscription')
                                             }}
                                         >
                                             <option value="">Select plan type</option>
@@ -347,6 +348,49 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                     {errors.email && <span className="text-danger">{errors.email.message}</span>}
                                                 </Col>
                                                 <Col sm={12} className='mb-2'>
+                                                    <Form.Group className="mb-0 position-relative">
+                                                        <Form.Label className='mb-1'>Billing Contact Phone Number <span className='text-danger'>*</span></Form.Label>
+                                                        <Form.Group>
+                                                            <InputGroup>
+                                                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
+                                                                <Form.Control
+                                                                    type="tel"
+                                                                    {...register('contact', {
+                                                                        required: 'This field is required',
+                                                                        pattern: {
+                                                                            value: /^[0-9]*$/,
+                                                                            message: 'Contact must be a number'
+                                                                        },
+                                                                        maxLength: {
+                                                                            value: 10,
+                                                                            message: 'Contact must not exceed 10 digits'
+                                                                        },
+                                                                        minLength: {
+                                                                            value: 10,
+                                                                            message: 'Contact must not be less than 10 digits'
+                                                                        }
+                                                                    })}
+
+                                                                    placeholder="1234-234-234"
+                                                                    maxLength={10}
+                                                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                                                />
+                                                            </InputGroup>
+                                                        </Form.Group>
+                                                        <div
+                                                            className='position-absolute ' style={{ top: '52%', left: '1%' }}
+                                                        >
+                                                            <img
+                                                                src={us}
+                                                                alt="country code flag"
+                                                                width={20} />
+                                                        </div>
+                                                    </Form.Group>
+                                                    {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
+                                                </Col>
+
+
+                                                {/* <Col sm={12} className='mb-2'>
                                                     <Form.Group className="">
                                                         <Form.Label className='mb-1'>Billing Contact Phone Number</Form.Label>
                                                         <Form.Control
@@ -370,7 +414,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                             placeholder='Billing Contact Phone Number' />
                                                     </Form.Group>
                                                     {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
-                                                </Col>
+                                                </Col> */}
                                             </Row>
                                         </Col>
 

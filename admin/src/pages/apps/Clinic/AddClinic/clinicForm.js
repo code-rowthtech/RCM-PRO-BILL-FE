@@ -56,6 +56,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const createResponse = store?.createClinicsReducer?.data?.status;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
+    console.log(clinicsList, 'clinicsListclinicsListclinicsList')
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     // const state = statesData?.states && statesData?.states.find((data) => data?.state_code === 'NY')
@@ -337,22 +338,35 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 if (counter === 1) {
                     setParentclinic(store?.createClinicsReducer?.data?.data?.clinicId?._id);
                     setBillingId(store?.createClinicsReducer?.data?.data?._id);
+                    const payload = {
+                        parentClinic: store?.createClinicsReducer?.data?.data?.clinicId?._id,
+                    }
+                    console.log('payload', payload)
+                    dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
                 } else if (counter > 1 && clinicsList) {
                     setParentclinic(clinicsList[0]?.parentClinic)
-                    setBillingId(clinicsList[0]?.parentClinic);
+                    setBillingId(clinicsList[0]?.userId?._id);
+                    const payload = {
+                        parentClinic: parentClinic,
+                    }
+                    dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
                 }
 
             }
+            const payload = {
+                parentClinic: parentClinic,
+            }
+            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
 
         }
-        if (parentClinic || deleteResponse === 200) {
+        if (deleteResponse === 200) {
             const payload = {
                 parentClinic: parentClinic,
             }
             dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
         }
 
-    }, [createResponse, parentClinic, deleteResponse, counter]);
+    }, [createResponse, clinicsList, parentClinic, deleteResponse, counter]);
     // Submit Button 
 
     const [formValid, setFormValid] = useState(false)
@@ -368,6 +382,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setFormValid(true)
         }
     }, [resetEmail])
+
     const onSubmit = (data) => {
         setIsModalRequest(false);
         const newPayload = {
@@ -386,13 +401,20 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             // logo: logo?.url.split('?')[0],
             pos: posDetails,
             address: {
-                address1: data?.address,
-                city: data?.city,
-                state: stateToSelect?._id,
-                street: data?.street,
-                zip: data?.zip,
-                latitude: latitude,
-                longitude: longitude,
+                ...(data?.address ? { address1: data?.address } : {}), // Only include address1 if data.address exists
+                ...(data?.city ? { city: data?.city } : {}), // Only include address1 if data.address exists
+                ...(data?.zip ? { zip: data?.zip } : {}), // Only include address1 if data.address exists
+                ...(data?.street ? { street: data?.street } : {}), // Only include address1 if data.address exists
+                ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}), // Only include address1 if data.address exists
+                ...(latitude ? { latitude: latitude } : {}), // Only include address1 if data.address exists
+                ...(longitude ? { longitude: longitude } : {}), // Only include address1 if data.address exists
+                // address1: data?.address,
+                // city: data?.city,
+                // state: stateToSelect?._id,
+                // street: data?.street,
+                // zip: data?.zip,
+                // latitude: latitude,
+                // longitude: longitude,
             },
             logo: {
                 url: logo?.url.split('?')[0],
@@ -953,7 +975,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Row>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>State</Form.Label>
+                                            <Form.Label className='mb-1' >State</Form.Label>
                                             <Form.Select
                                                 {...register('stateName')}
                                                 onChange={(e) => handleStateSelection(e)}
@@ -1003,7 +1025,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         <Form.Group className="mb-2">
                                             <Form.Label className='mb-1'>Street</Form.Label>
                                             <Form.Control
-                                                defaultValue={updatePage ? clinicDataToUpdate?.address?.street : ''}
                                                 type="text"
                                                 {...register('street')}
                                                 onKeyPress={handleFirstSpace}
@@ -1102,16 +1123,27 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
-                                        <Form.Group className="mb-2">
+                                        <Form.Group className="mb-2 position-relative">
                                             <Form.Label className="mb-1">Phone Number</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                value={data.contact}
-                                                onChange={(e) => handlePOSInputChange(e, 'contact', index)}
-                                                onKeyPress={handleFirstSpace}
-                                                placeholder="Phone Number"
-                                                maxLength={10}
-                                            />
+                                            <InputGroup>
+                                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text>
+                                                <Form.Control
+                                                    type="text"
+                                                    value={data.contact}
+                                                    onChange={(e) => handlePOSInputChange(e, 'contact', index)}
+                                                    onKeyPress={handleFirstSpace}
+                                                    placeholder="Phone Number"
+                                                    maxLength={10}
+                                                />
+                                            </InputGroup>
+                                            <div
+                                                className='position-absolute' style={{ top: '52%', left: '1%' }}
+                                            >
+                                                <img
+                                                    src={us}
+                                                    alt="country code flag"
+                                                    width={20} />
+                                            </div>
                                         </Form.Group>
                                     </Col>
                                 </React.Fragment>
