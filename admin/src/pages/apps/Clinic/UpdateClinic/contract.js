@@ -9,7 +9,7 @@ const Contracttable = ({ activeTab, id }) => {
     const dispatch = useDispatch()
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.response;
-    console.log(contracts)
+    console.log(contracts, 'ccccccccc')
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {
@@ -44,24 +44,30 @@ const Contracttable = ({ activeTab, id }) => {
                                     <Spinner />
                                 </td>
                             </tr>
-                            :
-                            contracts?.map((item, index) => (
-                                <tr key={item?._id}>
-                                    <td>{item?.contractName}</td>
-                                    <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                    <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                    <td>
-                                        {new Date(item?.sentDate).toLocaleDateString('en-GB')}
-                                    </td>
-                                    <td>
-                                        <i className="fs-4 me-1 mdi mdi-eye cursor-pointer mdi mdi-eye"
-                                            onClick={() => handleDownload(item?.certificateFileUrl)}></i>
-                                        <i
-                                            className="fs-4 mdi mdi-download"
-                                            onClick={() => handleDownload(item?.certificateFileUrl)}></i>
+                            : contracts?.length === 0 ? (
+                                <tr>
+                                    <td className="text-center" colSpan={5}>
+                                        No data found
                                     </td>
                                 </tr>
-                            ))
+                            ) :
+                                contracts?.map((item, index) => (
+                                    <tr key={item?._id}>
+                                        <td>{item?.contractName}</td>
+                                        <td><span className={`${item?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                        <td><span className={`${item?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{item?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                        <td>
+                                            {new Date(item?.sentDate).toLocaleDateString('en-GB')}
+                                        </td>
+                                        <td>
+                                            <i className="fs-4 me-1 mdi mdi-eye cursor-pointer mdi mdi-eye"
+                                                onClick={() => handleDownload(item?.certificateFileUrl)}></i>
+                                            <i
+                                                className="fs-4 mdi mdi-download"
+                                                onClick={() => handleDownload(item?.certificateFileUrl)}></i>
+                                        </td>
+                                    </tr>
+                                ))
                     }
 
 

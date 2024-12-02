@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { createPermissionAction, createRolesAction, createUserRolesAction, getPermissionAction } from '../../../../redux/actions';
@@ -10,6 +10,8 @@ import Spinner from '../../../../constants/Spinner';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for eye visibility toggle
 import { getMastersDataAction } from '../../../../redux/settings/actions';
 import { createdBy } from '../../Settings/userId';
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
+import us from '../../../../assets/images/flags/us.jpg'
 
 const AddRoles = ({ show, closeModal }) => {
     const dispatch = useDispatch();
@@ -116,7 +118,7 @@ const AddRoles = ({ show, closeModal }) => {
                                 {errors.email && <span className="text-danger">{errors.email.message}</span>}
                             </Form.Group>
                         </Col>
-                        <Col sm={6}>
+                        {/* <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Contact No <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
@@ -127,6 +129,47 @@ const AddRoles = ({ show, closeModal }) => {
                                 />
                                 {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
+                        </Col> */}
+                        <Col sm={6} className='mb-2'>
+                            <Form.Group className="mb-0 position-relative">
+                                <Form.Label className='mb-1'>Billing Contact Phone Number <span className='text-danger'>*</span></Form.Label>
+                                <Form.Group>
+                                    <InputGroup>
+                                        <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>+1</InputGroup.Text> {/* This is the prefix */}
+                                        <Form.Control
+                                            type="tel"
+                                            {...register('phone', {
+                                                required: 'This field is required',
+                                                pattern: {
+                                                    value: /^[0-9]*$/,
+                                                    message: 'Contact must be a number'
+                                                },
+                                                maxLength: {
+                                                    value: 10,
+                                                    message: 'Contact must not exceed 10 digits'
+                                                },
+                                                minLength: {
+                                                    value: 10,
+                                                    message: 'Contact must not be less than 10 digits'
+                                                }
+                                            })}
+
+                                            placeholder="1234-234-234"
+                                            maxLength={10}
+                                            onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        />
+                                    </InputGroup>
+                                </Form.Group>
+                                <div
+                                    className='position-absolute ' style={{ top: '52%', left: '1%' }}
+                                >
+                                    <img
+                                        src={us}
+                                        alt="country code flag"
+                                        width={20} />
+                                </div>
+                            </Form.Group>
+                            {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>

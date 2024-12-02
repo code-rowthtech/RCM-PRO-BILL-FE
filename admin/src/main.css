@@ -163,3 +163,13 @@ body::-webkit-scrollbar {
 .form-check-input {
     cursor: pointer !important;
 }
+
+/* Default color */
+#stateSelect {
+    color: black;
+}
+
+/* Red color for the default option */
+#stateSelect.default-selected {
+    color: red;
+}
