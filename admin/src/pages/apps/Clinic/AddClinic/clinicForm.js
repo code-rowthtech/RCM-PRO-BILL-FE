@@ -556,6 +556,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         value: 9,
                                         message: 'Tax ID / EIN must be at least 9 characters long', // Error message
                                     },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                    },
                                 })}
                                 // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
@@ -588,7 +592,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             }
                                         })}
                                         onChange={(e) => {
-                                            setResetEmail({ ...resetEmail, phone: e.target.value });
+                                            setResetEmail({ ...resetEmail, phone: '+1' + e.target.value });
                                         }}
                                         defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                         placeholder="1234-234-234"
@@ -621,18 +625,27 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         value: 10,
                                         message: 'NPI must be at least 10 characters long', // Error message
                                     },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'NPI cannot exceed 10 characters', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'NPI must contain numbers only', // Error message
+                                    },
                                 })}
                                 defaultValue={updatePage ? clinicDataToUpdate?.npiNumber : ''}
                                 placeholder="NPI Number"
                                 maxLength={10}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)} />
                             {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
+
                         </Form.Group>
                     </Col>
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
                         <Form.Label>Upload Logo</Form.Label>
                         <div onClick={handleLogoClick}
-                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName ? '' : 'custom-form-fields'}`}>
+                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName ? 'form-control' : 'custom-form-fields'}`}>
                             {logoName ? logoName : 'Upload Logo'}
                             <p className='mb-0'><FiDownloadCloud /></p>
                         </div>
@@ -790,7 +803,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Form.Select
                                     onChange={(e) => handleStateInputChange(e, 'name', index)}
                                 >
-                                    <option>State</option>
+                                    <option style={{ color: 'red !important' }}>State</option>
                                     {statesData?.states?.map((data) => (
                                         <option
                                             value={data?.name} key={data?._id}
@@ -1004,10 +1017,21 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Control
                                                 defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
                                                 type="text"
-                                                {...register('zip')}
+                                                {...register('zip', {
+                                                    minLength: {
+                                                        value: 5,
+                                                        message: 'ZIP code must be at least 5 characters long',
+                                                    },
+                                                    pattern: {
+                                                        value: /^[0-9]+$/,
+                                                        message: 'ZIP code must contain numbers only',
+                                                    },
+                                                })}
                                                 onKeyPress={handleFirstSpace}
-                                                placeholder="Zip" />
-                                            {/* {errors.zip && <span className="text-danger">{errors.zip.message}</span>} */}
+                                                placeholder="Zip"
+                                                maxLength={5}
+                                            />
+                                            {errors.zip && <span className="text-danger">{errors.zip.message}</span>}
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -1054,10 +1078,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Control
                                                 type="email"
                                                 value={data.email}
+                                                {...register('contactemail', {
+                                                    pattern: {
+                                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
+                                                        message: 'Please enter a valid email address'
+                                                    }
+                                                })}
                                                 onChange={(e) => handlePOSInputChange(e, 'email', index)}
-                                                onKeyPress={handleFirstSpace}
                                                 placeholder="Contact Email"
                                             />
+                                            {errors.contactemail && <span className="text-danger">{errors.contactemail.message}</span>}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>

@@ -66,7 +66,7 @@ const AddRoles = ({ show, closeModal }) => {
         }
     }, [createResponse])
     return (
-        <Modal centered show={show} onHide={closeModal}>
+        <Modal centered show={show} >
             {/* <Modal.Header
                 onHide={closeModal}
                 closeButton

@@ -54,7 +54,7 @@ const UpdateSubscriptions = ({ show, closeModal, data }) => {
         closeModal();
     }
     return (
-        <Modal show={show} size='md' centered onHide={closeModal}>
+        <Modal show={show} size='md' centered>
             {/* <Modal.Header
                 onHide={closeModal}
                 closeButton

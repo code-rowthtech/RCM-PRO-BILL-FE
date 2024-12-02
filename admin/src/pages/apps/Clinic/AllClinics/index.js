@@ -256,7 +256,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                     </Card>
                 </Col>
             </Row>
-            <Modal show={deleteModal} onHide={closeDeleteModal} centered size='md' >
+            <Modal show={deleteModal} centered size='md' >
                 <Modal.Body>
                     <div>
                         <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">

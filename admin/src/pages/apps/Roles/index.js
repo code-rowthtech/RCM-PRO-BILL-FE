@@ -216,7 +216,7 @@ const RoleManagement = () => {
                 </Col>
             </Row>
             <UpdateRoles data={dataToUpdate} show={updateModal} closeModal={closeUpdateModal} />
-            <Modal show={statusModal} onHide={closeStatusModal} centered size='md' >
+            <Modal show={statusModal} centered size='md' >
                 <Modal.Body>
                     <div>
                         <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">

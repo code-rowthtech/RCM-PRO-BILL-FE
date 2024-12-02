@@ -105,7 +105,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
     };
 
     return (
-        <Modal centered show={show} size="md" onHide={closeModal}>
+        <Modal centered show={show} size="md">
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>

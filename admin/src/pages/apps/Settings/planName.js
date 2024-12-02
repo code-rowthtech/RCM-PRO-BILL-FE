@@ -207,7 +207,7 @@ const PlanName = () => {
                     </Card.Body>
                 </Card>
             </Col>
-            <Modal centered show={addPlanNameModal} onHide={closeAddModal}>
+            <Modal centered show={addPlanNameModal}>
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -278,7 +278,7 @@ const PlanName = () => {
                 </Modal.Body>
             </Modal>
 
-            <Modal centered show={updatePlanNameModal} onHide={closeUpdateModal}>
+            <Modal centered show={updatePlanNameModal}>
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>

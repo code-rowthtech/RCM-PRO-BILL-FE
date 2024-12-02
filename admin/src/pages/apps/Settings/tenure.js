@@ -206,7 +206,7 @@ const Tenure = () => {
                     </Card.Body>
                 </Card>
             </Col>
-            <Modal centered show={addTenureModal} onHide={closeAddModal}>
+            <Modal centered show={addTenureModal} >
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -284,7 +284,7 @@ const Tenure = () => {
                 </Modal.Body>
             </Modal>
 
-            <Modal centered show={updateTenureModal} onHide={closeUpdateModal}>
+            <Modal centered show={updateTenureModal}>
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
