@@ -11,6 +11,7 @@ import Clinic from './clinic';
 import Billing from './billing';
 import Contracttable from './contract';
 import { getMastersDataAction } from '../../../../redux/settings/actions';
+import Spinner from '../../../../constants/Spinner';
 
 const Updateclinic = () => {
     const dispatch = useDispatch();
@@ -19,7 +20,6 @@ const Updateclinic = () => {
     const [activeTab, setActiveTab] = useState('clinic');
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log(clinicData, 'ccccccccccccc')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -47,7 +47,7 @@ const Updateclinic = () => {
                                     <span
                                         onClick={() => handleActiveTab('clinic')}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
-                                        Clinic Information
+                                        Practice Information
                                     </span>
                                     <span
                                         onClick={() => handleActiveTab('billing')}
@@ -66,7 +66,12 @@ const Updateclinic = () => {
                             <Row className='scroll-container w pt-2' style={{ height: '93%' }}>
                                 <Col>
                                     {activeTab === 'clinic' ?
-                                        <Clinic id={id} />
+                                        store?.getClinicByIdReducer?.loading ?
+                                            <div className=' d-flex align-items-center flex-column justify-content-center pt-5 mt-5'>
+                                                <Spinner />
+                                            </div>
+                                            :
+                                            <Clinic id={id} />
                                         :
                                         activeTab === 'billing' ?
                                             <Billing setActiveTab={setActiveTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} activeTab={activeTab} />

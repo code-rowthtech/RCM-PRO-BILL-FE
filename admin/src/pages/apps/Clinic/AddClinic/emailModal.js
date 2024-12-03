@@ -7,7 +7,7 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import Spinner from '../../../../constants/Spinner';
 import { IoMdClose } from 'react-icons/io';
 import ToastHandle from '../../../../helpers/ToastMessage';
-const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest }) => {
+const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDataNull }) => {
     const dispatch = useDispatch();
     // Using useForm hook for form handling and validation
     const {
@@ -22,6 +22,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest }) => {
         if (createResponse === 200) {
             setIsModalRequest(false);
             closeModal();
+            setMailDataNull()
         }
     }, [createResponse])
     const onSubmit = () => {

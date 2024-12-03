@@ -226,10 +226,10 @@ const AllRoutes = () => {
                     path: 'apps',
                     children: [
                         {
-                            path: 'crm',
+                            path: 'rcm',
                             children: [
                                 {
-                                    path: 'orders',
+                                    path: 'allclinics',
                                     element: <LoadComponent component={AllClinics} />,
                                 },
                                 {

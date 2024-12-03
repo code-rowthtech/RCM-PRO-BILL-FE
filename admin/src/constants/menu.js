@@ -26,8 +26,8 @@ const MENU_ITEMS = [
     // },
     {
         key: 'all-clinic',
-        label: 'Clinics',
-        url: '/apps/crm/orders',
+        label: 'Practice',
+        url: '/apps/rcm/allclinics',
         icon: 'uil-map-pin',
     },
     {
@@ -112,7 +112,7 @@ const MENU_ITEMS = [
             },
             // {
             //     key: 'speciality',
-            //     label: 'Speciality',
+            //     label: 'Practice Speciality',
             //     url: '/settings/speciality',
             //     parentKey: 'settings',
             // },
@@ -142,7 +142,7 @@ const MENU_ITEMS = [
             // },
             {
                 key: 'clinicType',
-                label: 'Clinic Type',
+                label: 'Practice Type',
                 url: '/settings/clinicType',
                 parentKey: 'settings',
             },

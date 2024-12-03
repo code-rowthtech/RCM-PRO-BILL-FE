@@ -20,7 +20,8 @@ const Clinic = ({ id }) => {
         setValue, watch,
         formState: { errors },
     } = useForm();
-
+    const dispatch = useDispatch()
+    const stateGeoLocation = watch('stateName');
     const logoFileInputRef = useRef(null);
     const [logoName, setLogoName] = useState('');
     const [logo, setLogo] = useState(null);
@@ -38,13 +39,11 @@ const Clinic = ({ id }) => {
     const cities = store?.getCitiesReducer?.data?.cities;
     const [formDetails, setFormDetails] = useState({
         accreditationDetails: [{ name: '', number: '', url: null, fileName: '' }],
-        medicalDetails: [{ name: '', number: '', url: null, fileName: '' }],
         stateDetails: [{ name: '', number: '', url: null, fileName: '' }],
     });
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
-    console.log(clinicData)
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -55,7 +54,34 @@ const Clinic = ({ id }) => {
         setPosDetails(clinicData?.pos || []);
 
     }, [clinicData]);
+    const setField = (key, value) => value && setValue(key, value);
+    console.log({ stateGeoLocation })
+    useEffect(() => {
+        setField('clinicType', clinicData?.clinicType);
+        setField('contact', clinicData?.userId?.phone?.startsWith("+1")
+            ? clinicData.userId.phone.substring(2)
+            : clinicData?.userId?.phone);
+        setField('name', clinicData?.name);
+        setField('taxId', clinicData?.taxIdOrEIN?.replace(/-/g, ''));
+        setField('speciality', clinicData?.practiceSpecialty)
+        setField('npi', clinicData?.npiNumber);
+        setField('email', clinicData?.userId?.email);
+        setField('address', clinicData?.userId?.address?.address1);
+        setField('street', clinicData?.userId?.address?.street);
+        setField('zip', clinicData?.userId?.address?.zip);
+        setField('stateName', clinicData?.userId?.address?.state?._id)
+        if (clinicData?.userId?.address?.city) {
+            dispatch(getCitiesAction({ state_code: clinicData?.userId?.address?.state?.id, name: clinicData?.userId?.address?.city?.name, limit: '', skip: '' }))
+        }
+        setLongitude(clinicData?.userId?.address?.longitude)
+        setLatitude(clinicData?.userId?.address?.latitude);
 
+        if (clinicData?.logo) {
+            setLogoName(clinicData?.logo?.fileName)
+        }
+
+
+    }, [clinicData, statesData, setValue]);
     const handleLogoClick = () => {
         if (logoFileInputRef.current) {
             logoFileInputRef.current.click();
@@ -65,7 +91,7 @@ const Clinic = ({ id }) => {
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         try {
-            const url = await handleUpload(selectedFile); // Assume handleUpload returns the uploaded file URL
+            const url = await handleUpload(selectedFile);
             setLogo(url);
             setLogoName(selectedFile?.name);
 
@@ -120,83 +146,21 @@ const Clinic = ({ id }) => {
         }));
     };
 
-    const dispatch = useDispatch()
     const handleStateSelection = (e) => {
         const selectedOption = e.target.selectedOptions[0]; // Get the selected <option>
-        const key = JSON.parse(selectedOption.getAttribute('data-key')); // Access the data-key attribute
-        console.log(key, 'key')
-
-        setSelectedState(key);
-        // const selectedState = JSON.parse(e.target.value);
-        dispatch(getCitiesAction({ state_code: key?.id, name: '', limit: 25 }));
+        const key = JSON.parse(selectedOption.getAttribute('data-key'));
+        console.log(key)
+        dispatch(getCitiesAction({ state_code: key?.id, name: '', limit: 25, skip: '' }))
     };
+
 
     const handleCitySelection = (e) => {
-        const value = e.target.value;
-        const selectedOption = e.target.selectedOptions[0]; // Get the selected <option>
 
-        const key = JSON.parse(selectedOption.getAttribute('data-key')); // Access the data-key attribute
-        setLongitude(key?.longitude)
-        setLatitude(key?.latitude)
-        // if (value) {
-        //     try {
-        //         const citySelected = JSON.parse(value);
-        setSelectedCity(key);
-        //     } catch (error) {
-        //         console.error('Invalid JSON:', value);
-        //     }
-        // }
     };
 
-
-    const setField = (key, value) => value && setValue(key, value);
-    useEffect(() => {
-        if (clinicData?.userId?.address?.city && clinicData?.userId?.address?.state?.id) {
-            dispatch(getCitiesAction({ state_code: clinicData?.userId?.address?.state?.id, name: clinicData?.userId?.address?.city?.name, limit: '', skip: '' }));
-        }
-    }, [clinicData])
-    useEffect(() => {
-        setField('clinicType', clinicData?.clinicType);
-        setField('contact', clinicData?.userId?.phone?.startsWith("+1")
-            ? clinicData.userId.phone.substring(2)
-            : clinicData?.userId?.phone);
-        setField('name', clinicData?.name);
-        setField('taxId', clinicData?.taxIdOrEIN);
-        setField('npi', clinicData?.npiNumber);
-        setField('email', clinicData?.userId?.email);
-        setField('address', clinicData?.userId?.address?.address1);
-        setField('street', clinicData?.userId?.address?.street);
-        setField('zip', clinicData?.userId?.address?.zip);
-        setField('stateName', clinicData?.userId?.address?.state?.state_code);
-        setLongitude(clinicData?.userId?.address?.longitude)
-        setLatitude(clinicData?.userId?.address?.latitude);
-        setValue('city', cities && cities?.find((data) => data?._id === clinicData?.userId?.address?.city)?._id)
-
-        if (clinicData?.logo) {
-            setLogoName(clinicData?.logo?.fileName)
-        }
-        const stateName = clinicData?.userId?.address?.state?.state_code;
-        if (stateName) {
-            const matchingState = statesData?.states?.find(
-                (state) => state.name === stateName
-            );
-            if (matchingState) {
-                setValue('stateName', JSON.stringify({
-                    name: matchingState?.name,
-                    state_code: matchingState?.state_code,
-                    id: matchingState?.id,
-                    _id: matchingState?._id,
-                }));
-            }
-        }
-
-    }, [clinicData, statesData, setValue]);
-
     const onSubmit = (data) => {
-
         const newPayload = {
             name: data?.name || clinicData?.name, // Clinic name
-            // email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(), // Email
             ...(data?.email.toLowerCase() !== clinicData?.userId?.email.toLowerCase() && {
                 email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(),
             }),
@@ -204,10 +168,9 @@ const Clinic = ({ id }) => {
             clinicType: data?.clinicType || clinicData?.clinicType, // Clinic Type
             taxIdOrEIN: data?.taxId?.replace(/^(\d{2})(\d*)/, '$1-$2') || clinicData?.taxIdOrEIN?.replace(/^(\d{2})(\d*)/, '$1-$2'), // Tax ID/EIN
             npiNumber: data?.npi || clinicData?.npiNumber, // NPI number
-            medicalLicenses: formDetails.medicalDetails || clinicData?.medicalLicenses, // Medical Licenses
+            // medicalLicenses: formDetails.medicalDetails || clinicData?.medicalLicenses, // Medical Licenses
             stateOfLicensing: formDetails.stateDetails || clinicData?.stateOfLicensing, // State Licensing
             accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails, // Accreditation Details
-            // logo: logo?.url?.split('?')[0] || clinicData?.logo, // Logo
             logo: {
                 url: logo?.url.split('?')[0],
                 fileName: logoName
@@ -215,17 +178,19 @@ const Clinic = ({ id }) => {
             id: id || clinicData?._id, // Clinic ID
             address: {
                 address1: data?.address || clinicData?.userId?.address?.address1, // Address 1
-                city: selectedCity?._id || clinicData?.userId?.address?.city || data?.city, // City ID
-                state: selectedState?._id || clinicData?.userId?.address?.state || stateToSelect?._id, // State ID
-                street: data?.street || clinicData?.userId?.address?.street, // Street
-                zip: data?.zip || clinicData?.userId?.address?.zip, // Zip Code
-                latitude: selectedCity?.latitude || clinicData?.userId?.address?.latitude || latitude, // Latitude
-                longitude: selectedCity?.longitude || clinicData?.userId?.address?.longitude || longitude, // Longitude
+                ...(selectedCity?._id || data?.city ? { city: data?.city } : ''),
+                ...(data?.stateName ? { state: data?.stateName } : ''),
+                ...(data?.street ? { street: data?.zip } : ''),
+                ...(data?.zip ? { zip: data?.zip } : ''),
+                ...(latitude ? { latitude: latitude } : ''),
+                ...(longitude ? { longitude: longitude } : ''),
+                // latitude: selectedCity?.latitude || clinicData?.userId?.address?.latitude || latitude, // Latitude
+                // longitude: selectedCity?.longitude || clinicData?.userId?.address?.longitude || longitude, // Longitude
             },
+            practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
-
-        console.log(newPayload, 'newPayload');
+        // console.log(newPayload, 'newPayload');
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -234,9 +199,7 @@ const Clinic = ({ id }) => {
             (pos) =>
                 !pos.name || !pos.role || !pos.contact || !pos.email
         );
-
         if (isIncomplete) {
-            // Show a toast message if any field is incomplete
             ToastHandle('Please fill all the fields before adding a new one', 'danger');
             return;
         }
@@ -268,7 +231,7 @@ const Clinic = ({ id }) => {
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
         async function fetchGeocodeData(location) {
-            const apiKey = '2a77840d874f4c35848e37042ce7c8ed'; // Replace with your API key
+            const apiKey = '2a77840d874f4c35848e37042ce7c8ed';
             const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}&language=en&pretty=1&countrycode=us`;
 
             try {
@@ -294,30 +257,26 @@ const Clinic = ({ id }) => {
                 }
             });
     }
+    // console.log(cities)
+    const [selectedLocation, setSelectedLocation] = useState(null);
     useEffect(() => {
-        if (citySearch) {
-            setValue('city', cities && cities.find((data) => data?.name === citySearch)?._id)
+        if (selectedLocation) {
+            setLatitude(selectedLocation?.bounds?.southwest?.lat);
+            setLongitude(selectedLocation?.bounds?.southwest?.lng);
+            setValue('address', selectedLocation?.formatted)
+            const stateId = statesData?.states && statesData?.states.find((data) => data?.state_code === selectedLocation?.components?.state_code)?.id;
+            const selectedState = statesData?.states && statesData?.states.find((data) => data?.state_code === selectedLocation?.components?.state_code)?._id;
+            setValue('stateName', selectedState)
+            const countyName = selectedLocation?.components?.county;
+            dispatch(getCitiesAction({ state_code: stateId, name: countyName, limit: '', skip: '' }))
         }
-    }, [citySearch, cities]);
+    }, [selectedLocation, setValue, statesData, dispatch])
     useEffect(() => {
-        if (latitude && longitude) {
-            setFocused(false);
+        if (cities) {
+            const selectedCounty = cities && cities.find((data) => data?.name === selectedLocation?.components?.county || clinicData?.userId?.address?.city?.name)?._id;
+            setValue('city', selectedCounty)
         }
-    }, [latitude, longitude])
-
-    const stateGeoLocation = watch('stateName');
-
-    useEffect(() => {
-        if (stateGeoLocation) {
-            setStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation));
-        }
-    }, [stateGeoLocation])
-    console.log(stateToSelect, 'stateToSelectstateToSelect')
-    useEffect(() => {
-        if (stateToSelect) {
-            dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: citySearch ? citySearch : '', limit: 25, skip: '' }));
-        }
-    }, [stateToSelect, citySearch])
+    }, [cities])
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -326,7 +285,7 @@ const Clinic = ({ id }) => {
                     <Col sm={6}>
                         <Form.Group className="mb-2">
                             <Form.Label className="mb-1">
-                                Clinic Name <span className="text-danger">*</span>
+                                Practice Name <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Control
                                 placeholder="Enter clinic name"
@@ -341,7 +300,7 @@ const Clinic = ({ id }) => {
                     {/* Clinic Type Field */}
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className="mb-1">Clinic Type <span className="text-danger">*</span></Form.Label>
+                            <Form.Label className="mb-1">Practice Type <span className="text-danger">*</span></Form.Label>
                             <Form.Select
                                 {...register('clinicType', { required: 'This field is required' })}
                             >
@@ -373,26 +332,28 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
+                            <Form.Label className='mb-1'>Practice Speciality</Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('taxId', {
-                                    minLength: {
-                                        value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
-                                    },
-                                    pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'Tax ID / EIN must contain numbers only', // Error message
-                                    },
+                                {...register('speciality', {
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
                                 })}
-                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                maxLength={9}
-                                placeholder="Tax ID / EIN" />
-                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.startsWith(' ')) {
+                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                    }
+                                }}
+                                placeholder="Practice speciality"
+                                onKeyPress={handleFirstSpace}
+                            />
+
+                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
+
                         </Form.Group>
                     </Col>
+
                     <Col sm={6}>
                         <Form.Group className="mb-0 position-relative">
                             <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
@@ -438,7 +399,29 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>NPI Number</Form.Label>
+                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('taxId', {
+                                    minLength: {
+                                        value: 9,
+                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                    },
+                                })}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                maxLength={9}
+                                placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>NPI Type 2 Number</Form.Label>
                             <Form.Control
                                 defaultValue={clinicData?.npiNumber}
                                 type="text"
@@ -482,15 +465,15 @@ const Clinic = ({ id }) => {
                     </Col>
                     <hr />
                     {/* Dynamic Fields Section */}
-                    {['accreditationDetails', 'medicalDetails', 'stateDetails'].map((type) => (
+                    {['accreditationDetails', 'stateDetails'].map((type) => (
                         <React.Fragment key={type}>
                             <Col sm={12}>
                                 <Form.Label>
                                     {type === 'accreditationDetails'
                                         ? 'Accreditation Details'
                                         : type === 'stateDetails'
-                                            ? 'State of Licensing'
-                                            : 'Medical Details'}
+                                            ? 'State of Licensure'
+                                            : ''}
                                     <span
                                         onClick={() => {
                                             // Check if all the required fields are filled before allowing adding a new field
@@ -619,18 +602,7 @@ const Clinic = ({ id }) => {
                                                         <p
                                                             key={index}
                                                             onClick={() => {
-                                                                console.log(data)
-                                                                setValue('zip', data?.components?.postcode)
-                                                                console.log(statesData?.states, 'statesData?.states')
-                                                                // if (data) {
-                                                                //     const stateToSelect = statesData?.states && statesData?.states?.find((data) => data?.state_code === data?.components?.state_code)?._id
-                                                                //     console.log({ stateToSelect })
-                                                                // }
-                                                                setValue('stateName', data?.components?.state_code)
-                                                                setLatitude(data?.bounds?.southwest?.lat);
-                                                                setLongitude(data?.bounds?.southwest?.lng);
-                                                                setCitySearch(data?.components?.county)
-                                                                setValue('address', data?.formatted)
+                                                                setSelectedLocation(data);
                                                                 setFocused(false); // Close dropdown after selection
                                                             }}
                                                             style={{
@@ -686,8 +658,7 @@ const Clinic = ({ id }) => {
                                                     <option
                                                         key={data?.id} // Unique key for each option
                                                         data-key={JSON.stringify({ id: data?.id, _id: data?._id })} // Store the key as a data attribute
-                                                        // defau={JSON.stringify({ name: data?.name, state_code: data?.state_code, id: data?.id, _id: data?._id }) || data?.state_code}
-                                                        value={data?.state_code}
+                                                        value={data?._id}
                                                     >
                                                         {data?.name}
                                                     </option>

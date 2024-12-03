@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Col, Form, Row, Button, Table, InputGroup } from 'react-bootstrap';
+import { Col, Form, Row, Button, Table, InputGroup, Dropdown } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
@@ -30,7 +30,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [updatePage, setUpdatePage] = useState(false);
     const [counter, setCounter] = useState(0);
     const [selectedState, setSelectedState] = useState(null);
-
+    const [dropdownVisible, setDropdownVisible] = useState(false)
     const [selectedCity, setSelectedCity] = useState(null);
     const [logo, setLogo] = useState(null);
     const [parentClinic, setParentclinic] = useState(null);
@@ -56,7 +56,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const createResponse = store?.createClinicsReducer?.data?.status;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
-    console.log(clinicsList, 'clinicsListclinicsListclinicsList')
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     // const state = statesData?.states && statesData?.states.find((data) => data?.state_code === 'NY')
@@ -234,20 +233,20 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         });
     };
 
-    const handleAddState = () => {
-        const isIncomplete = stateDetails.some(
-            (state) =>
-                !state.name || !state.number || !state.url
-        );
+    const handleAddState = (name) => {
+        // const isIncomplete = stateDetails.some(
+        //     (state) =>
+        //         !state.name || !state.number || !state.url
+        // );
 
-        if (isIncomplete) {
-            // Show a toast message if any field is incomplete
-            ToastHandle('Please fill all the fields before adding a new one', 'danger');
-            return;
-        }
+        // if (isIncomplete) {
+        //     // Show a toast message if any field is incomplete
+        //     ToastHandle('Please fill all the fields before adding a new one', 'danger');
+        //     return;
+        // }
         setStateDetails([
             ...stateDetails,
-            { name: '', number: '', url: null }
+            { name: name, number: '', url: null }
         ]);
     };
 
@@ -393,9 +392,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             role: decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id,
             phone: '+1' + data?.contact,
             clinicType: data?.clinicType,
-            taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2'),
-            npiNumber: data?.npi,
-            medicalLicenses: medicalDetails,
+            ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
+            ...(data?.npi ? { npiNumber: data?.npi } : ''),
+            // medicalLicenses: medicalDetails,
             stateOfLicensing: stateDetails,
             accreditationDetails: accreditationDetails,
             // logo: logo?.url.split('?')[0],
@@ -420,6 +419,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 url: logo?.url.split('?')[0],
                 fileName: logoName
             },
+            practiceSpecialty: data?.speciality,
         };
         // console.log(newPayload, 'newPayloadnewPayloadnewPayload')
         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
@@ -433,6 +433,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setCreateTableData(createData)
         }
     }, [createData]);
+    console.log(stateDetails, 'stateDetails ')
 
     const handleDeleteClinic = (data) => {
         const payload = {
@@ -509,7 +510,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 <Row>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Clinic Name <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Practice Name <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('clinicname', {
@@ -524,7 +525,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     }
                                     setResetEmail({ ...resetEmail, name: e.target.value });
                                 }}
-                                placeholder="Clinic name"
+                                placeholder="Practice name"
                                 onKeyPress={handleFirstSpace}
                             />
 
@@ -534,13 +535,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Clinic type <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Practice type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
                                 // defaultValue={updatePage ? clinicDataToUpdate?.clinicType : ''}
                                 {...register('clinicType', { required: 'This field is required' })}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
-                                <option value="">Select clinic type</option> {/* Ensure this has a value to represent unselected */}
+                                <option value="">Select practice type</option> {/* Ensure this has a value to represent unselected */}
                                 {clinicTypeData?.map((data) => (
                                     <option key={data?._id} value={data?.name}>{data?.name}</option>
                                 ))}
@@ -570,26 +571,28 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
+                            <Form.Label className='mb-1'>Practice Speciality</Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('taxId', {
-                                    minLength: {
-                                        value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
-                                    },
-                                    pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'Tax ID / EIN must contain numbers only', // Error message
-                                    },
+                                {...register('speciality', {
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
                                 })}
-                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                maxLength={9}
-                                placeholder="Tax ID / EIN" />
-                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.startsWith(' ')) {
+                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                    }
+                                }}
+                                placeholder="Practice speciality"
+                                onKeyPress={handleFirstSpace}
+                            />
+
+                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
+
                         </Form.Group>
                     </Col>
+
                     <Col sm={6}>
                         <Form.Group className="mb-0 position-relative">
                             <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
@@ -639,7 +642,29 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>NPI Number</Form.Label>
+                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('taxId', {
+                                    minLength: {
+                                        value: 9,
+                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                    },
+                                })}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                maxLength={9}
+                                placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>NPI Type 2  Number</Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('npi', {
@@ -747,7 +772,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
                         </React.Fragment>
                     ))}
-                    <hr />
+                    {/* <hr />
                     <Col sm={12}>
                         <Form.Label>
                             Medical Licenses&nbsp;
@@ -808,7 +833,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             </Col>
 
                         </React.Fragment>
-                    ))}
+                    ))} */}
                     <hr />
                     <Col sm={12}>
                         <Form.Label>
@@ -877,6 +902,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
                         </React.Fragment>
                     ))}
+                    <hr />
                     <hr />
                     <Col sm={12}>
                         <Row>
@@ -1060,7 +1086,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         </Row>
                     </Col>
                     <hr />
-
                     <Col sm={12}>
                         <Row>
                             <Col sm={12} className="mb-2">

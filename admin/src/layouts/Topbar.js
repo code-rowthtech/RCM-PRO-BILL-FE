@@ -115,14 +115,14 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/profile': 'Profile',
         '/apps/subscriptions/list': 'Subscriptions',
         '/apps/roles/list': 'Role Management',
-        '/apps/crm/orders': 'Clinics',
-        '/apps/crm/addclinic': 'Add Clinic',
-        '/apps/crm/updateclinic': 'Update Clinic',
+        '/apps/rcm/allclinics': 'Clinics',
+        '/apps/rcm/addclinic': 'Add Clinic',
+        '/apps/rcm/updateclinic': 'Update Clinic',
         '/settings/planName': 'Plans',
         '/settings/tenure': 'Tenures',
         '/settings/permissions': 'Permissions',
         '/settings/roles': 'Roles',
-        '/settings/clinicType': 'Clinic Types',
+        '/settings/clinicType': 'Practice Types',
         '/settings/jobtitle': 'Job Title',
 
     };
