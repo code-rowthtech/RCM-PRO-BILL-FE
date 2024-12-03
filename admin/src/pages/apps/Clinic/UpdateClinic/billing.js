@@ -247,7 +247,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                 </Col>
                                                 <Col sm={12}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Payment Method</Form.Label>
+                                                        <Form.Label className='mb-1'>Payment Method <span className='text-danger'>*</span></Form.Label>
                                                         <Form.Select
                                                             {...register('method', {
                                                                 required: 'This field is required'
@@ -263,7 +263,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                 </Col>
                                                 <Col sm={12}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Billing Address</Form.Label>
+                                                        <Form.Label className='mb-1'>Billing Address <span className='text-danger'>*</span></Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             {...register('billingaddress', { required: 'This field is required' })}
@@ -321,7 +321,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                 </Col>
                                                 <Col sm={12} className='mb-2'>
                                                     <Form.Group className="">
-                                                        <Form.Label className='mb-1'>Billing Contact Name</Form.Label>
+                                                        <Form.Label className='mb-1'>Billing Contact Name <span className='text-danger'>*</span></Form.Label>
                                                         <Form.Control
                                                             type='text'
                                                             {...register('name', {
@@ -333,7 +333,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                 </Col>
                                                 <Col sm={12} className='mb-2'>
                                                     <Form.Group className="">
-                                                        <Form.Label className='mb-1'>Billing Contact Email</Form.Label>
+                                                        <Form.Label className='mb-1'>Billing Contact Email <span className='text-danger'>*</span></Form.Label>
                                                         <Form.Control
                                                             type='email'
                                                             {...register('email', {
