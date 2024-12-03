@@ -9,7 +9,6 @@ const Contracttable = ({ activeTab, id }) => {
     const dispatch = useDispatch()
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.response;
-    console.log(contracts, 'ccccccccc')
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {
@@ -30,7 +29,7 @@ const Contracttable = ({ activeTab, id }) => {
                 <thead>
                     <tr>
                         <th>Contract Name</th>
-                        <th>Clinic Sign</th>
+                        <th>Practice Sign</th>
                         <th>Probill Sign</th>
                         <th>Date</th>
                         <th>Action</th>

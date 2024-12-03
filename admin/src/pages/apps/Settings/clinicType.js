@@ -129,7 +129,7 @@ const ClinicType = () => {
                                             <FiFileText className='fs-4' />
                                         </Button>
                                         <Button onClick={() => setAddDepartmentModal(true)} className="custom-buttons">
-                                            New Clinic Type
+                                            New Practice Type
                                         </Button>
                                     </Col>
                                 </Row>
@@ -141,7 +141,7 @@ const ClinicType = () => {
                                 <Table responsive className="table-centered table-nowrap mb-0">
                                     <thead className="ght">
                                         <tr key={''}>
-                                            <th>Clinic Type</th>
+                                            <th>Practice Type</th>
                                             <th>Description</th>
                                             <th>Created Date</th>
                                             <th>Status</th>
@@ -218,7 +218,7 @@ const ClinicType = () => {
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
                         <Col sm={10}>
-                            <h4 className="mb-0 text-center">New Clinic Type</h4>
+                            <h4 className="mb-0 text-center">New Practice Type</h4>
                         </Col>
                         <Col sm={1}>
                             <IoMdClose className="fs-4 cursor-pointer" onClick={closeAddModal} />
@@ -287,7 +287,7 @@ const ClinicType = () => {
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
                         <Col sm={10}>
-                            <h4 className="mb-0 text-center">Edit Clinic Type</h4>
+                            <h4 className="mb-0 text-center">Edit Practice Type</h4>
                         </Col>
                         <Col sm={1}>
                             <IoMdClose className="fs-4 cursor-pointer" onClick={closeUpdateModal} />

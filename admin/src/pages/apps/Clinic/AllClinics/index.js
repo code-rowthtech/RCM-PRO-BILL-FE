@@ -25,6 +25,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
+    console.log(clinicsData)
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -116,7 +117,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                     <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
                                         <Col xs="auto" className='d-flex gap-2'>
                                             <FormInput type='select' onChange={handleClinicTypeChange}>
-                                                <option value={''} key={''}>All Clinics</option>
+                                                <option value={''} key={''}>All Practices</option>
                                                 {clinicTypeData?.map((data, index) => (
                                                     <option className='text-capitalize' value={data?.name} key={data?._id}>{data?.name}</option>
                                                 ))}
@@ -126,12 +127,12 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                 onChange={(e) => setName(e.target.value)}
                                                 placeholder="Search..." />
                                             {isAddPresent ?
-                                                <Button as={Link} to="/apps/crm/addclinic" className="custom-buttons">
-                                                    New Clinic
+                                                <Button as={Link} to="/apps/rcm/addclinic" className="custom-buttons">
+                                                    New Practice
                                                 </Button>
                                                 :
-                                                <Button onClick={() => ToastHandle('You dont have permission to add a clinic.', 'danger')} className="custom-buttons">
-                                                    New Clinic
+                                                <Button onClick={() => ToastHandle('You dont have permission to add a practice.', 'danger')} className="custom-buttons">
+                                                    New Practice
                                                 </Button>
                                             }
                                         </Col>
@@ -142,9 +143,9 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th >Clinic Name</th>
+                                        <th >Practice Name</th>
                                         <th>Location</th>
-                                        <th>Clinic Type</th>
+                                        <th>Practice Type</th>
                                         <th>End Date&nbsp; <span className=' uil-info-circle allclinics-info mb-0 cursor-pointer'
                                         // data-toggle="tooltip"
                                         // data-placement="top"
@@ -227,7 +228,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td>
                                                             {isUpdatePresent ?
-                                                                <Link to={`/apps/crm/updateclinic?updateid=${data?._id}`} className="action-icon">
+                                                                <Link to={`/apps/rcm/updateclinic?updateid=${data?._id}`} className="action-icon">
                                                                     <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
                                                                 </Link>
                                                                 :

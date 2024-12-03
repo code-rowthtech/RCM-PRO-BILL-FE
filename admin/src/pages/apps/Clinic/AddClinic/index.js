@@ -56,7 +56,11 @@ const Index = () => {
         }
     }, [dispatch, addClinicResponse, activeTab])
 
-
+    const setMailDataNull = () => {
+        setResetEmail({
+            name: null, email: null, role: null, phone: null, clinicType: null
+        })
+    }
     const handleActiveTab = (data) => {
 
         setActiveTab(data)
@@ -83,7 +87,7 @@ const Index = () => {
                                     <span
                                         onClick={() => handleActiveTab('clinic')}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
-                                        Clinic Information
+                                        Practice Information
                                     </span>
                                     <span
                                         onClick={() => handleActiveTab('billing')}
@@ -135,7 +139,7 @@ const Index = () => {
                                         Email to Clinic
                                     </Button>
 
-                                    <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} />
+                                    <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
                                 </Col>
                             </Row>
                             <Row className='scroll-container pt-2' style={{ height: '93%' }}>

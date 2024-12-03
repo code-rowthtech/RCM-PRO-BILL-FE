@@ -39,7 +39,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId 
                 <thead>
                     <tr>
                         <th>Contract Name</th>
-                        <th>Clinic Sign</th>
+                        <th>Practice Sign</th>
                         <th>Probill Sign</th>
                         <th>Date</th>
                         <th>Action</th>
