@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getClinicById, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import Contract from '../AddClinic/contract';
 import BillingForm from '../AddClinic/billing';
 import ClinicForm from '../AddClinic/clinicForm';
@@ -15,6 +15,7 @@ import Spinner from '../../../../constants/Spinner';
 
 const Updateclinic = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const id = searchParams.get('updateid');
     const [activeTab, setActiveTab] = useState('clinic');
@@ -61,6 +62,9 @@ const Updateclinic = () => {
                                         ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Contract
                                     </span>
+                                </Col>
+                                <Col className='d-flex justify-content-end align-items-center'>
+                                    <Button onClick={() => navigate(-1)} className='custom-buttons'>Back</Button>
                                 </Col>
                             </Row>
                             <Row className='scroll-container w pt-2' style={{ height: '93%' }}>

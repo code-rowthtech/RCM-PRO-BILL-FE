@@ -138,8 +138,11 @@ const Index = () => {
                                     >
                                         Email to Clinic
                                     </Button>
-
+                                    <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                     <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
+                                </Col>
+                                <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
+                                    <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                 </Col>
                             </Row>
                             <Row className='scroll-container pt-2' style={{ height: '93%' }}>

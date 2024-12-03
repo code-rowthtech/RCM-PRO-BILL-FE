@@ -33,6 +33,7 @@ const ProfileDropdown = (props: ProfileDropdownProps, state: ProfileDropdownStat
         setDropdownOpen(!dropdownOpen);
     };
 
+    const logo = JSON.parse(sessionStorage.getItem('hyper_user'))?.logo;
     return (
         <Dropdown show={dropdownOpen} onToggle={toggleDropdown}>
             <Dropdown.Toggle
@@ -43,8 +44,11 @@ const ProfileDropdown = (props: ProfileDropdownProps, state: ProfileDropdownStat
                 onClick={toggleDropdown}
                 className="nav-link  border-0 dropdown-toggle nav-user d-flex align-items-center arrow-none me-0">
                 <span className="account-user-avatar">
-                    <FaUserCircle className="rounded-circle fs-1  text-dark" />
-                    {/* <img src={profilePic} className="rounded-circle" alt="user" /> */}
+                    {!logo ?
+                        <FaUserCircle className="rounded-circle fs-1  text-dark" />
+                        :
+                        <img src={logo} className="rounded-circle" alt="user" />
+                    }
                 </span>
                 <span>
                     <span className="account-user-name text-capitalize">{JSON.parse(sessionStorage.getItem('hyper_user'))?.name}</span>
