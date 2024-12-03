@@ -32,6 +32,7 @@ function* login({ payload }) {
             email: user?.data?.email,
             token: user?.accessToken,
             role: user?.data?.role?.name,
+            logo: user?.data?.profileImage,
             permissions: user?.data?.role?.permissions?.map(permission => permission.name) || [],
             _id: user?.data?._id
         }
