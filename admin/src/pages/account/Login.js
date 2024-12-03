@@ -70,9 +70,26 @@ const Login = (): React$Element<any> => {
     /*
     handle form submission
     */
+    // const onSubmit = (formData) => {
+
+    //     dispatch(loginUser({ email: formData.username, password: formData.password }));
+    // };
     const onSubmit = (formData) => {
-        dispatch(loginUser({ email: formData.username, password: formData.password }));
+        // Trim the username and password to remove leading and trailing spaces
+        const username = formData.username.trim();
+        const password = formData.password.trim();
+
+        // Check if either username or password is empty after trimming
+        if (!username || !password) {
+            // Show an error message (you can customize this as needed)
+            ToastHandle("Username and password cannot be empty or spaces only.", 'danger');
+            return;
+        }
+
+        // Dispatch the loginUser action if validation passes
+        dispatch(loginUser({ email: username, password }));
     };
+
 
     return (
         <>

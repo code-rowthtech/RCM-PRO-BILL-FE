@@ -176,3 +176,6 @@ body::-webkit-scrollbar {
 .stateToggle::after {
     display: none !important;
 }
+table {
+    box-shadow: none !important;
+}
