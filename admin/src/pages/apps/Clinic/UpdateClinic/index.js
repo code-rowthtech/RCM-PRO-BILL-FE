@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getClinicById, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
+import { generateContractAction, getClinicById, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import Contract from '../AddClinic/contract';
@@ -21,6 +21,7 @@ const Updateclinic = () => {
     const [activeTab, setActiveTab] = useState('clinic');
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    // console.log(clinicData?.contractId, 'from-index')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -37,6 +38,21 @@ const Updateclinic = () => {
     const handleActiveTab = (data) => {
         setActiveTab(data)
     }
+    const user = JSON.parse(sessionStorage.getItem('hyper_user'));
+    const billingDetails = store?.createSubscriptionPlanReducer?.data?.result;
+    const handleContractGeneration = () => {
+        const data = {
+            adminId: user?._id,
+            adminEmail: user?.email,
+            adminName: user?.name,
+            clinicId: billingDetails?.userId?.clinicId,
+            clinicEmail: billingDetails?.userId?.email,
+            clinicName: billingDetails,
+            pdfBuffer: "",
+        };
+        dispatch(generateContractAction({ key: encryptMessage(data) }))
+    }
+
     return (
         <>
             <Row className='mt-2'>
@@ -64,6 +80,7 @@ const Updateclinic = () => {
                                     </span>
                                 </Col>
                                 <Col className='d-flex justify-content-end align-items-center'>
+                                    <Button onClick={handleContractGeneration} className={`custom-buttons me-2 ${clinicData?.contractId || activeTab !== 'contract' ? 'd-none' : ''}`}>Generate Contract</Button>
                                     <Button onClick={() => navigate(-1)} className='custom-buttons'>Back</Button>
                                 </Col>
                             </Row>
@@ -87,7 +104,7 @@ const Updateclinic = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-            </Row>
+            </Row >
         </>
     )
 }

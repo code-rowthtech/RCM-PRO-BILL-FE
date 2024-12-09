@@ -25,7 +25,6 @@
 }
 .custom-buttons {
     background-color: #6169d0 !important;
-    /* background-color: #313a46 !important; */
     border: none !important;
     color: white !important;
 }
@@ -178,4 +177,22 @@ body::-webkit-scrollbar {
 }
 table {
     box-shadow: none !important;
+}
+
+.checkbox-round {
+    width: 0.8em;
+    height: 0.8em;
+    background-color: white;
+    border-radius: 50%;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.checkbox-round:checked {
+    background-color: gray;
+    border: 1.8px solid black !important;
 }

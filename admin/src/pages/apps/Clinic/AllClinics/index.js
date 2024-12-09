@@ -15,6 +15,7 @@ import { GoAlert } from 'react-icons/go';
 import { userPermissions } from '../../../../helpers/userPermissions';
 import ToastHandle from '../../../../helpers/ToastMessage'
 import { getMastersDataAction } from '../../../../redux/settings/actions';
+import Select from 'react-select/base';
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
     const [name, setName] = useState('');
@@ -25,7 +26,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log(clinicsData)
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -146,12 +146,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                         <th >Practice Name</th>
                                         <th>Location</th>
                                         <th>Practice Type</th>
-                                        <th>End Date&nbsp; <span className=' uil-info-circle allclinics-info mb-0 cursor-pointer'
-                                        // data-toggle="tooltip"
-                                        // data-placement="top"
-                                        // data-delay='{"show":"0", "hide":"3000"}'
-                                        // title="Last Date of Subscription"
-                                        /></th>
+                                        <th>End Date&nbsp; <span className=' uil-info-circle allclinics-info mb-0 cursor-pointer' /></th>
                                         <th>Countdown</th>
                                         <th>Contract</th>
                                         <th>Status</th>
@@ -178,17 +173,10 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                     <tr key={i}>
                                                         <td>{i + 1}</td>
                                                         <td className=''>
-                                                            {/* <img
-                                                                src={data?.logo}
-                                                                alt="Placeholder"
-                                                                className='rounded-circle'
-                                                                width="40"
-                                                                height="40"
-                                                            /> */}
                                                             <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
-                                                            {(data?.userId?.address?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.address?.city?.name || 'N/A')}
+                                                            {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')}
                                                         </td>
                                                         <td>{data?.clinicType}</td>
                                                         <td>

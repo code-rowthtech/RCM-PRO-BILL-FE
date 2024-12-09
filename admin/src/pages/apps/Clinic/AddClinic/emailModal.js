@@ -10,6 +10,7 @@ import ToastHandle from '../../../../helpers/ToastMessage';
 const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDataNull }) => {
     const dispatch = useDispatch();
     // Using useForm hook for form handling and validation
+    console.log(mailId, 'mailId')
     const {
         register,
         handleSubmit,

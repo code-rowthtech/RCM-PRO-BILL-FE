@@ -8,10 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import us from '../../../../assets/images/flags/us.jpg'
 import ToastHandle from '../../../../helpers/ToastMessage';
-import { getCitiesAction, updateClinicAction } from '../../../../redux/actions';
+import { getCities2Action, getCitiesAction, updateClinicAction } from '../../../../redux/actions';
 import Spinner from '../../../../constants/Spinner';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
+import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked } from 'react-icons/md';
 
 const Clinic = ({ id }) => {
     const {
@@ -28,14 +29,20 @@ const Clinic = ({ id }) => {
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
     const [focused, setFocused] = useState(false);
+    const [mailingFocused, setMailingFocused] = useState(false);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
+    const [mailingLatitude, setMailingLatitude] = useState(null);
+    const [mailingLongitude, setMailingLongitude] = useState(null);
     const [citySearch, setCitySearch] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    console.log({ clinicData })
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
+    const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
+    const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const cities = store?.getCitiesReducer?.data?.cities;
     const [formDetails, setFormDetails] = useState({
         accreditationDetails: [{ name: '', number: '', url: null, fileName: '' }],
@@ -54,8 +61,8 @@ const Clinic = ({ id }) => {
         setPosDetails(clinicData?.pos || []);
 
     }, [clinicData]);
+
     const setField = (key, value) => value && setValue(key, value);
-    console.log({ stateGeoLocation })
     useEffect(() => {
         setField('clinicType', clinicData?.clinicType);
         setField('contact', clinicData?.userId?.phone?.startsWith("+1")
@@ -66,15 +73,22 @@ const Clinic = ({ id }) => {
         setField('speciality', clinicData?.practiceSpecialty)
         setField('npi', clinicData?.npiNumber);
         setField('email', clinicData?.userId?.email);
-        setField('address', clinicData?.userId?.address?.address1);
+        setField('address', clinicData?.userId?.primaryAddress?.address);
+        setField('mailingAddress', clinicData?.userId?.mailingAddress?.address);
         setField('street', clinicData?.userId?.address?.street);
-        setField('zip', clinicData?.userId?.address?.zip);
-        setField('stateName', clinicData?.userId?.address?.state?._id)
-        if (clinicData?.userId?.address?.city) {
-            dispatch(getCitiesAction({ state_code: clinicData?.userId?.address?.state?.id, name: clinicData?.userId?.address?.city?.name, limit: '', skip: '' }))
+        setField('zip', clinicData?.userId?.primaryAddress?.zip);
+        setField('stateName', clinicData?.userId?.primaryAddress?.state?._id)
+        setField('mailingStateName', clinicData?.userId?.mailingAddress?.state?._id)
+        if (clinicData?.userId?.primaryAddress?.city) {
+            dispatch(getCitiesAction({ state_code: clinicData?.userId?.primaryAddress?.state?.id, name: clinicData?.userId?.primaryAddress?.city?.name, limit: '', skip: '' }))
         }
-        setLongitude(clinicData?.userId?.address?.longitude)
-        setLatitude(clinicData?.userId?.address?.latitude);
+        if (clinicData?.userId?.mailingAddress?.city) {
+            dispatch(getCities2Action({ state_code: clinicData?.userId?.mailingAddress?.state?.id, name: clinicData?.userId?.mailingAddress?.city?.name, limit: '', skip: '' }))
+        }
+        setLongitude(clinicData?.userId?.primaryAddress?.longitude)
+        setLatitude(clinicData?.userId?.primaryAddress?.latitude);
+        setMailingLongitude(clinicData?.userId?.mailingAddress?.longitude)
+        setMailingLatitude(clinicData?.userId?.mailingAddress?.latitude);
 
         if (clinicData?.logo) {
             setLogoName(clinicData?.logo?.fileName)
@@ -149,8 +163,13 @@ const Clinic = ({ id }) => {
     const handleStateSelection = (e) => {
         const selectedOption = e.target.selectedOptions[0]; // Get the selected <option>
         const key = JSON.parse(selectedOption.getAttribute('data-key'));
-        console.log(key)
         dispatch(getCitiesAction({ state_code: key?.id, name: '', limit: 25, skip: '' }))
+    };
+
+    const handleMailingStateSelection = (e) => {
+        const selectedOption = e.target.selectedOptions[0]; // Get the selected <option>
+        const key = JSON.parse(selectedOption.getAttribute('data-key'));
+        dispatch(getCities2Action({ state_code: key?.id, name: '', limit: 25, skip: '' }))
     };
 
 
@@ -176,16 +195,23 @@ const Clinic = ({ id }) => {
                 fileName: logoName
             },
             id: id || clinicData?._id, // Clinic ID
-            address: {
-                address1: data?.address || clinicData?.userId?.address?.address1, // Address 1
-                ...(selectedCity?._id || data?.city ? { city: data?.city } : ''),
+            primaryAddress: {
+                ...(data?.address ? { address: data?.address } : {}),
+                ...(data?.city ? { city: data?.city } : ''),
                 ...(data?.stateName ? { state: data?.stateName } : ''),
-                ...(data?.street ? { street: data?.zip } : ''),
+                ...(data?.street ? { street: data?.street } : ''),
                 ...(data?.zip ? { zip: data?.zip } : ''),
                 ...(latitude ? { latitude: latitude } : ''),
                 ...(longitude ? { longitude: longitude } : ''),
-                // latitude: selectedCity?.latitude || clinicData?.userId?.address?.latitude || latitude, // Latitude
-                // longitude: selectedCity?.longitude || clinicData?.userId?.address?.longitude || longitude, // Longitude
+            },
+            mailingAddress: {
+                ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
+                ...(data?.mailingCity ? { city: data?.mailingCity } : ''),
+                ...(data?.mailingStateName ? { state: data?.mailingStateName } : ''),
+                ...(data?.mailingStreet ? { street: data?.mailingStreet } : ''),
+                ...(data?.mailingZip ? { zip: data?.mailingZip } : ''),
+                ...(mailingLatitude ? { latitude: mailingLatitude } : ''),
+                ...(mailingLongitude ? { longitude: mailingLongitude } : ''),
             },
             practiceSpecialty: data?.speciality,
             pos: posDetails,
@@ -228,6 +254,7 @@ const Clinic = ({ id }) => {
     };
 
     const [searchedLocations, setSearchedLocations] = useState(null)
+    const [searchedMailingLocations, setSearchedMailingLocations] = useState(null)
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
         async function fetchGeocodeData(location) {
@@ -253,12 +280,42 @@ const Clinic = ({ id }) => {
                 if (data) {
                     setSearchedLocations(data?.results)
                 } else {
-                    console.log("No data returned.");
+                    console.error("No data returned.");
+                }
+            });
+    }
+    const getMailingGeolocation = (e) => {
+        const addressToSearch = e.target.value;
+        async function fetchGeocodeData(location) {
+            const apiKey = '2a77840d874f4c35848e37042ce7c8ed';
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}&language=en&pretty=1&countrycode=us`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data; // Return the geocoding data
+            } catch (error) {
+                console.error("Failed to fetch geocode data:", error);
+                return null; // Return null in case of error
+            }
+        }
+        fetchGeocodeData(addressToSearch)
+            .then((data) => {
+                if (data) {
+                    setSearchedMailingLocations(data?.results)
+                } else {
+                    console.error("No data returned.");
                 }
             });
     }
     // console.log(cities)
     const [selectedLocation, setSelectedLocation] = useState(null);
+    const [selectedMailingLocation, setSelectedMailingLocation] = useState(null);
     useEffect(() => {
         if (selectedLocation) {
             setLatitude(selectedLocation?.bounds?.southwest?.lat);
@@ -270,13 +327,89 @@ const Clinic = ({ id }) => {
             const countyName = selectedLocation?.components?.county;
             dispatch(getCitiesAction({ state_code: stateId, name: countyName, limit: '', skip: '' }))
         }
-    }, [selectedLocation, setValue, statesData, dispatch])
+        if (selectedMailingLocation) {
+            setMailingLatitude(selectedMailingLocation?.bounds?.southwest?.lat);
+            setMailingLongitude(selectedMailingLocation?.bounds?.southwest?.lng);
+            setValue('mailingAddress', selectedMailingLocation?.formatted)
+            const stateId = statesData?.states && statesData?.states.find((data) => data?.state_code === selectedMailingLocation?.components?.state_code)?.id;
+            const selectedState = statesData?.states && statesData?.states.find((data) => data?.state_code === selectedMailingLocation?.components?.state_code)?._id;
+            setValue('mailingStateName', selectedState)
+            const countyName = selectedMailingLocation?.components?.county;
+            dispatch(getCities2Action({ state_code: stateId, name: countyName, limit: '', skip: '' }))
+        }
+    }, [selectedLocation, selectedMailingLocation, setValue, statesData, dispatch])
     useEffect(() => {
-        if (cities) {
-            const selectedCounty = cities && cities.find((data) => data?.name === selectedLocation?.components?.county || clinicData?.userId?.address?.city?.name)?._id;
+        if (cities1) {
+            const selectedCounty = cities1 && cities1.find((data) => data?.name === selectedLocation?.components?.county || clinicData?.userId?.primaryAddress?.city?.name)?._id;
             setValue('city', selectedCounty)
         }
-    }, [cities])
+        if (cities2) {
+            const selectedCounty = cities2 && cities2.find((data) => data?.name === selectedLocation?.components?.county || clinicData?.userId?.mailingAddress?.city?.name)?._id;
+            setValue('mailingCity', selectedCounty)
+        }
+    }, [cities1, cities2])
+
+    const [selectedStates, setSelectedStates] = useState([]);
+    const [statesMenu, setStatesMenu] = useState(false);
+    useEffect(() => {
+        if (clinicData?.stateOfLicensing) {
+            const initialSelectedStates = clinicData.stateOfLicensing.map((item) => item.name);
+            setSelectedStates(initialSelectedStates);
+
+            setFormDetails((prevDetails) => ({
+                ...prevDetails,
+                stateDetails: clinicData.stateOfLicensing.map((item) => ({
+                    name: item.name,
+                    number: item.number || '',
+                    url: item.url || null,
+                    fileName: item.fileName || '',
+                    _id: item._id || null,
+                })),
+            }));
+        }
+    }, [clinicData]);
+
+    const handleCheckboxChange = (stateName) => {
+        setSelectedStates((prev) => {
+            const updatedStates = prev.includes(stateName)
+                ? prev.filter((name) => name !== stateName) // Remove unchecked state
+                : [...prev, stateName]; // Add checked state
+
+            // Sync stateDetails in formDetails with selectedStates
+            setFormDetails((prevDetails) => {
+                const updatedStateDetails = updatedStates.map((state) =>
+                    prevDetails.stateDetails.find((detail) => detail.name === state) || {
+                        name: state,
+                        number: '',
+                        url: null,
+                        fileName: '',
+                    }
+                );
+
+                return {
+                    ...prevDetails,
+                    stateDetails: updatedStateDetails,
+                };
+            });
+
+            return updatedStates;
+        });
+    };
+
+    const menuRef = useRef(null);
+    const containerRef = useRef(null);
+
+    // Close menu if clicked outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setStatesMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -372,8 +505,8 @@ const Clinic = ({ id }) => {
                                             message: 'Contact must not exceed 10 digits'
                                         },
                                         minLength: {
-                                            value: 10,
-                                            message: 'Contact must not be less than 10 digits'
+                                            value: 9,
+                                            message: 'Contact must not be less than 9 digits'
                                         }
                                     })}
                                     // onChange={(e) => {
@@ -467,8 +600,8 @@ const Clinic = ({ id }) => {
                     {/* Dynamic Fields Section */}
                     {['accreditationDetails', 'stateDetails'].map((type) => (
                         <React.Fragment key={type}>
-                            <Col sm={12}>
-                                <Form.Label>
+                            <Col sm={12} className={`${type === 'stateDetails' ? 'position-relative' : ''}`}>
+                                <Form.Label ref={type === 'stateDetails' ? containerRef : null}>
                                     {type === 'accreditationDetails'
                                         ? 'Accreditation Details'
                                         : type === 'stateDetails'
@@ -476,37 +609,58 @@ const Clinic = ({ id }) => {
                                             : ''}
                                     <span
                                         onClick={() => {
-                                            // Check if all the required fields are filled before allowing adding a new field
-                                            const allFieldsFilled = formDetails[type].every(item => item.name && item.number && item.url);
-                                            if (!allFieldsFilled) {
-                                                ToastHandle('Please fill all the fields before adding a new one', 'danger');
-                                                return;  // Prevent adding a new field
+                                            if (type === 'accreditationDetails') {
+                                                const allFieldsFilled = formDetails[type].every(item => item.name && item.number && item.url);
+                                                if (!allFieldsFilled) {
+                                                    ToastHandle('Please fill all the fields before adding a new one', 'danger');
+                                                    return;  // Prevent adding a new field
+                                                }
+                                                handleAddField(type);  // Add new field if validation passes
+                                            } else if (type === 'stateDetails') {
+                                                setStatesMenu(!statesMenu)
                                             }
-                                            handleAddField(type);  // Add new field if validation passes
                                         }}
                                         className="fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer"
                                     >
                                         {/* Add Icon */}
                                     </span>
+                                    {type === 'stateDetails' && (
+                                        <div
+                                            ref={menuRef}
+                                            className={`scroll-container ${statesMenu ? '' : 'd-none'} bg-white border border-secondary position-absolute ps-1 py-1`}
+                                            style={{ height: '14rem', width: '12em', zIndex: '111' }}
+                                        >
+                                            {/* <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}> */}
+                                            {statesData?.states?.map((data, index) => (
+                                                <div className='d-flex align-items-center px-1' key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }} onClick={() => handleCheckboxChange(data?.name)}
+                                                >
+                                                    {selectedStates.includes(data?.name) ?
+                                                        <MdOutlineRadioButtonChecked />
+                                                        :
+                                                        <MdOutlineRadioButtonUnchecked />
+                                                    }
+                                                    <span className='ps-1'>
+                                                        {data?.name}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                            {/* </ul> */}
+                                        </div>
+                                    )}
+
                                 </Form.Label>
                             </Col>
                             {formDetails[type].map((item, index) => (
                                 <React.Fragment key={index}>
                                     {type === 'stateDetails' ? (
                                         <Col sm={4}>
-                                            <Form.Select
+                                            <Form.Control
+                                                type="text"
+                                                value={item.name}
+                                                placeholder="Name"
+                                                readOnly
                                                 onChange={(e) => handleInputChange(e, 'name', type, index)}
-                                            >
-                                                <option value="">Select State</option>
-                                                {statesData?.states?.map((data) => (
-                                                    <option
-                                                        key={data?._id}
-                                                        value={data?.name}
-                                                    >
-                                                        {data?.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
+                                            />
                                         </Col>
                                     ) : (
                                         <Col sm={4}>
@@ -684,7 +838,7 @@ const Clinic = ({ id }) => {
                                                 onChange={(e) => handleCitySelection(e)}
                                             >
                                                 <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
-                                                {cities?.map((data) => (
+                                                {cities1?.map((data) => (
                                                     <option data-key={JSON.stringify({ _id: data?._id, latitude: data?.latitude, longitude: data?.longitude })} key={data?._id} value={data?._id}>
                                                         {data?.name}
                                                     </option>
@@ -830,6 +984,173 @@ const Clinic = ({ id }) => {
                     <hr />
                     <Col sm={12}>
                         <Row>
+                            <Col sm={12} className='mb-2'>
+                                <span className='text-black fw-semibold form-label'>Mailing Address Details</span>
+                            </Col>
+                            <Col sm={6}>
+                                <Row className='position-relative'>
+                                    <Col sm={12}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Form.Control
+                                                    type="text"
+                                                    // defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
+                                                    {...register('mailingAddress')}
+                                                    onChange={(e) => {
+                                                        getMailingGeolocation(e);
+                                                        setMailingFocused(true); // Open dropdown on input
+                                                    }}
+                                                    onFocus={() => setMailingFocused(true)} // Open dropdown when the field is focused
+                                                    onBlur={() => {
+                                                        setTimeout(() => setMailingFocused(false), 200); // Delay to allow selection before hiding dropdown
+                                                    }}
+                                                    placeholder="Search for address"
+                                                    autoComplete="off"
+                                                />
+                                                {/* Dropdown suggestions */}
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '100%',
+                                                        left: 0,
+                                                        width: '100%',
+                                                        maxHeight: '150px',
+                                                        zIndex: 111,
+                                                        backgroundColor: '#fff',
+                                                        border: '1px solid #ced4da',
+                                                        borderTop: 'none',
+                                                    }}
+                                                    className={`scroll-container hover-bg-change ${searchedMailingLocations?.length === 0 || !mailingFocused ? 'd-none' : ''}`}
+                                                >
+                                                    {searchedMailingLocations?.map((data, index) => (
+                                                        <p
+                                                            key={index}
+                                                            onClick={() => {
+                                                                setSelectedMailingLocation(data);
+                                                                setMailingFocused(false); // Close dropdown after selection
+                                                            }}
+                                                            style={{
+                                                                margin: 0,
+                                                                padding: '8px 12px',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            className="hover-bg-change text-black"
+                                                        >
+                                                            {data?.formatted}
+                                                        </p>
+                                                    ))}
+                                                    {searchedMailingLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
+                                                </div>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Latitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={mailingLatitude}
+                                                placeholder="Latitude"
+                                            />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Longitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={mailingLongitude}
+                                                placeholder="Longitude" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col sm={6}>
+                                <Row>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1' >State</Form.Label>
+                                            <Form.Select
+                                                {...register('mailingStateName')}
+                                                onChange={(e) => handleMailingStateSelection(e)}
+                                            >
+                                                <option>State</option>
+                                                {statesData?.states?.map((data) => (
+                                                    <option
+                                                        key={data?.id} // Unique key for each option
+                                                        data-key={JSON.stringify({ id: data?.id, _id: data?._id })} // Store the key as a data attribute
+                                                        value={data?._id}
+                                                    >
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            <Form.Select
+                                                disabled={store?.getCitiesReducer?.loading}
+                                                {...register('mailingCity')}
+                                                onChange={(e) => handleCitySelection(e)}
+                                            >
+                                                <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
+                                                {cities2?.map((data) => (
+                                                    <option data-key={JSON.stringify({ _id: data?._id, latitude: data?.latitude, longitude: data?.longitude })} key={data?._id} value={data?._id}>
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                            {/* } */}
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                {...register('mailingStreet')}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Street" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Zip</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                {...register('mailingZip', {
+                                                    minLength: {
+                                                        value: 5,
+                                                        message: 'ZIP code must be at least 5 characters long',
+                                                    },
+                                                    pattern: {
+                                                        value: /^[0-9]+$/,
+                                                        message: 'ZIP code must contain numbers only',
+                                                    },
+                                                })}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Zip"
+                                                maxLength={5}
+                                            />
+                                            {errors.mailingZip && <span className="text-danger">{errors.mailingZip.message}</span>}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <hr />
+                    <Col sm={12}>
+                        <Row>
                             <Col sm={12} className="mb-2">
                                 <span className="text-black fw-semibold form-label  ">
                                     POC (Point of contact)
@@ -897,6 +1218,20 @@ const Clinic = ({ id }) => {
                                                 <Form.Control
                                                     type="tel"
                                                     value={data.contact}
+                                                    {...register('pocContact', {
+                                                        pattern: {
+                                                            value: /^[0-9]*$/,
+                                                            message: 'Contact must be a number'
+                                                        },
+                                                        maxLength: {
+                                                            value: 10,
+                                                            message: 'Contact must not exceed 10 digits'
+                                                        },
+                                                        minLength: {
+                                                            value: 9,
+                                                            message: 'Contact must not be less than 9 digits'
+                                                        }
+                                                    })}
                                                     onChange={(e) => handlePOSInputChange(e, 'contact', index)}
                                                     placeholder="Phone Number"
                                                     maxLength={10}
@@ -911,6 +1246,7 @@ const Clinic = ({ id }) => {
                                                     width={20} />
                                             </div>
                                         </Form.Group>
+                                        {errors.pocContact && <span className="text-danger pt-0">{errors.pocContact.message}</span>}
                                     </Col>
                                 </React.Fragment>
                             ))}

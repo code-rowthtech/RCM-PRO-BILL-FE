@@ -15,11 +15,21 @@ const GET_STATES_INITIAL_STATE = {
     loading: false
 }
 
-const GET_CITIES_INITIAL_STATE = {
-    data: [],
-    loading: false
-}
+// const GET_CITIES_INITIAL_STATE = {
+//     data: [],
+//     loading: false
+// }
 
+const GET_CITIES_INITIAL_STATE = {
+    cities1: {
+        data: [],
+        loading: false,
+    },
+    cities2: {
+        data: [],
+        loading: false,
+    }
+};
 const UPDATE_CLINICS_INITIAL_STATE = {
     data: [],
     loading: false
@@ -46,6 +56,11 @@ const DELETE_CLINIC_INITIAL_STATE = {
 }
 
 const GET_CONTRACT_INITIAL_STATE = {
+    data: [],
+    loading: false
+}
+
+const GENERATE_CONTRACT_INITIAL_STATE = {
     data: [],
     loading: false
 }
@@ -180,31 +195,86 @@ export const getStatesReducer = (state = GET_STATES_INITIAL_STATE, action) => {
     }
 }
 
+// export const getCitiesReducer = (state = GET_CITIES_INITIAL_STATE, action) => {
+//     switch (action.type) {
+//         case ClinicsActionTypes.GET_CITIES_LOADING:
+//             return {
+//                 data: state.data,
+//                 loading: true
+//             }
+//         case ClinicsActionTypes.GET_CITIES_SUCCESS:
+//             return {
+//                 data: action.payload,
+//                 loading: false
+//             }
+//         case ClinicsActionTypes.GET_CITIES_ERROR:
+//             return {
+//                 data: action.payload,
+//                 loading: false
+//             }
+//         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
+//             return {
+//                 data: [],
+//                 loading: false
+//             }
+//         default: return state
+//     }
+// }
+
 export const getCitiesReducer = (state = GET_CITIES_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_CITIES_LOADING:
             return {
-                data: state.data,
-                loading: true
-            }
+                ...state,
+                cities1: {
+                    ...state.cities1,
+                    loading: true
+                }
+            };
         case ClinicsActionTypes.GET_CITIES_SUCCESS:
             return {
-                data: action.payload,
-                loading: false
-            }
+                ...state,
+                cities1: {
+                    data: action.payload,
+                    loading: false
+                }
+            };
         case ClinicsActionTypes.GET_CITIES_ERROR:
             return {
-                data: action.payload,
-                loading: false
-            }
-        case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
+                ...state,
+                cities1: {
+                    data: [],
+                    loading: false
+                }
+            };
+        case ClinicsActionTypes.GET_CITIES2_LOADING:
             return {
-                data: [],
-                loading: false
-            }
-        default: return state
+                ...state,
+                cities2: {
+                    ...state.cities2,
+                    loading: true
+                }
+            };
+        case ClinicsActionTypes.GET_CITIES2_SUCCESS:
+            return {
+                ...state,
+                cities2: {
+                    data: action.payload,
+                    loading: false
+                }
+            };
+        case ClinicsActionTypes.GET_CITIES2_ERROR:
+            return {
+                ...state,
+                cities2: {
+                    data: [],
+                    loading: false
+                }
+            };
+        default:
+            return state;
     }
-}
+};
 
 export const updateClinicsReducer = (state = UPDATE_CLINICS_INITIAL_STATE, action) => {
     switch (action.type) {
@@ -296,6 +366,32 @@ export const getContractReducer = (state = GET_CONTRACT_INITIAL_STATE, action) =
                 loading: false
             }
         case ClinicsActionTypes.GET_CONTRACT_ERROR:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
+            return {
+                data: [],
+                loading: false
+            }
+        default: return state
+    }
+}
+
+export const generateContractReducer = (state = GENERATE_CONTRACT_INITIAL_STATE, action) => {
+    switch (action.type) {
+        case ClinicsActionTypes.GENERATE_CONTRACT_LOADING:
+            return {
+                data: state.data,
+                loading: true
+            }
+        case ClinicsActionTypes.GENERATE_CONTRACT_SUCCESS:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case ClinicsActionTypes.GENERATE_CONTRACT_ERROR:
             return {
                 data: action.payload,
                 loading: false

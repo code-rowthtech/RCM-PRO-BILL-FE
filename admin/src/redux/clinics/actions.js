@@ -18,10 +18,20 @@ export const getStatesByCountryAction = (data): AuthAction => ({
     data
 });
 
-export const getCitiesAction = (data): AuthAction => ({
+// export const getCitiesAction = (data): AuthAction => ({
+//     type: ClinicsActionTypes.GET_CITIES,
+//     data
+// });
+export const getCitiesAction = (data) => ({
     type: ClinicsActionTypes.GET_CITIES,
     data
 });
+
+export const getCities2Action = (data) => ({
+    type: ClinicsActionTypes.GET_CITIES2,
+    data
+});
+
 
 export const updateClinicAction = (data): AuthAction => ({
     type: ClinicsActionTypes.UPDATE_CLINIC,
@@ -50,6 +60,11 @@ export const deleteClinicAction = (data): AuthAction => ({
 
 export const getContractAction = (data): AuthAction => ({
     type: ClinicsActionTypes.GET_CONTRACT,
+    data
+});
+
+export const generateContractAction = (data): AuthAction => ({
+    type: ClinicsActionTypes.GENERATE_CONTRACT,
     data
 });
 

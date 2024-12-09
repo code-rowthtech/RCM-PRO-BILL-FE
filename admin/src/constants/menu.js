@@ -122,12 +122,12 @@ const MENU_ITEMS = [
             //     url: '/settings/department',
             //     parentKey: 'settings',
             // },
-            // {
-            //     key: 'contractformat',
-            //     label: 'Contract Format',
-            //     url: '/settings/contractFormat',
-            //     parentKey: 'settings',
-            // },
+            {
+                key: 'contractformat',
+                label: 'Contract Format',
+                url: '/settings/contractFormat',
+                parentKey: 'settings',
+            },
             // {
             //     key: 'designation',
             //     label: 'Designation',
