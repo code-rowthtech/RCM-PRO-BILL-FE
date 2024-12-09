@@ -10,7 +10,6 @@ import Spinner from '../../../../constants/Spinner';
 import us from '../../../../assets/images/flags/us.jpg'
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
-    console.log({ billingId })
     const {
         register,
         handleSubmit,
@@ -49,7 +48,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
             adminId: adminData?._id,
             clinicCount: multiple === 0 ? 1 : multiple,
         }
-        console.log(payload)
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
     };
 
@@ -59,7 +57,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
             reset();
             setActiveTab('contract');
             ToastHandle(store?.createSubscriptionPlanReducer?.data?.message, 'success');
-            dispatch(stateEmptydAction());
+            // dispatch(stateEmptydAction());
         }
     }, [billingAddResponse]);
 
@@ -112,7 +110,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
                                 setAmount(selectedSubscription || 0);
-                                // console.log(selectedSubscription, 'selectedSubscription')
                             }}
                         >
                             <option value="">Select plan type</option>

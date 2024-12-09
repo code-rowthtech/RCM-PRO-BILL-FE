@@ -53,3 +53,8 @@ export function getContractApi(params: any): any {
     return api.create(URL.getContract, data)
 }
 
+export function generateContractApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.generateContract, data)
+}
+

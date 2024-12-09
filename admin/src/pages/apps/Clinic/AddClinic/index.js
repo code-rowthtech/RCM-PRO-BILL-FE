@@ -5,7 +5,7 @@ import { FormInput } from '../../../../components';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRolesAction } from '../../../../redux/actions';
-import { createClinicAction, getStatesByCountryAction, stateEmptydAction } from '../../../../redux/clinics/actions';
+import { createClinicAction, generateContractAction, getContractAction, getStatesByCountryAction, stateEmptydAction } from '../../../../redux/clinics/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import Spinner from '../../../../constants/Spinner';
 import ToastHandle from '../../../../helpers/ToastMessage';
@@ -39,6 +39,7 @@ const Index = () => {
     const [resetEmail, setResetEmail] = useState({
         name: null, email: null, role: null, phone: null, clinicType: null
     });
+
     const [isModalRequest, setIsModalRequest] = useState(false); // Track whether the API was triggered by the modal
     const [resetEmailError, setResetEmailError] = useState(null);
     const store = useSelector((state) => state);
@@ -68,14 +69,35 @@ const Index = () => {
     const [showMailModal, setShowMailModal] = useState(false);
     const closeMailModal = () => {
         setShowMailModal(false);
-        // if (store?.createClinicsReducer?.data?.status === 200) {
-        //     setResetEmail({
-        //         name: null, email: null, role: null, phone: null
-        //     })
-        // }
         setResetEmailError(null)
     }
+    const [buffer, setBuffer] = useState(null);
+    const user = JSON.parse(sessionStorage.getItem('hyper_user'));
+    const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
+    console.log(billingResponse, 'from index')
+    const handleContractGeneration = () => {
+        const data = {
+            adminId: user?._id,
+            adminEmail: user?.email,
+            adminName: user?.name,
+            clinicId: billingResponse?._id,
+            clinicEmail: billingResponse?.userId?.email,
+            clinicName: billingResponse?.name,
+            pdfUint8Array: buffer
+        }
+        console.log(data, 'from index pay')
+        dispatch(generateContractAction({ key: encryptMessage(data) }));
+    }
 
+    useEffect(() => {
+        if (store?.generateContractReducer?.data?.status === 200) {
+            const payload = {
+                clinicId: billingResponse?._id,
+                // clinicId: billingId,
+            };
+            dispatch(getContractAction({ key: encryptMessage(payload) }));
+        }
+    }, [dispatch, store?.generateContractReducer?.data?.status])
     return (
         <>
             <Row className='mt-2'>
@@ -101,20 +123,6 @@ const Index = () => {
                                     </span>
                                 </Col>
                                 <Col className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
-                                    {/* <Button
-                                        className='custom-buttons'
-                                        onClick={() => {
-                                            if (!resetEmail || resetEmail.trim() === '') {
-                                                setResetEmailError("This field is required.");
-                                            } else {
-                                                setShowMailModal(true);
-                                            }
-                                            // else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) {
-                                            //     // Regex check for a valid email format
-                                            //     setResetEmailError("Please enter a valid email address.");
-                                            // } 
-                                        }}
-                                    > */}
                                     <Button
                                         className='custom-buttons'
                                         // disabled={!resetEmail?.name && !resetEmail?.email && !resetEmail?.phone && !resetEmail?.clinicType}
@@ -142,6 +150,7 @@ const Index = () => {
                                     <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
                                 </Col>
                                 <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
+                                    <Button onClick={handleContractGeneration} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>Generate Contract</Button>
                                     <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                 </Col>
                             </Row>
@@ -160,6 +169,7 @@ const Index = () => {
                                             <BillingForm multiple={multiple} setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
                                             :
                                             <Contract
+                                                setBuffer={setBuffer}
                                                 setClinicId={setClinicId} setBillingId={setBillingId}
                                                 setActiveTab={setActiveTab} activeTab={activeTab}
                                                 clinicId={clinicId} billingId={billingId} contractId={contractId} />

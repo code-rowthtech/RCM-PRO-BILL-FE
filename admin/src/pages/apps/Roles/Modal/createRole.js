@@ -169,18 +169,17 @@ const AddRoles = ({ show, closeModal }) => {
                                         width={20} />
                                 </div>
                             </Form.Group>
-                            {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
+                            {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Reporting <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Reporting</Form.Label>
                                 <Form.Select disabled>
                                     <option>Reporting</option>
                                     <option value="">1</option>
                                     <option value="">2</option>
                                     <option value="">3</option>
                                 </Form.Select>
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>

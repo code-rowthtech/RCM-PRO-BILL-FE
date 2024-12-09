@@ -4,7 +4,7 @@ import {
     createClinicApi, getClinicApi, getClinicByIdApi,
     updateClinicApi, getStateByCountry, getCityByStateApi,
     addSubscriptionPlanApi, getClinicsByParentIdApi, deleteClinicOnboardingApi,
-    getContractApi
+    getContractApi, generateContractApi
 } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
@@ -184,23 +184,49 @@ function* getStatesFunction(data) {
     }
 }
 
+// function* getCitiesFunction(data) {
+//     try {
+//         yield put({
+//             type: ClinicsActionTypes.GET_CITIES_LOADING,
+//             payload: {},
+//         });
+//         const response = yield call(getCityByStateApi, data);
+//         const decryptedData = JSON.parse(decryptMessage(response.data.data));
+//         if (response.status === 200) {
+//             yield put({
+//                 type: ClinicsActionTypes.GET_CITIES_SUCCESS,
+//                 payload: { ...decryptedData },
+//             });
+//         } else {
+//             yield put({
+//                 type: ClinicsActionTypes.GET_CITIES_ERROR,
+//                 payload: { ...decryptedData },
+//             });
+//         }
+//     } catch (error) {
+//         yield put({
+//             type: ClinicsActionTypes.GET_CITIES_ERROR,
+//             payload: error,
+//         });
+//     }
+// }
+
 function* getCitiesFunction(data) {
     try {
         yield put({
             type: ClinicsActionTypes.GET_CITIES_LOADING,
-            payload: {},
         });
         const response = yield call(getCityByStateApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
             yield put({
                 type: ClinicsActionTypes.GET_CITIES_SUCCESS,
-                payload: { ...decryptedData },
+                payload: decryptedData,
             });
         } else {
             yield put({
                 type: ClinicsActionTypes.GET_CITIES_ERROR,
-                payload: { ...decryptedData },
+                payload: decryptedData,
             });
         }
     } catch (error) {
@@ -210,6 +236,33 @@ function* getCitiesFunction(data) {
         });
     }
 }
+
+function* getCities2Function(data) {
+    try {
+        yield put({
+            type: ClinicsActionTypes.GET_CITIES2_LOADING,
+        });
+        const response = yield call(getCityByStateApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        if (response.status === 200) {
+            yield put({
+                type: ClinicsActionTypes.GET_CITIES2_SUCCESS,
+                payload: decryptedData,
+            });
+        } else {
+            yield put({
+                type: ClinicsActionTypes.GET_CITIES2_ERROR,
+                payload: decryptedData,
+            });
+        }
+    } catch (error) {
+        yield put({
+            type: ClinicsActionTypes.GET_CITIES2_ERROR,
+            payload: error,
+        });
+    }
+}
+
 
 function* createSubscriptionPlanFunction(data) {
     try {
@@ -287,9 +340,38 @@ function* getContractFunction(data) {
             });
         }
     } catch (error) {
+        // ToastHandle(error, 'danger')
         // console.log({ error })
         yield put({
             type: ClinicsActionTypes.GET_CONTRACT_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* generateContractFunction(data) {
+    try {
+        yield put({
+            type: ClinicsActionTypes.GENERATE_CONTRACT_LOADING,
+            payload: {},
+        });
+        const response = yield call(generateContractApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        if (response.status === 200) {
+            yield put({
+                type: ClinicsActionTypes.GENERATE_CONTRACT_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: ClinicsActionTypes.GENERATE_CONTRACT_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        // console.log({ error })
+        yield put({
+            type: ClinicsActionTypes.GENERATE_CONTRACT_ERROR,
             payload: error,
         });
     }
@@ -316,9 +398,18 @@ export function* watchGetClinics() {
 export function* watchGetStates() {
     yield takeEvery(ClinicsActionTypes.GET_STATES, getStatesFunction);
 }
+// export function* watchGetCities() {
+//     yield takeEvery(ClinicsActionTypes.GET_CITIES, getCitiesFunction);
+// }
+
 export function* watchGetCities() {
     yield takeEvery(ClinicsActionTypes.GET_CITIES, getCitiesFunction);
 }
+
+export function* watchGetCities2() {
+    yield takeEvery(ClinicsActionTypes.GET_CITIES2, getCities2Function);
+}
+
 
 export function* watchGetClinicById() {
     yield takeEvery(ClinicsActionTypes.GET_CLINIC_BY_ID, getClinicByIdFunction);
@@ -340,6 +431,10 @@ export function* watchGetContract() {
     yield takeEvery(ClinicsActionTypes.GET_CONTRACT, getContractFunction);
 }
 
+export function* watchGenerateContract() {
+    yield takeEvery(ClinicsActionTypes.GENERATE_CONTRACT, generateContractFunction);
+}
+
 export function* watchresetState() {
     yield takeEvery(ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE, callStateEmpty);
 }
@@ -347,8 +442,8 @@ export function* watchresetState() {
 function* clinicsSaga() {
     yield all([
         fork(watchCreateClinics), fork(watchGetClinicById), fork(watchGetClinics), fork(watchUpdateClinics),
-        fork(watchresetState), fork(watchGetStates), fork(watchGetCities), fork(watchCreateSubscriptions),
-        fork(watchGetClinicByParent), fork(watchDeleteClinicOnboarding), fork(watchGetContract)
+        fork(watchresetState), fork(watchGetStates), fork(watchGetCities), fork(watchGetCities2), fork(watchCreateSubscriptions),
+        fork(watchGetClinicByParent), fork(watchDeleteClinicOnboarding), fork(watchGetContract), fork(watchGenerateContract)
     ]);
 }
 export default clinicsSaga;

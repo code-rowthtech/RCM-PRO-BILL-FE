@@ -5,7 +5,7 @@ import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import us from '../../../../assets/images/flags/us.jpg'
 import {
-    createClinicAction, deleteClinicAction, getCitiesAction, getClinicById,
+    createClinicAction, deleteClinicAction, getCities2Action, getCitiesAction, getClinicById,
     getClinicByParentAction, getStatesByCountryAction,
     stateEmptydAction, updateClinicAction
 } from '../../../../redux/clinics/actions';
@@ -14,6 +14,7 @@ import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
+import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked } from 'react-icons/md';
 
 const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, setIsModalRequest, isModalRequest, resetEmail }) => {
     const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         handleSubmit,
         formState: { errors },
         reset,
-        watch,
+        watch, getValues,
         setError,
         setValue,
         clearErrors
@@ -36,7 +37,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [parentClinic, setParentclinic] = useState(null);
     const [logoName, setLogoName] = useState(null);
     const [focused, setFocused] = useState(false);
+    const [mailingFocused, setMailingFocused] = useState(false);
     const [singleOrMultiple, setSingleOrMultiple] = useState(false);
+    const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
     ]);
@@ -58,10 +61,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
-    // const state = statesData?.states && statesData?.states.find((data) => data?.state_code === 'NY')
-    // console.log(state)
+    const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
+    const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const cities = store?.getCitiesReducer?.data?.cities;
-    // ref init
     const logoFileInputRef = useRef(null);
     const accreditationFileInputRef = useRef(null);
     const medicalFileInputRef = useRef(null);
@@ -73,11 +75,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setResetEmail({ ...resetEmail, role: clinicRoleId })
         }
     }, [decryptedRolesData])
-    // data consoles 
-    // console.log(store?.createClinicsReducer?.data?.data, "store?.createClinicsReducer?.data")
 
-
-    // handle Inputs
     const handleLogoClick = () => {
         logoFileInputRef.current.click();
     };
@@ -93,6 +91,18 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         }
     };
 
+    useEffect(() => {
+        if (logo && logoName) {
+            setResetEmail({
+                ...resetEmail,
+                logo: {
+                    url: logo?.url.split('?')[0],  // Removes any query parameters from the URL
+                    fileName: logoName,             // Assigns the logo file name
+                },
+            });
+        }
+    }, [logo, logoName]);
+
     const handleAccreditationChange = async (e, index) => {
         const selectedFile = e.target.files[0];
         try {
@@ -103,25 +113,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     ...updatedDetails[index],
                     url: url?.url?.split('?')[0],
                     fileName: selectedFile.name,
-                };
-                return updatedDetails;
-            });
-        } catch (error) {
-            console.error('Error during file upload:', error);
-        }
-    };
-
-    const handleStateChange = async (e, index) => {
-        const selectedFile = e.target.files[0];
-        try {
-            const url = await handleUpload(selectedFile);
-            setStateDetails((prevDetails) => {
-                const updatedDetails = [...prevDetails];
-                updatedDetails[index] = {
-                    ...updatedDetails[index],
-                    url: url?.url?.split('?')[0],
-                    fileName: selectedFile.name,
-
                 };
                 return updatedDetails;
             });
@@ -164,18 +155,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const handleMedicalInputChange = (e, field, index) => {
         const value = e.target.value;
         setMedicalDetails((prevDetails) => {
-            const updatedDetails = [...prevDetails];
-            updatedDetails[index] = {
-                ...updatedDetails[index],
-                [field]: value
-            };
-            return updatedDetails;
-        });
-    };
-
-    const handleStateInputChange = (e, field, index) => {
-        const value = e.target.value;
-        setStateDetails((prevDetails) => {
             const updatedDetails = [...prevDetails];
             updatedDetails[index] = {
                 ...updatedDetails[index],
@@ -233,30 +212,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         });
     };
 
-    const handleAddState = (name) => {
-        // const isIncomplete = stateDetails.some(
-        //     (state) =>
-        //         !state.name || !state.number || !state.url
-        // );
-
-        // if (isIncomplete) {
-        //     // Show a toast message if any field is incomplete
-        //     ToastHandle('Please fill all the fields before adding a new one', 'danger');
-        //     return;
-        // }
-        setStateDetails([
-            ...stateDetails,
-            { name: name, number: '', url: null }
-        ]);
-    };
-
-    const handleRemoveState = (index) => {
-        setStateDetails((prevDetails) => {
-            const updatedDetails = prevDetails.filter((_, i) => i !== index);
-            return updatedDetails;
-        });
-    };
-
     const handleAddPOS = () => {
         const isIncomplete = posDetails.some(
             (pos) =>
@@ -292,29 +247,21 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         });
     };
     const handleStateSelection = (e) => {
-
-        setSelectedState(e.target.value)
-        dispatch(getCitiesAction({ state_code: e.target.value, name: '', limit: 25 }));
-        // try {
-        //     const selectedState = JSON.parse(e.target.value);
-        //     if (selectedState?.state_code) {
-        //         setSelectedState(selectedState);
-        //     }
-        // } catch (error) {
-        //     console.error('Error parsing selected state:', error);
-        // }
+        const selectedOption = e.target.selectedOptions[0]
+        const key = JSON.parse(selectedOption.getAttribute('data-key'));
+        setSelectedState(e.target.value);
+        dispatch(getCitiesAction({ state_code: key, name: '', limit: 25 }));
+    };
+    const handleMailingStateSelection = (e) => {
+        const selectedOption = e.target.selectedOptions[0]
+        const key = JSON.parse(selectedOption.getAttribute('data-key'));
+        setMailingStateToSelect(e.target.value);
+        dispatch(getCities2Action({ state_code: key, name: '', limit: 25 }));
     };
 
     const handleCitySelection = (e) => {
         const value = e.target.value;
         setSelectedCity(value)
-        // if (value) {
-        //     try {
-        //         setSelectedCity(citySelected);
-        //     } catch (error) {
-        //         console.error('Invalid JSON:', value);
-        //     }
-        // }
     };
     const deleteResponse = store?.deleteClinicOnboardingReducer?.data?.status;
     // create Response
@@ -333,6 +280,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
                 setActiveTab('billing');
+                setCounter(0);
             } else {
                 if (counter === 1) {
                     setParentclinic(store?.createClinicsReducer?.data?.data?.clinicId?._id);
@@ -340,7 +288,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     const payload = {
                         parentClinic: store?.createClinicsReducer?.data?.data?.clinicId?._id,
                     }
-                    console.log('payload', payload)
                     dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
                 } else if (counter > 1 && clinicsList) {
                     setParentclinic(clinicsList[0]?.parentClinic)
@@ -373,8 +320,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const email = watch('email');
     const contact = watch('contact');
     const clinicType = watch('clinicType');
-    // console.log(clinicname, email, contact, clinicType)
-    // Determine form validity
     const isFormValid = clinicname && email && contact && clinicType;
     useEffect(() => {
         if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
@@ -382,10 +327,12 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         }
     }, [resetEmail])
 
+
     const onSubmit = (data) => {
+        // console.log({ counter })
         setIsModalRequest(false);
         const newPayload = {
-            isParent: counter === 1 ? true : false, // Conditional property assignment using a ternary operator
+            isParent: counter < 1 ? true : false, // Conditional property assignment using a ternary operator
             parentClinic: parentClinic,
             name: data?.clinicname,
             email: data?.email,
@@ -394,27 +341,37 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             clinicType: data?.clinicType,
             ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
             ...(data?.npi ? { npiNumber: data?.npi } : ''),
-            // medicalLicenses: medicalDetails,
             stateOfLicensing: stateDetails,
             accreditationDetails: accreditationDetails,
-            // logo: logo?.url.split('?')[0],
             pos: posDetails,
-            address: {
-                ...(data?.address ? { address1: data?.address } : {}), // Only include address1 if data.address exists
-                ...(data?.city ? { city: data?.city } : {}), // Only include address1 if data.address exists
-                ...(data?.zip ? { zip: data?.zip } : {}), // Only include address1 if data.address exists
-                ...(data?.street ? { street: data?.street } : {}), // Only include address1 if data.address exists
-                ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}), // Only include address1 if data.address exists
-                ...(latitude ? { latitude: latitude } : {}), // Only include address1 if data.address exists
-                ...(longitude ? { longitude: longitude } : {}), // Only include address1 if data.address exists
-                // address1: data?.address,
-                // city: data?.city,
-                // state: stateToSelect?._id,
-                // street: data?.street,
-                // zip: data?.zip,
-                // latitude: latitude,
-                // longitude: longitude,
+            primaryAddress: {
+                ...(data?.address ? { address: data?.address } : {}),
+                ...(data?.city ? { city: data?.city } : {}),
+                ...(data?.zip ? { zip: data?.zip } : {}),
+                ...(data?.street ? { street: data?.street } : {}),
+                ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
+                ...(latitude ? { latitude: latitude } : {}),
+                ...(longitude ? { longitude: longitude } : {}),
             },
+            mailingAddress: sameAsPrimary
+                ? {
+                    ...(data?.address ? { address: data?.address } : {}),
+                    ...(data?.city ? { city: data?.city } : {}),
+                    ...(data?.zip ? { zip: data?.zip } : {}),
+                    ...(data?.street ? { street: data?.street } : {}),
+                    ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
+                    ...(latitude ? { latitude: latitude } : {}),
+                    ...(longitude ? { longitude: longitude } : {}),
+                }
+                : {
+                    ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
+                    ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
+                    ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
+                    ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
+                    ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
+                    ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
+                    ...(mailingLongitude ? { longitude: mailingLongitude } : {})
+                },
             logo: {
                 url: logo?.url.split('?')[0],
                 fileName: logoName
@@ -424,7 +381,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         // console.log(newPayload, 'newPayloadnewPayloadnewPayload')
         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
     };
-
     const createData = store?.createClinicsReducer?.data?.data;
     const [createTableData, setCreateTableData] = useState(null);
     // console.log({ createTableData })
@@ -433,7 +389,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setCreateTableData(createData)
         }
     }, [createData]);
-    console.log(stateDetails, 'stateDetails ')
 
     const handleDeleteClinic = (data) => {
         const payload = {
@@ -443,6 +398,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     }
 
     const [searchedLocations, setSearchedLocations] = useState(null)
+    const [searchedMailingLocations, setSearchedMailingLocations] = useState(null)
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
         async function fetchGeocodeData(location) {
@@ -451,7 +407,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
             try {
                 const response = await fetch(url);
-
                 if (!response.ok) {
                     throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
                 }
@@ -466,7 +421,35 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         fetchGeocodeData(addressToSearch)
             .then((data) => {
                 if (data) {
-                    setSearchedLocations(data?.results)
+                    setSearchedLocations(data?.results);
+                } else {
+                    console.log("No data returned.");
+                }
+            });
+    }
+    const getMailingGeolocation = (e) => {
+        const addressToSearch = e.target.value;
+        async function fetchGeocodeData(location) {
+            const apiKey = '2a77840d874f4c35848e37042ce7c8ed'; // Replace with your API key
+            const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${apiKey}&language=en&pretty=1&countrycode=us`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Failed to fetch geocode data:", error);
+                return null;
+            }
+        }
+        fetchGeocodeData(addressToSearch)
+            .then((data) => {
+                if (data) {
+                    setSearchedMailingLocations(data?.results);
                 } else {
                     console.log("No data returned.");
                 }
@@ -474,36 +457,125 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     }
 
     // Example usage
-
     const [longitude, setLongitude] = useState(null);
     const [latitude, setLatitude] = useState(null);
+    const [mailingLongitude, setMailingLongitude] = useState(null);
+    const [mailingLatitude, setMailingLatitude] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
+    const [mailingStateToSelect, setMailingStateToSelect] = useState(null);
+    // console.log({ mailingStateToSelect })
     useEffect(() => {
         if (latitude && longitude) {
             setFocused(false);
         }
-    }, [latitude, longitude])
+        if (mailingLatitude && mailingLongitude) {
+            setMailingFocused(false);
+        }
+    }, [latitude, longitude, mailingLatitude, mailingLongitude]);
 
     const stateGeoLocation = watch('stateName');
+    const mailingStateGeoLocation = watch('mailingStateName');
 
     useEffect(() => {
         if (stateGeoLocation) {
             setStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation));
         }
-    }, [stateGeoLocation])
+        if (mailingStateGeoLocation) {
+            setMailingStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === mailingStateGeoLocation));
+        }
+    }, [stateGeoLocation, mailingStateGeoLocation])
 
     const [citySearch, setCitySearch] = useState(null);
+    const [mailingCitySearch, setMailingCitySearch] = useState(null);
     useEffect(() => {
         if (citySearch) {
-            setValue('city', cities && cities.find((data) => data?.name === citySearch)?._id)
+            setValue('city', cities1 && cities1.find((data) => data?.name === citySearch)?._id)
         }
-    }, [citySearch, cities])
+        if (mailingCitySearch) {
+            setValue('mailingCity', cities2 && cities2.find((data) => data?.name === mailingCitySearch)?._id)
+        }
+    }, [citySearch, cities1, mailingCitySearch, cities2])
     useEffect(() => {
         if (stateToSelect) {
             dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: citySearch ? citySearch : '', limit: 25, skip: '' }));
         }
-    }, [stateToSelect, citySearch])
-    // console.log(cities)
+        if (mailingStateToSelect) {
+            dispatch(getCities2Action({ state_code: mailingStateToSelect?.id, name: mailingCitySearch ? mailingCitySearch : '', limit: 25, skip: '' }));
+        }
+    }, [stateToSelect, citySearch, mailingStateToSelect, mailingCitySearch])
+
+    const [selectedStates, setSelectedStates] = useState([]);
+    const [statesMenu, setStatesMenu] = useState(false);
+    const handleCheckboxChange = (stateName) => {
+        setSelectedStates((prev) => {
+            const updatedStates = prev.includes(stateName)
+                ? prev.filter((name) => name !== stateName)
+                : [...prev, stateName];
+            setStateDetails((prevDetails) => {
+                const newDetails = updatedStates.map((state) =>
+                    prevDetails.find((detail) => detail.name === state) || { name: state, number: '', url: null, fileName: '' }
+                );
+                return newDetails;
+            });
+            return updatedStates;
+        });
+    };
+
+    const handleStateInputChange = (e, field, index) => {
+        const value = e.target.value;
+        setStateDetails((prevDetails) => {
+            const updatedDetails = [...prevDetails];
+            updatedDetails[index] = {
+                ...updatedDetails[index],
+                [field]: value,
+            };
+            return updatedDetails;
+        });
+    };
+
+    const handleStateChange = async (e, index) => {
+        const selectedFile = e.target.files[0];
+        try {
+            const url = await handleUpload(selectedFile);
+            setStateDetails((prevDetails) => {
+                const updatedDetails = [...prevDetails];
+                updatedDetails[index] = {
+                    ...updatedDetails[index],
+                    url: url?.url?.split('?')[0],
+                    fileName: selectedFile.name,
+                };
+                return updatedDetails;
+            });
+        } catch (error) {
+            console.error('Error during file upload:', error);
+        }
+    };
+
+    const handleRemoveState = (index) => {
+        setStateDetails((prevDetails) => {
+            const updatedDetails = prevDetails.filter((_, i) => i !== index);
+            setSelectedStates(updatedDetails.map((detail) => detail.name)); // Update selectedStates as well
+            return updatedDetails;
+        });
+    };
+    const menuRef = useRef(null); // Reference for the menu
+    const containerRef = useRef(null); // Reference for the container
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setStatesMenu(false);
+            }
+        };
+        // Add event listener to detect clicks outside the menu
+        document.addEventListener('mousedown', handleClickOutside);
+        // Clean up the event listener on component unmount
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+
+
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -528,9 +600,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 placeholder="Practice name"
                                 onKeyPress={handleFirstSpace}
                             />
-
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
-
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
@@ -583,6 +653,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     if (value.startsWith(' ')) {
                                         e.target.value = value.trimStart(); // Prevent spaces at the start
                                     }
+                                    setResetEmail({ ...resetEmail, practiceSpecialty: value });
                                 }}
                                 placeholder="Practice speciality"
                                 onKeyPress={handleFirstSpace}
@@ -601,6 +672,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
                                     <Form.Control
                                         type="tel"
+                                        // value={formattedPhone}
                                         {...register('contact', {
                                             required: 'This field is required',
                                             pattern: {
@@ -612,12 +684,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 message: 'Contact must not exceed 10 digits'
                                             },
                                             minLength: {
-                                                value: 10,
-                                                message: 'Contact must not be less than 10 digits'
+                                                value: 9,
+                                                message: 'Contact must not be less than 9 digits'
                                             }
                                         })}
                                         onChange={(e) => {
                                             setResetEmail({ ...resetEmail, phone: '+1' + e.target.value });
+                                            // handlePhoneChange(e.target.value)
                                         }}
                                         defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                         placeholder="1234-234-234"
@@ -658,6 +731,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 maxLength={9}
+                                onChange={(e) => setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value })}
                                 placeholder="Tax ID / EIN" />
                             {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
@@ -684,9 +758,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 defaultValue={updatePage ? clinicDataToUpdate?.npiNumber : ''}
                                 placeholder="NPI Number"
                                 maxLength={10}
+                                onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)} />
                             {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
-
                         </Form.Group>
                     </Col>
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
@@ -698,6 +772,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         </div>
                         <Form.Control
                             type="file"
+                            id='file-input'
                             className="rounded-circle"
                             style={{ display: 'none' }}
                             // {...register('logoimage', { required: 'This field is required' })}
@@ -772,137 +847,87 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
                         </React.Fragment>
                     ))}
-                    {/* <hr />
-                    <Col sm={12}>
-                        <Form.Label>
-                            Medical Licenses&nbsp;
-                            <span
-                                onClick={handleAddMedical}
-                                className='plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer'>
-                            </span>
-                        </Form.Label>
-                    </Col>
-                    {medicalDetails.map((medical, index) => (
-                        <React.Fragment key={index}>
-                            <Col sm={4}>
-                                <Form.Control
-                                    type="text"
-                                    value={medical.name}
-                                    placeholder="Name"
-                                    onChange={(e) => handleMedicalInputChange(e, 'name', index)}
-                                    onKeyPress={handleFirstSpace}
-                                />
-                            </Col>
-                            <Col sm={4}>
-                                <Form.Control
-                                    type="text"
-                                    value={medical.number}
-                                    placeholder="Document Number"
-                                    {...register('medDocno', {
-                                        pattern: {
-                                            value: /^[0-9]*$/,
-                                            message: 'Document no must be a number'
-                                        },
-                                    })}
-                                    onChange={(e) => handleMedicalInputChange(e, 'number', index)}
-                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                />
-                                {errors.medDocno && <span className="text-danger">{errors.medDocno.message}</span>}
-                            </Col>
-                            <Col sm={4} className="mb-2 position-relative ">
-                                <div
-                                    onClick={() => document.getElementById(`fileInput-medical=${index}`).click()}
-                                    // onClick={() => medicalFileInputRef.current.click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${medical.fileName ? 'form-control' : 'custom-form-fields'}`}>
-                                    {medical.fileName ? medical?.fileName?.length > 30 ? medical?.fileName?.slice(0, 25) + '...' : medical?.fileName : 'Upload Document'}
-                                    <p className='mb-0'><FiDownloadCloud /></p>
-                                </div>
-                                <Form.Control
-                                    type="file"
-                                    className="rounded-circle "
-                                    id={`fileInput-medical=${index}`}
-                                    style={{ display: 'none' }}
-                                    ref={medicalFileInputRef}
-                                    onChange={(e) => handleMedicalChange(e, index)}
-                                />
-                                <span
-                                    onClick={() => handleRemoveMedical(index)}
-                                    style={{ right: '-2%', top: '20%' }}
-                                    className={`${medicalDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
-                                </span>
-                            </Col>
 
-                        </React.Fragment>
-                    ))} */}
                     <hr />
-                    <Col sm={12}>
-                        <Form.Label>
-                            State of Licensing&nbsp;
+
+                    <Col sm={12} className="position-relative">
+                        <Form.Label ref={containerRef}>
+                            State of Licensure&nbsp;
                             <span
-                                onClick={handleAddState}
-                                className='plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer'>
-                            </span>
+                                onClick={() => setStatesMenu(!statesMenu)}
+                                className={`plusicon ms-1 fs-5 ${statesMenu ? 'uil-angle-down' : 'uil-angle-up'} fw-bold cursor-pointer`}
+                            ></span>
+                            <div
+                                ref={menuRef}
+                                className={`scroll-container ${statesMenu ? '' : 'd-none'} bg-white border border-secondary position-absolute ps-1 py-1`}
+                                style={{ height: '14rem', width: '12em', zIndex: '111' }}
+                            >
+                                {/* <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}> */}
+                                {statesData?.states?.map((data, index) => (
+                                    <div className='d-flex align-items-center px-1' key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }} onClick={() => handleCheckboxChange(data?.name)}
+                                    >
+                                        {selectedStates.includes(data?.name) ?
+                                            <MdOutlineRadioButtonChecked />
+                                            :
+                                            <MdOutlineRadioButtonUnchecked />
+                                        }
+                                        <span className='ps-1'>
+                                            {data?.name}
+                                        </span>
+                                    </div>
+                                ))}
+                                {/* </ul> */}
+                            </div>
                         </Form.Label>
                     </Col>
                     {stateDetails.map((data, index) => (
                         <React.Fragment key={index}>
                             <Col sm={4}>
-                                <Form.Select
-                                    onChange={(e) => handleStateInputChange(e, 'name', index)}
-                                >
-                                    <option style={{ color: 'red !important' }}>State</option>
-                                    {statesData?.states?.map((data) => (
-                                        <option
-                                            value={data?.name} key={data?._id}
-                                        >
-                                            {data?.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
+                                <Form.Control
+                                    type="text"
+                                    value={data.name}
+                                    readOnly // Display selected state name
+                                    placeholder="State"
+                                />
                             </Col>
                             <Col sm={4}>
                                 <Form.Control
                                     type="text"
                                     value={data.number}
                                     placeholder="Document Number"
-                                    {...register('stateDocno', {
-                                        pattern: {
-                                            value: /^[0-9]*$/,
-                                            message: 'Document no must be a number'
-                                        },
-                                    })}
                                     onChange={(e) => handleStateInputChange(e, 'number', index)}
-                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
-                                {errors.stateDocno && <span className="text-danger">{errors.stateDocno.message}</span>}
-
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
                                 <div
                                     onClick={() => document.getElementById(`fileInput-state=${index}`).click()}
-                                    // onClick={() => stateFileInputRef.current.click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName ? 'form-control' : 'custom-form-fields'}`}>
-                                    {data.fileName ? data?.fileName?.length > 30 ? data?.fileName?.slice(0, 25) + '...' : data?.fileName : 'Upload Document'}
-                                    <p className='mb-0'><FiDownloadCloud /></p>
+                                    className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName ? 'form-control' : 'custom-form-fields'
+                                        }`}
+                                >
+                                    {data.fileName
+                                        ? data?.fileName?.length > 30
+                                            ? data?.fileName?.slice(0, 25) + '...'
+                                            : data?.fileName
+                                        : 'Upload Document'}
+                                    <p className="mb-0">
+                                        <FiDownloadCloud />
+                                    </p>
                                 </div>
                                 <Form.Control
                                     type="file"
                                     id={`fileInput-state=${index}`}
-                                    className="rounded-circle "
                                     style={{ display: 'none' }}
-                                    ref={stateFileInputRef}
                                     onChange={(e) => handleStateChange(e, index)}
                                 />
                                 <span
                                     onClick={() => handleRemoveState(index)}
+                                    className={`${stateDetails.length <= 1 ? 'd-none' : ''
+                                        } uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}
                                     style={{ right: '-2%', top: '20%' }}
-                                    className={`${stateDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
-                                </span>
+                                ></span>
                             </Col>
-
                         </React.Fragment>
                     ))}
-                    <hr />
                     <hr />
                     <Col sm={12}>
                         <Row>
@@ -921,16 +946,15 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     {...register('address')}
                                                     onChange={(e) => {
                                                         getGeolocation(e);
-                                                        setFocused(true); // Open dropdown on input
+                                                        setFocused(true);
                                                     }}
-                                                    onFocus={() => setFocused(true)} // Open dropdown when the field is focused
+                                                    onFocus={() => setFocused(true)}
                                                     onBlur={() => {
-                                                        setTimeout(() => setFocused(false), 200); // Delay to allow selection before hiding dropdown
+                                                        setTimeout(() => setFocused(false), 200);
                                                     }}
                                                     placeholder="Search for address"
                                                     autoComplete="off"
                                                 />
-                                                {/* Dropdown suggestions */}
                                                 <div
                                                     style={{
                                                         position: 'absolute',
@@ -949,14 +973,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                         <p
                                                             key={index}
                                                             onClick={() => {
-                                                                console.log(data)
+                                                                // console.log(data)
                                                                 setValue('zip', data?.components?.postcode)
                                                                 setValue('stateName', data?.components?.state_code)
                                                                 setLatitude(data?.bounds?.southwest?.lat);
                                                                 setLongitude(data?.bounds?.southwest?.lng);
                                                                 setCitySearch(data?.components?.county)
                                                                 setValue('address', data?.formatted)
-                                                                setFocused(false); // Close dropdown after selection
+                                                                setFocused(false);
                                                             }}
                                                             style={{
                                                                 margin: 0,
@@ -982,7 +1006,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 defaultValue={latitude}
                                                 placeholder="Latitude"
                                             />
-                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
@@ -992,7 +1015,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="text"
                                                 defaultValue={longitude}
                                                 placeholder="Longitude" />
-                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -1004,13 +1026,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Label className='mb-1' >State</Form.Label>
                                             <Form.Select
                                                 {...register('stateName')}
-                                                onChange={(e) => handleStateSelection(e)}
+                                                onChange={(e) => {
+                                                    handleStateSelection(e, 'primary');
+
+                                                }}
                                             >
-                                                <option>State</option>
+                                                <option >State</option>
                                                 {statesData?.states?.map((data) => (
                                                     <option
-                                                        key={data?.state_code} // Unique key for each option
-                                                        // defau={JSON.stringify({ name: data?.name, state_code: data?.state_code, id: data?.id, _id: data?._id }) || data?.state_code}
+                                                        key={data?.name}
+                                                        data-key={data?.id}
                                                         value={data?.state_code}
                                                     >
                                                         {data?.name}
@@ -1023,22 +1048,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
                                             <Form.Label className='mb-1'>City</Form.Label>
-                                            {/* {
-                                                store?.getCitiesReducer?.loading ?
-                                                    <Row>
-                                                        <Col sm={12}>
-                                                            <Spinner className='fs-5' />
-                                                        </Col>
-                                                    </Row>
-                                                    : */}
                                             <Form.Select
                                                 disabled={store?.getCitiesReducer?.loading}
                                                 {...register('city')}
                                                 onChange={(e) => handleCitySelection(e)}
                                             >
                                                 <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
-                                                {cities?.map((data) => (
-                                                    <option key={data?._id} value={data?._id}>
+                                                {cities1?.map((data) => (
+                                                    <option key={data?.name} value={data?._id}>
                                                         {data?.name}
                                                     </option>
                                                 ))}
@@ -1065,6 +1082,211 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
                                                 type="text"
                                                 {...register('zip', {
+                                                    minLength: {
+                                                        value: 5,
+                                                        message: 'ZIP code must be at least 5 characters long',
+                                                    },
+                                                    pattern: {
+                                                        value: /^[0-9]+$/,
+                                                        message: 'ZIP code must contain numbers only',
+                                                    },
+                                                })}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Zip"
+                                                maxLength={5}
+                                            />
+                                            {errors.zip && <span className="text-danger">{errors.zip.message}</span>}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <hr />
+                    <Col sm={12}>
+                        <Row>
+                            <Col sm={12} className='mb-2'>
+                                <span className='text-black fw-semibold form-label'>Mailing Address</span>
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Same as Primary Address"
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSameAsPrimary(true);
+                                            setValue('mailingAddress', getValues('address'));
+                                            setValue('mailingZip', getValues('zip'));
+                                            setValue('mailingStreet', getValues('street'));
+                                            setMailingLatitude(latitude);
+                                            setMailingLongitude(longitude);
+                                        } else {
+                                            setSameAsPrimary(false)
+                                            setValue('mailingAddress', '');
+                                            setValue('mailingZip', '');
+                                            setValue('mailingStreet', '');
+                                            setMailingLatitude(null);
+                                            setMailingLongitude(null);
+                                        }
+                                    }}
+                                />
+                            </Col>
+                            <Col sm={6}>
+                                <Row className='position-relative'>
+                                    <Col sm={12}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Form.Control
+                                                    type="text"
+                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
+                                                    {...register('mailingAddress')}
+                                                    onChange={(e) => {
+                                                        getMailingGeolocation(e);
+                                                        setMailingFocused(true);
+                                                    }}
+                                                    onFocus={() => setMailingFocused(true)}
+                                                    onBlur={() => {
+                                                        setTimeout(() => setMailingFocused(false), 200);
+                                                    }}
+                                                    placeholder="Search for address"
+                                                    autoComplete="off"
+                                                />
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '100%',
+                                                        left: 0,
+                                                        width: '100%',
+                                                        maxHeight: '150px',
+                                                        zIndex: 111,
+                                                        backgroundColor: '#fff',
+                                                        border: '1px solid #ced4da',
+                                                        borderTop: 'none',
+                                                    }}
+                                                    className={`scroll-container hover-bg-change ${searchedMailingLocations?.length === 0 || !mailingFocused ? 'd-none' : ''}`}
+                                                >
+                                                    {searchedMailingLocations?.map((data, index) => (
+                                                        <p
+                                                            key={index}
+                                                            onClick={() => {
+                                                                setValue('mailingZip', data?.components?.postcode)
+                                                                setValue('mailingStateName', data?.components?.state_code)
+                                                                setMailingLatitude(data?.bounds?.southwest?.lat);
+                                                                setMailingLongitude(data?.bounds?.southwest?.lng);
+                                                                setMailingCitySearch(data?.components?.county)
+                                                                setValue('mailingAddress', data?.formatted)
+                                                                setMailingFocused(false);
+                                                            }}
+                                                            style={{
+                                                                margin: 0,
+                                                                padding: '8px 12px',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            className="hover-bg-change text-black"
+                                                        >
+                                                            {data?.formatted}
+                                                        </p>
+                                                    ))}
+                                                    {searchedMailingLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
+                                                </div>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Latitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={mailingLatitude}
+                                                placeholder="Latitude"
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Longitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={mailingLongitude}
+                                                placeholder="Longitude" />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col sm={6}>
+                                <Row>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1' >State</Form.Label>
+                                            {sameAsPrimary ?
+                                                <Form.Control
+                                                    value={statesData?.states?.find((data) => data?.state_code === getValues('stateName'))?.name}
+                                                    readOnly />
+                                                :
+                                                <Form.Select
+                                                    {...register('mailingStateName')}
+                                                    onChange={(e) => {
+                                                        handleMailingStateSelection(e);
+
+                                                    }}
+                                                >
+                                                    <option >State</option>
+                                                    {statesData?.states?.map((data) => (
+                                                        <option
+                                                            key={data?.name}
+                                                            data-key={data?.id}
+                                                            value={data?.state_code}
+                                                        >
+                                                            {data?.name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            }
+
+                                        </Form.Group>
+
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            {sameAsPrimary ?
+                                                <Form.Control
+                                                    value={cities1?.find((data) => data?._id === getValues('city'))?.name}
+                                                    readOnly />
+                                                :
+                                                <Form.Select
+                                                    disabled={store?.getCitiesReducer?.loading}
+                                                    {...register('mailingCity')}
+                                                    onChange={(e) => handleCitySelection(e)}
+                                                >
+                                                    <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
+                                                    {cities2?.map((data) => (
+                                                        <option key={data?.name} value={data?._id}>
+                                                            {data?.name}
+                                                        </option>
+                                                    ))}
+                                                </Form.Select>
+                                            }
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                {...register('mailingStreet')}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Street" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Zip</Form.Label>
+                                            <Form.Control
+                                                defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
+                                                type="text"
+                                                {...register('mailingZip', {
                                                     minLength: {
                                                         value: 5,
                                                         message: 'ZIP code must be at least 5 characters long',
@@ -1155,6 +1377,20 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 <Form.Control
                                                     type="text"
                                                     value={data.contact}
+                                                    {...register('pocContact', {
+                                                        pattern: {
+                                                            value: /^[0-9]*$/,
+                                                            message: 'Contact must be a number'
+                                                        },
+                                                        maxLength: {
+                                                            value: 10,
+                                                            message: 'Contact must not exceed 10 digits'
+                                                        },
+                                                        minLength: {
+                                                            value: 9,
+                                                            message: 'Contact must not be less than 9 digits'
+                                                        }
+                                                    })}
                                                     onChange={(e) => handlePOSInputChange(e, 'contact', index)}
                                                     onKeyPress={handleFirstSpace}
                                                     placeholder="Phone Number"
@@ -1170,6 +1406,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     width={20} />
                                             </div>
                                         </Form.Group>
+                                        {errors.pocContact && <span className="text-danger pt-0">{errors.pocContact.message}</span>}
+
                                     </Col>
                                 </React.Fragment>
                             ))}
@@ -1183,17 +1421,18 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             {store?.createClinicsReducer?.loading && counter > 1 ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
-                                'Add Multiple Clinics'
+                                'Add Multiple Practices'
                             }
                         </Button>
                         <Button
                             variant="primary"
-                            type={counter > 0 ? 'button' : 'submit'}
+                            type={counter <= 1 ? 'submit' : 'button'}
                             className='custom-buttons'
                             disabled={!formValid || store?.createClinicsReducer?.loading}
                             onClick={() => {
                                 setSingleOrMultiple(false);
-                                if (counter > 0 && !isModalRequest) {
+                                // setCounter(1);
+                                if (counter > 1 && !isModalRequest) {
                                     setMultiple(counter)
                                     setActiveTab('billing');
                                     setSingleOrMultiple(false);
@@ -1240,22 +1479,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         <td>{multipleData?.clinicType}</td>
                                         <td className='text-lowercase'>{multipleData?.userId?.email}</td>
                                         <td>{multipleData?.userId?.phone}</td>
-                                        {/* <td>{multipleData?.taxIdOrEIN}</td> */}
                                         <td className='fs-4 d-flex gap-1'>
-                                            {/* <i className="mdi mdi-square-edit-outline cursor-pointer"></i> */}
                                             <i
                                                 className="mdi mdi-delete cursor-pointer"
                                                 onClick={() => {
-                                                    // if (index === 0) {
-                                                    //     ToastHandle('The parent clinic cannot be deleted before deleting the subclinics added under it.', 'danger')
-                                                    //     return;
-                                                    // }
                                                     const payload = {
                                                         id: index === 0 ? multipleData?.clinicId : multipleData?._id,
                                                     };
                                                     dispatch(deleteClinicAction({ key: encryptMessage(payload) }));
-
-                                                    // dispatch(stateEmptydAction());
                                                 }}
                                             ></i>
                                         </td>
@@ -1271,7 +1502,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <td>{createTableData?.email}</td>
                                 <td>{createTableData?.phone}</td>
                                 <td>
-                                    {/* <i className="mdi mdi-square-edit-outline cursor-pointer"></i> */}
                                     <i onClick={() => handleDeleteClinic(createTableData?._id)} className="mdi mdi-delete cursor-pointer"></i>
                                 </td>
                             </tr>
