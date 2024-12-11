@@ -15,5 +15,5 @@ export function updateRolesApi(params: any): any {
 
 export function getRolesApi(params: any): any {
     const { data } = params;
-    return api.get(`${URL.getRoles}?limit=${data?.limit}&page=${data?.skip}&search=${data?.search}&status=${data.status}`);
+    return api.get(`${URL.getRoles}?limit=${data?.limit}&page=${data?.skip}&search=${data?.search}&status=${data.status}&showTo=super-admin`);
 }

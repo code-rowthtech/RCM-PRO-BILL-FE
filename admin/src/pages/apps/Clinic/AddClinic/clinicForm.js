@@ -15,6 +15,7 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked } from 'react-icons/md';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, setIsModalRequest, isModalRequest, resetEmail }) => {
     const dispatch = useDispatch();
@@ -28,6 +29,20 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         setValue,
         clearErrors
     } = useForm();
+    const navigate = useNavigate()
+
+    // Variable initializations
+
+    const clinicname = watch('clinicname');
+    const email = watch('email');
+    const contact = watch('contact');
+    const clinicType = watch('clinicType');
+    const stateGeoLocation = watch('stateName');
+    const mailingStateGeoLocation = watch('mailingStateName');
+    const isFormValid = clinicname && email && contact && clinicType;
+    const [searchParams] = useSearchParams();
+    const parentClincId = searchParams.get('clincid');
+    const parentUserId = searchParams.get('userId');
     const [updatePage, setUpdatePage] = useState(false);
     const [counter, setCounter] = useState(0);
     const [selectedState, setSelectedState] = useState(null);
@@ -40,6 +55,12 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [mailingFocused, setMailingFocused] = useState(false);
     const [singleOrMultiple, setSingleOrMultiple] = useState(false);
     const [sameAsPrimary, setSameAsPrimary] = useState(false);
+    const [longitude, setLongitude] = useState(null);
+    const [latitude, setLatitude] = useState(null);
+    const [mailingLongitude, setMailingLongitude] = useState(null);
+    const [mailingLatitude, setMailingLatitude] = useState(null);
+    const [stateToSelect, setStateToSelect] = useState(null);
+    const [mailingStateToSelect, setMailingStateToSelect] = useState(null);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
     ]);
@@ -52,30 +73,180 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
+    const [ids, setIds] = useState({
+        userId: null, clinicId: null,
+    })
+    const [formValid, setFormValid] = useState(false);
+    const [createTableData, setCreateTableData] = useState(null);
+    const [searchedLocations, setSearchedLocations] = useState(null);
+    const [searchedMailingLocations, setSearchedMailingLocations] = useState(null);
+    const [selectedStates, setSelectedStates] = useState([]);
+    const [statesMenu, setStatesMenu] = useState(false);
 
-    // Get store Data 
+    const [citySearch, setCitySearch] = useState(null);
+    const [mailingCitySearch, setMailingCitySearch] = useState(null);
+    // GET store data
     const store = useSelector((state) => state);
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const createResponse = store?.createClinicsReducer?.data?.status;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
+    console.log({ clinicsList })
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
+    const deleteResponse = store?.deleteClinicOnboardingReducer?.data?.status;
     const cities = store?.getCitiesReducer?.data?.cities;
     const logoFileInputRef = useRef(null);
     const accreditationFileInputRef = useRef(null);
     const medicalFileInputRef = useRef(null);
     const stateFileInputRef = useRef(null);
+    const createData = store?.createClinicsReducer?.data?.data;
+    const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    console.log({ clinicData })
+    // useEffects
 
+    useEffect(() => {
+        if (parentClincId) {
+            const payload = {
+                id: parentClincId
+            }
+            dispatch(getClinicById({ key: encryptMessage(payload) }))
+        }
+    }, [parentClincId])
+    useEffect(() => {
+        const validateDetails = (details, keys) =>
+            details.every((item) =>
+                keys.every((key) => item?.[key]?.toString().trim())
+            );
+
+        const updatedResetEmail = { ...resetEmail };
+
+        // Update accreditation details if valid
+        if (validateDetails(accreditationDetails, ['name', 'number', 'url', 'fileName'])) {
+            updatedResetEmail.accreditationDetails = accreditationDetails;
+        }
+
+        // Update state details if valid
+        if (validateDetails(stateDetails, ['name', 'number', 'url', 'fileName'])) {
+            updatedResetEmail.stateOfLicensing = stateDetails;
+        }
+
+        // Update position details if valid
+        if (
+            posDetails.every(
+                (item) =>
+                    item?.name?.trim() &&
+                    item?.email?.trim() &&
+                    item?.role?.trim() &&
+                    item?.contact?.trim()
+            )
+        ) {
+            updatedResetEmail.pos = posDetails;
+        }
+
+        // Update primaryAddress state if `stateToSelect` exists
+        if (stateToSelect?._id) {
+            updatedResetEmail.primaryAddress = {
+                ...updatedResetEmail.primaryAddress,
+                state: stateToSelect._id, // Update the state field
+            };
+        }
+        setResetEmail(updatedResetEmail);
+    }, [accreditationDetails, stateDetails, posDetails, stateToSelect, getValues, latitude, longitude, watch('city'), watch('street'), watch('zip')]);
     useEffect(() => {
         if (decryptedRolesData) {
             const clinicRoleId = decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id;
             setResetEmail({ ...resetEmail, role: clinicRoleId })
         }
     }, [decryptedRolesData])
+    useEffect(() => {
+        if (createResponse === 200) {
+            // reset Data
+            reset();
+            setLogo(null);
+            setLogoName(null);
+            setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setPosDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setStateDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setMedicalDetails([{ name: '', number: '', url: null, fileName: '' }]);
+            setSelectedCity(null);
+            setSelectedState(null);
+            if (!parentClincId && counter === 0) {
+                setBillingId(store?.createClinicsReducer?.data?.data?._id);
+                setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
+                setActiveTab('billing');
+            }
+        }
+        if (createResponse === 200 && parentClincId) {
+            const payload = {
+                parentClinicId: parentClincId,
+            }
+            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
+        }
+        if (deleteResponse === 200) {
+            const payload = {
+                parentClinic: parentClinic,
+            }
+            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
+        }
 
+    }, [createResponse, clinicsList, parentClinic, deleteResponse, counter]);
+    useEffect(() => {
+        if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
+            setFormValid(true)
+        }
+    }, [resetEmail])
+    useEffect(() => {
+        console.log(store?.createClinicsReducer?.data, 'store?.createClinicsReducer?.data')
+        if (createResponse === 200 && counter === 1) {
+            setIds({
+                userId: store?.createClinicsReducer?.data?.data?._id,
+                clinicId: store?.createClinicsReducer?.data?.data?.clinicId?._id
+            });
+            navigate(`/apps/rcm/addclinic?clincid=${store?.createClinicsReducer?.data?.data?.clinicId?._id}&userId=${store?.createClinicsReducer?.data?.data?._id}`)
+        }
+    }, [createResponse, counter]);
+    useEffect(() => {
+        if (createData) {
+            setCreateTableData(createData)
+        }
+    }, [createData]);
+    useEffect(() => {
+        if (latitude && longitude) {
+            setFocused(false);
+        }
+        if (mailingLatitude && mailingLongitude) {
+            setMailingFocused(false);
+        }
+    }, [latitude, longitude, mailingLatitude, mailingLongitude]);
+    useEffect(() => {
+        if (stateGeoLocation) {
+            setStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation));
+        }
+        if (mailingStateGeoLocation) {
+            setMailingStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === mailingStateGeoLocation));
+        }
+    }, [stateGeoLocation, mailingStateGeoLocation])
+    useEffect(() => {
+        if (citySearch) {
+            setValue('city', cities1 && cities1.find((data) => data?.name === citySearch)?._id)
+        }
+        if (mailingCitySearch) {
+            setValue('mailingCity', cities2 && cities2.find((data) => data?.name === mailingCitySearch)?._id)
+        }
+    }, [citySearch, cities1, mailingCitySearch, cities2])
+    useEffect(() => {
+        if (stateToSelect) {
+            dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: citySearch ? citySearch : '', limit: 25, skip: '' }));
+        }
+        if (mailingStateToSelect) {
+            dispatch(getCities2Action({ state_code: mailingStateToSelect?.id, name: mailingCitySearch ? mailingCitySearch : '', limit: 25, skip: '' }));
+        }
+    }, [stateToSelect, citySearch, mailingStateToSelect, mailingCitySearch])
+
+    // functions
     const handleLogoClick = () => {
         logoFileInputRef.current.click();
     };
@@ -263,80 +434,19 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         const value = e.target.value;
         setSelectedCity(value)
     };
-    const deleteResponse = store?.deleteClinicOnboardingReducer?.data?.status;
-    // create Response
-    useEffect(() => {
-        if (createResponse === 200) {
-            // reset Data
-            reset();
-            setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            setPosDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            setStateDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            setMedicalDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            setSelectedCity(null);
-            setSelectedState(null);
 
-            if (!singleOrMultiple && !isModalRequest) {
-                setBillingId(store?.createClinicsReducer?.data?.data?._id);
-                setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
-                setActiveTab('billing');
-                setCounter(0);
-            } else {
-                if (counter === 1) {
-                    setParentclinic(store?.createClinicsReducer?.data?.data?.clinicId?._id);
-                    setBillingId(store?.createClinicsReducer?.data?.data?._id);
-                    const payload = {
-                        parentClinic: store?.createClinicsReducer?.data?.data?.clinicId?._id,
-                    }
-                    dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-                } else if (counter > 1 && clinicsList) {
-                    setParentclinic(clinicsList[0]?.parentClinic)
-                    setBillingId(clinicsList[0]?.userId?._id);
-                    const payload = {
-                        parentClinic: parentClinic,
-                    }
-                    dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-                }
-
-            }
-            const payload = {
-                parentClinic: parentClinic,
-            }
-            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-
-        }
-        if (deleteResponse === 200) {
-            const payload = {
-                parentClinic: parentClinic,
-            }
-            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-        }
-
-    }, [createResponse, clinicsList, parentClinic, deleteResponse, counter]);
     // Submit Button 
-
-    const [formValid, setFormValid] = useState(false)
-    const clinicname = watch('clinicname');
-    const email = watch('email');
-    const contact = watch('contact');
-    const clinicType = watch('clinicType');
-    const isFormValid = clinicname && email && contact && clinicType;
-    useEffect(() => {
-        if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
-            setFormValid(true)
-        }
-    }, [resetEmail])
-
-
     const onSubmit = (data) => {
-        // console.log({ counter })
         setIsModalRequest(false);
         const newPayload = {
-            isParent: counter < 1 ? true : false, // Conditional property assignment using a ternary operator
-            parentClinic: parentClinic,
+            ...(parentClincId ? {
+                parentUserId: parentUserId,
+                parentClinicId: parentClincId,
+            } : {}),
+            flag: parentClincId ? "subClinic" : "Clinic",
             name: data?.clinicname,
+            isPrimaryAndMailingAddressSame: sameAsPrimary,
             email: data?.email,
-            role: decryptedRolesData && decryptedRolesData.find(role => role?.name === "clinic")?._id,
             phone: '+1' + data?.contact,
             clinicType: data?.clinicType,
             ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
@@ -378,17 +488,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             },
             practiceSpecialty: data?.speciality,
         };
-        // console.log(newPayload, 'newPayloadnewPayloadnewPayload')
+        console.log(newPayload, 'newPayloadnewPayloadnewPayload')
         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
     };
-    const createData = store?.createClinicsReducer?.data?.data;
-    const [createTableData, setCreateTableData] = useState(null);
-    // console.log({ createTableData })
-    useEffect(() => {
-        if (createData) {
-            setCreateTableData(createData)
-        }
-    }, [createData]);
 
     const handleDeleteClinic = (data) => {
         const payload = {
@@ -397,8 +499,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         dispatch(deleteClinicAction({ key: encryptMessage(payload) }))
     }
 
-    const [searchedLocations, setSearchedLocations] = useState(null)
-    const [searchedMailingLocations, setSearchedMailingLocations] = useState(null)
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
         async function fetchGeocodeData(location) {
@@ -456,56 +556,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             });
     }
 
-    // Example usage
-    const [longitude, setLongitude] = useState(null);
-    const [latitude, setLatitude] = useState(null);
-    const [mailingLongitude, setMailingLongitude] = useState(null);
-    const [mailingLatitude, setMailingLatitude] = useState(null);
-    const [stateToSelect, setStateToSelect] = useState(null);
-    const [mailingStateToSelect, setMailingStateToSelect] = useState(null);
-    // console.log({ mailingStateToSelect })
-    useEffect(() => {
-        if (latitude && longitude) {
-            setFocused(false);
-        }
-        if (mailingLatitude && mailingLongitude) {
-            setMailingFocused(false);
-        }
-    }, [latitude, longitude, mailingLatitude, mailingLongitude]);
-
-    const stateGeoLocation = watch('stateName');
-    const mailingStateGeoLocation = watch('mailingStateName');
-
-    useEffect(() => {
-        if (stateGeoLocation) {
-            setStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation));
-        }
-        if (mailingStateGeoLocation) {
-            setMailingStateToSelect(statesData?.states && statesData?.states.find((data) => data?.state_code === mailingStateGeoLocation));
-        }
-    }, [stateGeoLocation, mailingStateGeoLocation])
-
-    const [citySearch, setCitySearch] = useState(null);
-    const [mailingCitySearch, setMailingCitySearch] = useState(null);
-    useEffect(() => {
-        if (citySearch) {
-            setValue('city', cities1 && cities1.find((data) => data?.name === citySearch)?._id)
-        }
-        if (mailingCitySearch) {
-            setValue('mailingCity', cities2 && cities2.find((data) => data?.name === mailingCitySearch)?._id)
-        }
-    }, [citySearch, cities1, mailingCitySearch, cities2])
-    useEffect(() => {
-        if (stateToSelect) {
-            dispatch(getCitiesAction({ state_code: stateToSelect?.id, name: citySearch ? citySearch : '', limit: 25, skip: '' }));
-        }
-        if (mailingStateToSelect) {
-            dispatch(getCities2Action({ state_code: mailingStateToSelect?.id, name: mailingCitySearch ? mailingCitySearch : '', limit: 25, skip: '' }));
-        }
-    }, [stateToSelect, citySearch, mailingStateToSelect, mailingCitySearch])
-
-    const [selectedStates, setSelectedStates] = useState([]);
-    const [statesMenu, setStatesMenu] = useState(false);
     const handleCheckboxChange = (stateName) => {
         setSelectedStates((prev) => {
             const updatedStates = prev.includes(stateName)
@@ -558,23 +608,19 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             return updatedDetails;
         });
     };
-    const menuRef = useRef(null); // Reference for the menu
-    const containerRef = useRef(null); // Reference for the container
+    const menuRef = useRef(null);
+    const containerRef = useRef(null);
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (containerRef.current && !containerRef.current.contains(event.target)) {
                 setStatesMenu(false);
             }
         };
-        // Add event listener to detect clicks outside the menu
         document.addEventListener('mousedown', handleClickOutside);
-        // Clean up the event listener on component unmount
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
-
 
     return (
         <>
@@ -607,8 +653,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         <Form.Group className="mb-2">
                             <Form.Label className='mb-1'>Practice type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
-                                // defaultValue={updatePage ? clinicDataToUpdate?.clinicType : ''}
                                 {...register('clinicType', { required: 'This field is required' })}
+                                data-has-value={!!getValues('clinicType')}
+                                // onBlur={(e) => {
+                                //     e.target.setAttribute('data-has-value', !!e.target.value);
+                                // }}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
                                 <option value="">Select practice type</option> {/* Ensure this has a value to represent unselected */}
@@ -923,7 +972,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     onClick={() => handleRemoveState(index)}
                                     className={`${stateDetails.length <= 1 ? 'd-none' : ''
                                         } uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}
-                                    style={{ right: '-2%', top: '20%' }}
+                                    style={{ right: '0.8%', top: '-38%' }}
                                 ></span>
                             </Col>
                         </React.Fragment>
@@ -942,7 +991,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <div style={{ position: 'relative' }}>
                                                 <Form.Control
                                                     type="text"
-                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
                                                     {...register('address')}
                                                     onChange={(e) => {
                                                         getGeolocation(e);
@@ -1026,12 +1074,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Label className='mb-1' >State</Form.Label>
                                             <Form.Select
                                                 {...register('stateName')}
+                                                data-has-value={!!getValues('stateName')}
+                                                onBlur={(e) => {
+                                                    e.target.setAttribute('data-has-value', !!e.target.value);
+                                                }}
                                                 onChange={(e) => {
                                                     handleStateSelection(e, 'primary');
 
                                                 }}
                                             >
-                                                <option >State</option>
+                                                <option value=''>State</option>
                                                 {statesData?.states?.map((data) => (
                                                     <option
                                                         key={data?.name}
@@ -1051,6 +1103,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Select
                                                 disabled={store?.getCitiesReducer?.loading}
                                                 {...register('city')}
+                                                data-has-value={!!getValues('city')}
+                                                onBlur={(e) => {
+                                                    e.target.setAttribute('data-has-value', !!e.target.value);
+                                                }}
                                                 onChange={(e) => handleCitySelection(e)}
                                             >
                                                 <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
@@ -1224,12 +1280,15 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 :
                                                 <Form.Select
                                                     {...register('mailingStateName')}
+                                                    data-has-value={!!getValues('mailingStateName')}
+                                                    onBlur={(e) => {
+                                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                                    }}
                                                     onChange={(e) => {
                                                         handleMailingStateSelection(e);
-
                                                     }}
                                                 >
-                                                    <option >State</option>
+                                                    <option value=''>State</option>
                                                     {statesData?.states?.map((data) => (
                                                         <option
                                                             key={data?.name}
@@ -1256,6 +1315,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 <Form.Select
                                                     disabled={store?.getCitiesReducer?.loading}
                                                     {...register('mailingCity')}
+                                                    data-has-value={!!getValues('mailingCity')}
+                                                    onBlur={(e) => {
+                                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                                    }}
                                                     onChange={(e) => handleCitySelection(e)}
                                                 >
                                                     <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
@@ -1417,8 +1480,17 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     <hr />
                     <Col md={12} className='mt-2 d-flex gap-2 justify-content-end'>
 
-                        <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid || store?.createClinicsReducer?.loading} onClick={() => { setSingleOrMultiple(true); setCounter(counter + 1) }} >
-                            {store?.createClinicsReducer?.loading && counter > 1 ?
+                        <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid || store?.createClinicsReducer?.loading}
+                            onClick={() => {
+                                if (!parentClincId) {
+
+                                    setCounter(1)
+                                } else {
+                                    setCounter(2)
+                                }
+                            }}
+                        >
+                            {store?.createClinicsReducer?.loading && parentClincId ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
                                 'Add Multiple Practices'
@@ -1426,21 +1498,19 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         </Button>
                         <Button
                             variant="primary"
-                            type={counter <= 1 ? 'submit' : 'button'}
+                            type={!parentClincId ? 'submit' : 'button'}
                             className='custom-buttons'
                             disabled={!formValid || store?.createClinicsReducer?.loading}
                             onClick={() => {
-                                setSingleOrMultiple(false);
-                                // setCounter(1);
-                                if (counter > 1 && !isModalRequest) {
+                                if (parentClincId && !isModalRequest) {
                                     setMultiple(counter)
                                     setActiveTab('billing');
-                                    setSingleOrMultiple(false);
-                                    setCounter(0);
+                                    // setSingleOrMultiple(false);
+                                    // setCounter(0);
                                 }
                             }}
                         >
-                            {store?.createClinicsReducer?.loading && counter === 0 ?
+                            {store?.createClinicsReducer?.loading && !parentClincId ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
                                 'Next'
@@ -1449,7 +1519,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                 </Row >
             </Form >
-            <Row className={`${clinicsList?.length > 0 || counter === 1 && createResponse === 200 ? '' : 'd-none'}`}>
+            <Row className={`${clinicsList?.length > 0 && parentClincId ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
                         <thead>
@@ -1459,12 +1529,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <th>Clinic Type</th>
                                 <th>Email</th>
                                 <th>Contact</th>
-                                {/* <th>Tax / EIN Id</th> */}
-                                {/* <th></th> */}
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody className={`${counter === 1 ? 'd-none' : ''}`}>
+                        <tbody className={`${!parentClincId ? 'd-none' : ''}`}>
                             {store?.getClinicsByParentReducer?.loading ?
                                 <tr>
                                     <td colSpan={5} className='text-center'>
@@ -1493,18 +1561,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     </tr>
                                 )
                                 )}
-                        </tbody>
-                        <tbody className={`${counter === 1 ? '' : 'd-none'}`}>
-                            <tr key={createTableData?._id}>
-                                <td className='text-capitalize'>{createTableData?.clinicId?.name}</td>
-                                <td>{(createTableData?.address?.state?.state_code || "N/A") + " / " + (createTableData?.address?.city?.name || "N/A")}</td>
-                                <td>{createTableData?.clinicId?.clinicType}</td>
-                                <td>{createTableData?.email}</td>
-                                <td>{createTableData?.phone}</td>
-                                <td>
-                                    <i onClick={() => handleDeleteClinic(createTableData?._id)} className="mdi mdi-delete cursor-pointer"></i>
-                                </td>
-                            </tr>
                         </tbody>
                     </Table>
                 </Col>

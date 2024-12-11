@@ -18,7 +18,7 @@ const Clinic = ({ id }) => {
     const {
         register,
         handleSubmit,
-        setValue, watch,
+        setValue, watch, getValues,
         formState: { errors },
     } = useForm();
     const dispatch = useDispatch()
@@ -36,6 +36,7 @@ const Clinic = ({ id }) => {
     const [mailingLongitude, setMailingLongitude] = useState(null);
     const [citySearch, setCitySearch] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
+    const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
     console.log({ clinicData })
@@ -51,6 +52,7 @@ const Clinic = ({ id }) => {
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
+    console.log(posDetails, 'posDetailsposDetails')
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -77,6 +79,7 @@ const Clinic = ({ id }) => {
         setField('mailingAddress', clinicData?.userId?.mailingAddress?.address);
         setField('street', clinicData?.userId?.address?.street);
         setField('zip', clinicData?.userId?.primaryAddress?.zip);
+        setSameAsPrimary(clinicData?.userId?.isPrimaryAndMailingAddressSame);
         setField('stateName', clinicData?.userId?.primaryAddress?.state?._id)
         setField('mailingStateName', clinicData?.userId?.mailingAddress?.state?._id)
         if (clinicData?.userId?.primaryAddress?.city) {
@@ -179,6 +182,8 @@ const Clinic = ({ id }) => {
 
     const onSubmit = (data) => {
         const newPayload = {
+            userId: clinicData?.userId?._id,
+            clinicId: clinicData?._id,
             name: data?.name || clinicData?.name, // Clinic name
             ...(data?.email.toLowerCase() !== clinicData?.userId?.email.toLowerCase() && {
                 email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(),
@@ -189,7 +194,7 @@ const Clinic = ({ id }) => {
             npiNumber: data?.npi || clinicData?.npiNumber, // NPI number
             // medicalLicenses: formDetails.medicalDetails || clinicData?.medicalLicenses, // Medical Licenses
             stateOfLicensing: formDetails.stateDetails || clinicData?.stateOfLicensing, // State Licensing
-            accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails, // Accreditation Details
+            accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails,
             logo: {
                 url: logo?.url.split('?')[0],
                 fileName: logoName
@@ -204,15 +209,26 @@ const Clinic = ({ id }) => {
                 ...(latitude ? { latitude: latitude } : ''),
                 ...(longitude ? { longitude: longitude } : ''),
             },
-            mailingAddress: {
-                ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
-                ...(data?.mailingCity ? { city: data?.mailingCity } : ''),
-                ...(data?.mailingStateName ? { state: data?.mailingStateName } : ''),
-                ...(data?.mailingStreet ? { street: data?.mailingStreet } : ''),
-                ...(data?.mailingZip ? { zip: data?.mailingZip } : ''),
-                ...(mailingLatitude ? { latitude: mailingLatitude } : ''),
-                ...(mailingLongitude ? { longitude: mailingLongitude } : ''),
-            },
+            isPrimaryAndMailingAddressSame: sameAsPrimary,
+            mailingAddress: sameAsPrimary ?
+                {
+                    ...(data?.address ? { address: data?.address } : {}),
+                    ...(data?.city ? { city: data?.city } : ''),
+                    ...(data?.stateName ? { state: data?.stateName } : ''),
+                    ...(data?.street ? { street: data?.street } : ''),
+                    ...(data?.zip ? { zip: data?.zip } : ''),
+                    ...(latitude ? { latitude: latitude } : ''),
+                    ...(longitude ? { longitude: longitude } : ''),
+                }
+                : {
+                    ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
+                    ...(data?.mailingCity ? { city: data?.mailingCity } : ''),
+                    ...(data?.mailingStateName ? { state: data?.mailingStateName } : ''),
+                    ...(data?.mailingStreet ? { street: data?.mailingStreet } : ''),
+                    ...(data?.mailingZip ? { zip: data?.mailingZip } : ''),
+                    ...(mailingLatitude ? { latitude: mailingLatitude } : ''),
+                    ...(mailingLongitude ? { longitude: mailingLongitude } : ''),
+                },
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
@@ -985,7 +1001,29 @@ const Clinic = ({ id }) => {
                     <Col sm={12}>
                         <Row>
                             <Col sm={12} className='mb-2'>
-                                <span className='text-black fw-semibold form-label'>Mailing Address Details</span>
+                                <span className='text-black fw-semibold form-label'>Mailing Address</span>
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Same as Primary Address"
+                                    checked={sameAsPrimary}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSameAsPrimary(true);
+                                            setValue('mailingAddress', getValues('address'));
+                                            setValue('mailingZip', getValues('zip'));
+                                            setValue('mailingStreet', getValues('street'));
+                                            setMailingLatitude(latitude);
+                                            setMailingLongitude(longitude);
+                                        } else {
+                                            setSameAsPrimary(false)
+                                            setValue('mailingAddress', '');
+                                            setValue('mailingZip', '');
+                                            setValue('mailingStreet', '');
+                                            setMailingLatitude(null);
+                                            setMailingLongitude(null);
+                                        }
+                                    }}
+                                />
                             </Col>
                             <Col sm={6}>
                                 <Row className='position-relative'>
@@ -1007,6 +1045,7 @@ const Clinic = ({ id }) => {
                                                     }}
                                                     placeholder="Search for address"
                                                     autoComplete="off"
+                                                    readOnly={sameAsPrimary}
                                                 />
                                                 {/* Dropdown suggestions */}
                                                 <div
@@ -1051,6 +1090,7 @@ const Clinic = ({ id }) => {
                                             <Form.Label className='mb-1'>Latitude</Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                readOnly={sameAsPrimary}
                                                 defaultValue={mailingLatitude}
                                                 placeholder="Latitude"
                                             />
@@ -1062,6 +1102,7 @@ const Clinic = ({ id }) => {
                                             <Form.Label className='mb-1'>Longitude</Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                readOnly={sameAsPrimary}
                                                 defaultValue={mailingLongitude}
                                                 placeholder="Longitude" />
                                             {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
@@ -1077,6 +1118,7 @@ const Clinic = ({ id }) => {
                                             <Form.Select
                                                 {...register('mailingStateName')}
                                                 onChange={(e) => handleMailingStateSelection(e)}
+                                                disabled={sameAsPrimary}
                                             >
                                                 <option>State</option>
                                                 {statesData?.states?.map((data) => (
@@ -1096,7 +1138,7 @@ const Clinic = ({ id }) => {
                                         <Form.Group className="mb-2">
                                             <Form.Label className='mb-1'>City</Form.Label>
                                             <Form.Select
-                                                disabled={store?.getCitiesReducer?.loading}
+                                                disabled={store?.getCitiesReducer?.loading || sameAsPrimary}
                                                 {...register('mailingCity')}
                                                 onChange={(e) => handleCitySelection(e)}
                                             >
@@ -1116,6 +1158,7 @@ const Clinic = ({ id }) => {
                                             <Form.Label className='mb-1'>Street</Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                readOnly={sameAsPrimary}
                                                 {...register('mailingStreet')}
                                                 onKeyPress={handleFirstSpace}
                                                 placeholder="Street" />
@@ -1127,6 +1170,7 @@ const Clinic = ({ id }) => {
                                             <Form.Label className='mb-1'>Zip</Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                readOnly={sameAsPrimary}
                                                 {...register('mailingZip', {
                                                     minLength: {
                                                         value: 5,
@@ -1162,11 +1206,11 @@ const Clinic = ({ id }) => {
                             </Col>
                             {posDetails.map((data, index) => (
                                 <React.Fragment key={index}>
-                                    <Col sm={12} className='form-label'>
+                                    <Col sm={12} className="form-label">
                                         {'POS ' + `${index + 1}`}
                                         <span
                                             onClick={() => handleRemovePOS(index)}
-                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer  fs-5 fw-bold text-danger`}>
+                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer fs-5 fw-bold text-danger`}>
                                         </span>
                                     </Col>
                                     <Col sm={6}>
@@ -1174,7 +1218,7 @@ const Clinic = ({ id }) => {
                                             <Form.Label className="mb-1">Full Name</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                value={data.name}
+                                                value={data.name || ''} // Ensure it defaults to an empty string
                                                 onChange={(e) => handlePOSInputChange(e, 'name', index)}
                                                 placeholder="Full Name"
                                             />
@@ -1185,8 +1229,8 @@ const Clinic = ({ id }) => {
                                             <Form.Label className="mb-1">Contact Email</Form.Label>
                                             <Form.Control
                                                 type="email"
-                                                value={data.email}
-                                                {...register('contactemail', {
+                                                value={data.email || ''} // Ensure it defaults to an empty string
+                                                {...register(`contactemail_${index}`, {
                                                     pattern: {
                                                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
                                                         message: 'Please enter a valid email address'
@@ -1195,17 +1239,18 @@ const Clinic = ({ id }) => {
                                                 onChange={(e) => handlePOSInputChange(e, 'email', index)}
                                                 placeholder="Contact Email"
                                             />
-                                            {errors.contactemail && <span className="text-danger">{errors.contactemail.message}</span>}
-
+                                            {errors[`contactemail_${index}`] && (
+                                                <span className="text-danger">{errors[`contactemail_${index}`].message}</span>
+                                            )}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
                                             <Form.Label className="mb-1">Job Title / Role</Form.Label>
                                             <Form.Control
-                                                type='text'
-                                                value={data?.role}
-                                                placeholder='Job Title / Role'
+                                                type="text"
+                                                value={data.role || ''} // Ensure it defaults to an empty string
+                                                placeholder="Job Title / Role"
                                                 onChange={(e) => handlePOSInputChange(e, 'role', index)}
                                             />
                                         </Form.Group>
@@ -1214,11 +1259,11 @@ const Clinic = ({ id }) => {
                                         <Form.Group className="mb-2 position-relative">
                                             <Form.Label className="mb-1">Phone Number</Form.Label>
                                             <InputGroup>
-                                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text>
+                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">+1</InputGroup.Text>
                                                 <Form.Control
                                                     type="tel"
-                                                    value={data.contact}
-                                                    {...register('pocContact', {
+                                                    value={data.contact || ''} // Ensure it defaults to an empty string
+                                                    {...register(`pocContact_${index}`, {
                                                         pattern: {
                                                             value: /^[0-9]*$/,
                                                             message: 'Contact must be a number'
@@ -1237,21 +1282,17 @@ const Clinic = ({ id }) => {
                                                     maxLength={10}
                                                 />
                                             </InputGroup>
-                                            <div
-                                                className='position-absolute' style={{ top: '52%', left: '1%' }}
-                                            >
-                                                <img
-                                                    src={us}
-                                                    alt="country code flag"
-                                                    width={20} />
+                                            <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
+                                                <img src={us} alt="country code flag" width={20} />
                                             </div>
                                         </Form.Group>
-                                        {errors.pocContact && <span className="text-danger pt-0">{errors.pocContact.message}</span>}
+                                        {errors[`pocContact_${index}`] && (
+                                            <span className="text-danger pt-0">{errors[`pocContact_${index}`].message}</span>
+                                        )}
                                     </Col>
                                 </React.Fragment>
                             ))}
                         </Row>
-
                     </Col>
                 </Row >
                 <Row>

@@ -13,7 +13,7 @@ import ClinicForm from './clinicForm';
 import BillingForm from './billing';
 import Contract from './contract';
 import { IoMdArrowRoundBack } from 'react-icons/io';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import SendEmailModal from './emailModal';
 import { getMastersDataAction } from '../../../../redux/settings/actions';
 
@@ -37,9 +37,10 @@ const Index = () => {
     const [activeTab, setActiveTab] = useState('clinic');
     const [allowedTabs, setAllowedTabs] = useState(['clinic'])
     const [resetEmail, setResetEmail] = useState({
-        name: null, email: null, role: null, phone: null, clinicType: null
+        name: null, email: null, phone: null, clinicType: null, flag: 'Clinic'
     });
-
+    const [searchParams] = useSearchParams();
+    const parentClincId = searchParams.get('clincid');
     const [isModalRequest, setIsModalRequest] = useState(false); // Track whether the API was triggered by the modal
     const [resetEmailError, setResetEmailError] = useState(null);
     const store = useSelector((state) => state);
@@ -72,9 +73,10 @@ const Index = () => {
         setResetEmailError(null)
     }
     const [buffer, setBuffer] = useState(null);
+    const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
+
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
-    console.log(billingResponse, 'from index')
     const handleContractGeneration = () => {
         const data = {
             adminId: user?._id,
@@ -83,7 +85,7 @@ const Index = () => {
             clinicId: billingResponse?._id,
             clinicEmail: billingResponse?.userId?.email,
             clinicName: billingResponse?.name,
-            pdfUint8Array: buffer
+            pdfUint8Array: quillBuffer
         }
         console.log(data, 'from index pay')
         dispatch(generateContractAction({ key: encryptMessage(data) }));
@@ -144,13 +146,13 @@ const Index = () => {
                                             }
                                         }}
                                     >
-                                        Email to Clinic
+                                        Email to Practice
                                     </Button>
                                     <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                     <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
                                 </Col>
                                 <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
-                                    <Button onClick={handleContractGeneration} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>Generate Contract</Button>
+                                    <Button onClick={handleContractGeneration} disabled={!quillBuffer} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>Generate Contract</Button>
                                     <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                 </Col>
                             </Row>
@@ -169,7 +171,7 @@ const Index = () => {
                                             <BillingForm multiple={multiple} setActiveTab={setActiveTab} activeTab={activeTab} clinicId={clinicId} billingId={billingId} />
                                             :
                                             <Contract
-                                                setBuffer={setBuffer}
+                                                setQuillBuffer={setQuillBuffer}
                                                 setClinicId={setClinicId} setBillingId={setBillingId}
                                                 setActiveTab={setActiveTab} activeTab={activeTab}
                                                 clinicId={clinicId} billingId={billingId} contractId={contractId} />

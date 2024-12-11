@@ -128,12 +128,12 @@ const MENU_ITEMS = [
                 url: '/settings/contractFormat',
                 parentKey: 'settings',
             },
-            // {
-            //     key: 'designation',
-            //     label: 'Designation',
-            //     url: '/settings/designation',
-            //     parentKey: 'settings',
-            // },
+            {
+                key: 'designation',
+                label: 'Designation',
+                url: '/settings/designation',
+                parentKey: 'settings',
+            },
             // {
             //     key: 'bloodGroup',
             //     label: 'Blood Group',

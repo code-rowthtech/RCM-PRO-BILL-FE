@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { SettingsActionTypes } from './constants';
-import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi } from './api';
+import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi, createContractApi, getContractApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -34,6 +34,66 @@ function* createMastersDataFunction(data) {
         ToastHandle(error, 'danger')
         yield put({
             type: SettingsActionTypes.CREATE_MASTERS_DATA_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* createContractFunction(data) {
+    try {
+        yield put({
+            type: SettingsActionTypes.CREATE_NEW_CONTRACT_LOADING,
+            payload: {},
+        });
+        const response = yield call(createContractApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        console.log(decryptedData, 'decryptedDatadecryptedData')
+        if (response.status === 201) {
+            ToastHandle(decryptedData?.message, 'success')
+            yield put({
+                type: SettingsActionTypes.CREATE_NEW_CONTRACT_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: SettingsActionTypes.CREATE_NEW_CONTRACT_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        ToastHandle(error, 'danger')
+        yield put({
+            type: SettingsActionTypes.CREATE_NEW_CONTRACT_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* getContractFunction(data) {
+    try {
+        yield put({
+            type: SettingsActionTypes.GET_NEW_CONTRACT_LOADING,
+            payload: {},
+        });
+        const response = yield call(getContractApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        console.log(decryptedData, 'decryptedDatadecryptedData')
+        if (response.status === 201) {
+            ToastHandle(decryptedData?.message, 'success')
+            yield put({
+                type: SettingsActionTypes.GET_NEW_CONTRACT_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: SettingsActionTypes.GET_NEW_CONTRACT_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        ToastHandle(error, 'danger')
+        yield put({
+            type: SettingsActionTypes.GET_NEW_CONTRACT_ERROR,
             payload: error,
         });
     }
@@ -140,9 +200,16 @@ export function* callStateEmpty() {
 
 }
 
-
 export function* watchCreateMastersData() {
     yield takeEvery(SettingsActionTypes.CREATE_MASTERS_DATA, createMastersDataFunction);
+}
+
+export function* watchCreateContractData() {
+    yield takeEvery(SettingsActionTypes.CREATE_NEW_CONTRACT, createContractFunction);
+}
+
+export function* watchGetContractData() {
+    yield takeEvery(SettingsActionTypes.GET_NEW_CONTRACT, getContractFunction);
 }
 export function* watchGetMastersData() {
     yield takeEvery(SettingsActionTypes.GET_MASTERS_DATA, getMastersDataFunction);
@@ -164,6 +231,8 @@ function* settingsSaga() {
     yield all([
         fork(watchCreateMastersData),
         fork(watchGetMastersData),
+        fork(watchGetContractData),
+        fork(watchCreateContractData),
         fork(watchGetTenureData),
         fork(watchUpdateMastersData),
         fork(watchresetState)

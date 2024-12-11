@@ -8,6 +8,16 @@ export function createMastersDataApi(params: any): any {
     return api.create(URL.addMastersData, data);
 }
 
+export function createContractApi(params: any): any {
+    const { data } = params;
+    return api.create(URL.createContract, data);
+}
+
+export function getContractApi(params: any): any {
+    const { data } = params;
+    return api.get(URL.getContractapi, data);
+}
+
 export function getMastersDataApi(params: any): any {
     const { data } = params;
     return api.get(`${URL.getMastersData}?status=${data?.status}&category=${data?.category}&search=${data?.search}&page=${data?.skip}&limit=${data?.limit}`);

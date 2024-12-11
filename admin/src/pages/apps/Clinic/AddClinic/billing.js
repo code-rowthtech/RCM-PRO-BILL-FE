@@ -9,16 +9,20 @@ import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
 import us from '../../../../assets/images/flags/us.jpg'
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
+import { useSearchParams } from 'react-router-dom';
 const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
     const {
         register,
         handleSubmit,
         formState: { errors },
         reset,
-        watch,
+        watch, getValues,
         setError,
         clearErrors
     } = useForm();
+    const [searchParams] = useSearchParams();
+    const parentClincId = searchParams.get('clincid');
+    const parentUserId = searchParams.get('userId');
     const [paymentType, setPaymentType] = useState('');
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -41,7 +45,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
     const onSubmit = (data) => {
         const payload = {
             subscription: data?.subscription,
-            userId: billingId,
+            userId: parentClincId ? parentUserId : billingId,
             billingContactName: data?.name,
             billingContactPhone: '+1' + data?.contact,
             billingContactemail: data?.email,
@@ -106,6 +110,10 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                             {...register('subscription', {
                                 required: 'This field is required'
                             })}
+                            // data-has-value={!!getValues('subscription')}
+                            // onBlur={(e) => {
+                            //     e.target.setAttribute('data-has-value', !!e.target.value);
+                            // }}
                             onChange={(e) => {
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
@@ -208,9 +216,13 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                     <Form.Group className="mb-2">
                                         <Form.Label className='mb-1'>Payment Method <span className='text-danger'>*</span></Form.Label>
                                         <Form.Select
-                                            // {...register('method', {
-                                            //     required: 'This field is required'
-                                            // })}
+                                            {...register('method', {
+                                                required: 'This field is required'
+                                            })}
+                                            // data-has-value={!!getValues('method')}
+                                            // onBlur={(e) => {
+                                            // e.target.setAttribute('data-has-value', !!e.target.value);
+                                            // }}
                                             onChange={(e) => setPaymentType(e.target.value)}>
                                             <option value=''>Select payment method</option>
                                             <option value='card'>Card</option>

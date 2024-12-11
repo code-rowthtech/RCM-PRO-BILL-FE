@@ -17,19 +17,11 @@ import Spinner from '../../constants/Spinner';
 import ToastHandle from '../../helpers/ToastMessage';
 import UploadToS3 from '../../helpers/uploads3';
 
-/* bottom link of account pages */
 const BottomLink = () => {
     const { t } = useTranslation();
     return (
         <Row className="mt-3">
-            {/* <Col className="text-center">
-                    <p className="text-muted">
-                        {t("Don't have an account?")}{' '}
-                        <Link to={'/account/register'} className="text-muted ms-1">
-                            <b>{t('Sign Up')}</b>
-                        </Link>
-                    </p>
-                </Col> */}
+            {/* Add links if needed */}
         </Row>
     );
 };
@@ -50,16 +42,16 @@ const Login = (): React$Element<any> => {
         error: state.Auth.error,
         userLoggedIn: state.Auth.userLoggedIn,
     }));
+
     useEffect(() => {
         if (error) {
-            ToastHandle(error, 'danger')
+            ToastHandle(error, 'danger');
         }
     }, [error]);
 
     /*
     form validation schema
     */
-
     const schemaResolver = yupResolver(
         yup.object().shape({
             username: yup.string().required(t('Please enter Username')),
@@ -70,26 +62,17 @@ const Login = (): React$Element<any> => {
     /*
     handle form submission
     */
-    // const onSubmit = (formData) => {
-
-    //     dispatch(loginUser({ email: formData.username, password: formData.password }));
-    // };
     const onSubmit = (formData) => {
-        // Trim the username and password to remove leading and trailing spaces
         const username = formData.username.trim();
         const password = formData.password.trim();
 
-        // Check if either username or password is empty after trimming
         if (!username || !password) {
-            // Show an error message (you can customize this as needed)
-            ToastHandle("Username and password cannot be empty or spaces only.", 'danger');
+            ToastHandle('Username and password cannot be empty or spaces only.', 'danger');
             return;
         }
 
-        // Dispatch the loginUser action if validation passes
         dispatch(loginUser({ email: username, password }));
     };
-
 
     return (
         <>
@@ -102,22 +85,8 @@ const Login = (): React$Element<any> => {
                     </p>
                 </div>
 
-                {/* {error && (
-                    <Alert variant="danger" className="my-2">
-                        {error ? 'Please try again' : ''}
-                    </Alert>
-                )} */}
-
                 <VerticalForm
-                    onSubmit={(data) => {
-                        // Sanitize the input values on form submission
-                        const sanitizedData = {
-                            ...data,
-                            username: data.username.trim(),
-                            password: data.password.trim(),
-                        };
-                        onSubmit(sanitizedData);
-                    }}
+                    onSubmit={(data) => onSubmit(data)}
                     resolver={schemaResolver}
                 >
                     <FormInput
@@ -126,9 +95,7 @@ const Login = (): React$Element<any> => {
                         name="username"
                         placeholder={t('Enter your Email')}
                         containerClass={'mb-3'}
-                        onChange={(e) => {
-                            e.target.value = e.target.value.replace(/^\s+|\s+$/g, ''); // Trim spaces
-                        }}
+                        defaultValue="" // Ensures the field is initialized
                     />
                     <FormInput
                         label={t('Password')}
@@ -136,9 +103,7 @@ const Login = (): React$Element<any> => {
                         name="password"
                         placeholder={t('Enter your password')}
                         containerClass={'mb-3'}
-                        onChange={(e) => {
-                            e.target.value = e.target.value.replace(/^\s+|\s+$/g, ''); // Trim spaces
-                        }}
+                        defaultValue="" // Ensures the field is initialized
                     />
 
                     <div className="mb-3 mb-0 text-center">
@@ -151,7 +116,6 @@ const Login = (): React$Element<any> => {
                         </Button>
                     </div>
                 </VerticalForm>
-
             </AccountLayout>
         </>
     );
