@@ -40,7 +40,7 @@ const AddRoles = ({ show, closeModal }) => {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
+        reset, getValues,
         watch
     } = useForm();
 
@@ -258,7 +258,11 @@ const AddRoles = ({ show, closeModal }) => {
                             <Form.Group className='mb-2'>
                                 <Form.Label>Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
-                                    {...register('designation')}>
+                                    {...register('designation')}
+                                    data-has-value={!!getValues('designation')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}>
                                     <option value={''} key={''}>Designation</option>
                                     {designation?.map((data, i) => (
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
@@ -286,6 +290,10 @@ const AddRoles = ({ show, closeModal }) => {
                                     {...register('role', {
                                         required: 'This field is required'
                                     })}
+                                    data-has-value={!!getValues('role')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}
                                     className='text-capitalize'>
                                     <option value='' key=''>Select role</option>
                                     {decryptedRolesData?.map((data) => (

@@ -16,6 +16,7 @@ import { userPermissions } from '../../../../helpers/userPermissions';
 import ToastHandle from '../../../../helpers/ToastMessage'
 import { getMastersDataAction } from '../../../../redux/settings/actions';
 import Select from 'react-select/base';
+import { useForm } from 'react-hook-form';
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
     const [name, setName] = useState('');
@@ -31,7 +32,10 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const isAddPresent = userPermissions.includes('add clinic');
     const isUpdatePresent = userPermissions.includes('update clinic');
-
+    const {
+        register,
+        getValues,
+    } = useForm();
     useEffect(() => {
         const payload = {
             name: name,
@@ -116,7 +120,13 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                 <Col sm={6} className='text-end'>
                                     <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
                                         <Col xs="auto" className='d-flex gap-2'>
-                                            <FormInput type='select' onChange={handleClinicTypeChange}>
+                                            <FormInput type='select'
+                                                {...register('type')}
+                                                data-has-value={!!getValues('type')}
+                                                onBlur={(e) => {
+                                                    e.target.setAttribute('data-has-value', !!e.target.value);
+                                                }}
+                                                onChange={handleClinicTypeChange}>
                                                 <option value={''} key={''}>All Practices</option>
                                                 {clinicTypeData?.map((data, index) => (
                                                     <option className='text-capitalize' value={data?.name} key={data?._id}>{data?.name}</option>

@@ -12,7 +12,7 @@ const UpdateSubscriptions = ({ show, closeModal, data }) => {
         register,
         handleSubmit,
         formState: { errors },
-        reset
+        reset, getValues,
     } = useForm();
 
     const dispatch = useDispatch();

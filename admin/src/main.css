@@ -196,3 +196,36 @@ table {
     background-color: gray;
     border: 1.8px solid black !important;
 }
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid gray;
+    padding: 8px; /* Adjust padding as needed */
+    text-align: left; /* Align text to the left (optional) */
+}
+
+/* .form-select {
+    color: #a9a9a9 !important;
+    font-weight: 550 !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    color: black !important;
+}
+
+.form-select[data-has-value='true'] {
+    color: black !important;
+} */
+.form-select {
+    color: #a9a9a9 !important;
+    font-weight: 550 !important;
+}
+
+.form-select:focus {
+    color: black !important;
+}
+
+.form-select[data-has-value='true'] {
+    color: black !important;
+}

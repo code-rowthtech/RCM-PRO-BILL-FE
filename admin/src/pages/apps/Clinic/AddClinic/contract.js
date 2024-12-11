@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Table } from 'react-bootstrap';
+import { Button, Col, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { getContractAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { jsPDF } from "jspdf";
-import Spinner from '../../../../constants/Spinner'; // Assuming you have a spinner component
-
-const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId, setBuffer }) => {
+import Spinner from '../../../../constants/Spinner';
+import Quill from 'quill';
+import { ImageDrop } from 'quill-image-drop-module';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { getContractFormatAction } from '../../../../redux/settings/actions';
+const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId, setQuillBuffer }) => {
     const {
         register,
         handleSubmit,
@@ -18,14 +22,49 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
         clearErrors,
     } = useForm();
 
+    const [quillValue, setQuillValue] = useState('');
+    const [editMode, setEditMode] = useState(false);
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data;
+    const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [pdfUrl, setPdfUrl] = useState(null);
-    console.log(store?.getContractReducer?.data, 'contractscontracts')
+
+    // Generate Uint8Array buffer for the current quillValue
+    // useEffect(() => {
+    //     if (quillValue) {
+    //         const encoder = new TextEncoder();
+    //         const buffer = encoder.encode(quillValue); // Convert string to Uint8Array
+    //         setQuillBuffer(buffer);
+    //         console.log('Uint8Array Buffer:', buffer);
+    //         console.log(typeof buffer)
+    //     }
+    // }, [quillValue]);
+    useEffect(() => {
+        if (quillValue) {
+            try {
+                const encoder = new TextEncoder();
+                const uint8ArrayBuffer = encoder.encode(quillValue); // Convert string to Uint8Array
+                const arrayFormat = Array.from(uint8ArrayBuffer); // Convert Uint8Array to Array
+                setQuillBuffer(arrayFormat); // Use setQuillBuffer to store the array
+                console.log('Uint8Array Buffer:', uint8ArrayBuffer);
+                console.log('Array Format:', arrayFormat);
+            } catch (error) {
+                console.error('Error generating Uint8Array buffer:', error);
+            }
+        }
+    }, [quillValue]);
+
     // Fetch data when the component is mounted or activeTab changes
+
+    useEffect(() => {
+        if (contractFormat) {
+            const htmlContent = generateHTML(data);
+            setQuillValue(htmlContent);
+        }
+    }, [contractFormat]);
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {
@@ -33,6 +72,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                 // clinicId: billingId,
             };
             dispatch(getContractAction({ key: encryptMessage(payload) }));
+            dispatch(getContractFormatAction());
         }
 
         if (store?.getContractReducer?.data?.status === 200) {
@@ -41,232 +81,73 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
         }
     }, [activeTab, billingId, dispatch, setBillingId, setClinicId]);
 
+    const data = {
+        planName: 'Basic Plan',
+        amount: '$1200',
+        date: new Date().toLocaleDateString(),
+        clinicName: 'ABC Clinic',
+        adminName: 'Admin User',
+    };
     // Generate HTML content for the PDF
-    const generateHTML = (data) => `
-       <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Agreement</title>
-    <style>
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #333;
-            background-color: #f9f9f9;
-            line-height: 1.6;
+    const generateHTML = (data) => {
+        if (contractFormat) {
+            return `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; padding: 20px; border: 1px solid #ccc;">
+              ${contractFormat
+                    .replace('{{planName}}', data.planName)
+                    .replace('{{amount}}', data.amount)
+                    .replace('{{date}}', data.date)
+                    .replace('{{clinicName}}', data.clinicName)
+                    .replace('{{adminName}}', data.adminName)}
+          </body>
+          </html>`;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #555;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .details {
-            margin-top: 20px;
-            line-height: 1.8;
-        }
-
-        .details p {
-            font-size: 16px;
-            margin: 8px 0;
-        }
-
-        .details strong {
-            color: #444;
-        }
-
-        .signature-section {
-            margin-top: 40px;
-        }
-
-        .signature-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
-        }
-
-        .signature-table th, 
-        .signature-table td {
-            padding: 15px;
-            text-align: left;
-            border: 1px solid #e5e5e5;
-        }
-
-        .signature-table th {
-            background-color: #f7f7f7;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .signature-table td {
-            background-color: #fcfcfc;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-            color: #888;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2 class="header">Contract Agreement</h2>
-        <div class="details">
-            <p><strong>Plan Name:</strong> ${data.planName}</p>
-            <p><strong>Amount:</strong> ${data.amount}</p>
-            <p><strong>Date:</strong> ${data.date}</p>
-            <p><strong>Clinic Name:</strong> ${data.clinicName}</p>
-            <p><strong>Admin Name:</strong> ${data.adminName}</p>
-        </div>
-
-        <div class="signature-section">
-            <table class="signature-table">
-                <tr>
-                    <th>Clinic</th>
-                    <td>Signature: ________________________</td>
-                </tr>
-                <tr>
-                    <th>Admin</th>
-                    <td>Signature: ________________________</td>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p>Generated on: ${data.date}</p>
-    </div>
-</body>
-</html>
-
-    `;
-
-    // Generate PDF once the contract data is available
-    useEffect(() => {
-        // if (user) {
-        const sampleData = {
-            planName: billingResponse?.userId?.subscription?.name,
-            amount: billingResponse?.userId?.subscription?.amount,
-            date: new Date().toISOString().split('T')[0],
-            clinicName: billingResponse?.name,
-            adminName: user?.name,
-        };
-        generatePDFBlob(sampleData);
-        // }
-    }, []);
-
-    // Generate a PDF Blob and set the PDF URL
-    const generatePDFBlob = async (data) => {
-        const htmlContent = generateHTML(data);
-
-        const doc = new jsPDF();
-
-        return new Promise((resolve, reject) => {
-            try {
-                const doc = new jsPDF(); // Initialize jsPDF instance
-
-                // Render the HTML content into the PDF
-                doc.html(htmlContent, {
-                    callback: (doc) => {
-                        try {
-                            const blob = doc.output('blob');
-                            console.log('Blob:', blob);
-                            setPdfUrl(URL.createObjectURL(blob))
-                            // Generate the PDF as an ArrayBuffer
-                            const buffer = doc.output('arraybuffer');
-                            console.log(buffer, 'buffer')
-                            resolve(buffer); // Resolve with the generated buffer
-                            setBuffer(Array.from(new Uint8Array(buffer)))
-                        } catch (error) {
-                            reject(`Error generating PDF buffer: ${error.message}`);
-                        }
-                    },
-                    x: 10, // Adjust x position for rendering
-                    y: 10, // Adjust y position for rendering
-                    width: 180, // Set content width (adjust as needed)
-                });
-            } catch (error) {
-                reject(`Error initializing jsPDF: ${error.message}`);
-            }
-        });
+        return '';
+    };
+    const modules = {
+        toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+            ['link'],
+            ['clean'],
+        ],
     };
 
-    function generatePDFBuffer(data) {
-        const htmlContent = generateHTML(data); // Generate the HTML content dynamically
-
-        return new Promise((resolve, reject) => {
-            try {
-                const doc = new jsPDF(); // Initialize jsPDF instance
-
-                // Render the HTML content into the PDF
-                doc.html(htmlContent, {
-                    callback: (doc) => {
-                        try {
-                            // Generate the PDF as an ArrayBuffer
-                            const buffer = doc.output('arraybuffer');
-                            resolve(buffer); // Resolve with the generated buffer
-                        } catch (error) {
-                            reject(`Error generating PDF buffer: ${error.message}`);
-                        }
-                    },
-                    x: 10, // Adjust x position for rendering
-                    y: 10, // Adjust y position for rendering
-                    width: 180, // Set content width (adjust as needed)
-                });
-            } catch (error) {
-                reject(`Error initializing jsPDF: ${error.message}`);
-            }
-        });
-    }
     return (
-        <Row style={{ height: '100%' }} className="d-flex justify-content-between">
-            {contracts?.contract ?
-                pdfUrl ? (
-                    <Table responsive className="table-centered border border-muted table-nowrap mb-0">
-                        <thead>
-                            <tr>
-                                <th>Contract Name</th>
-                                <th>Practice Sign</th>
-                                <th>Probill Sign</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </Table>
-                ) : (
-                    <div className="text-center w-100">
-                        <Spinner />
-                    </div>
-                )
-                :
-                `${store?.getContractReducer?.data?.message}`
-            }
+        <Row style={{ height: '100%' }} className="">
+            <Row className=" scroll-container">
+                <Col className={`${!editMode ? 'd-flex justify-content-center ' : ''}`} sm={editMode ? 6 : 12}>
+                    <div dangerouslySetInnerHTML={{ __html: quillValue }} />
+                </Col>
+                <Col sm={editMode ? 6 : ''} className={editMode ? '' : 'd-none'}>
+                    <ReactQuill
+                        modules={modules}
+                        value={quillValue}
+                        onChange={(value) => setQuillValue(value)}
+                        theme="snow"
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col sm={12} className="text-end">
+                    {editMode ? (
+                        <Button className="custom-buttons" onClick={() => setEditMode(false)}>
+                            Close Editor
+                        </Button>
+                    ) : (
+                        <Button className="custom-buttons" onClick={() => setEditMode(true)}>
+                            Edit Contract
+                        </Button>
+                    )}
+                </Col>
+            </Row>
 
         </Row>
     );

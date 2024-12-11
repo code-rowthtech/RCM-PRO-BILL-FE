@@ -15,8 +15,9 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
         register,
         handleSubmit,
         formState: { errors },
-        reset,
+        reset, setValue,
     } = useForm();
+
     const store = useSelector((state) => state);
     const createResponse = store?.createClinicsReducer?.data?.status;
     useEffect(() => {
@@ -25,7 +26,10 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
             closeModal();
             setMailDataNull()
         }
-    }, [createResponse])
+        if (mailId?.email) {
+            setValue('email', mailId?.email)
+        }
+    }, [createResponse, setValue, mailId])
     const onSubmit = () => {
         setIsModalRequest(true)
         dispatch(createClinicAction({ key: encryptMessage(mailId) }))
@@ -57,7 +61,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
                                 <Form.Control
                                     type="email"
                                     readOnly
-                                    value={mailId?.email}
+                                    // defaultValue={mailId?.email}
                                     {...register('email', { required: 'Email is required' })}
                                 />
                                 {errors.email && <span className="text-danger">{errors.email.message}</span>}

@@ -9,6 +9,16 @@ export const createMastersDataAction = (data): AuthAction => ({
     data
 });
 
+export const createContractAction = (data): AuthAction => ({
+    type: SettingsActionTypes.CREATE_NEW_CONTRACT,
+    data
+});
+
+export const getContractFormatAction = (data): AuthAction => ({
+    type: SettingsActionTypes.GET_NEW_CONTRACT,
+    data
+});
+
 export const getMastersDataAction = (data): AuthAction => ({
     type: SettingsActionTypes.GET_MASTERS_DATA,
     data

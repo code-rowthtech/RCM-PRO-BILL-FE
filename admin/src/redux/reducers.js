@@ -15,7 +15,7 @@ import { getDoctorsReducer } from './doctors/reducers';
 import { getAnalyticsReducer } from './dashboard/reducers';
 import { getPatientsReducer } from './patients/reducers';
 import { getSubscriptionsReducer, createSubscriptionsReducer, updateSubscriptionsReducer } from './subscriptions/reducers';
-import { createMastersDataReducer, getMastersDataReducer, updateMastersDataReducer, getTenureReducer } from './settings/reducers';
+import { createMastersDataReducer, createContractReducer, getMastersDataReducer, updateMastersDataReducer, getTenureReducer, getContractFormatReducer } from './settings/reducers';
 import { createUserRolesReducer, getUserRolesReducer, updateUserRolesReducer } from './rolemanagement/reducers';
 export default (combineReducers({
     Auth,
@@ -28,6 +28,6 @@ export default (combineReducers({
     getDoctorsReducer,
     getPatientsReducer,
     getSubscriptionsReducer, createSubscriptionsReducer, updateSubscriptionsReducer,
-    createMastersDataReducer, getMastersDataReducer, updateMastersDataReducer, getTenureReducer,
+    createMastersDataReducer, createContractReducer, getMastersDataReducer, updateMastersDataReducer, getTenureReducer, getContractFormatReducer,
     createUserRolesReducer, getUserRolesReducer, updateUserRolesReducer
 }): any);

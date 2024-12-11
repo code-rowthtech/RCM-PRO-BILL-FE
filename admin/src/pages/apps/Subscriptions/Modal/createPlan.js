@@ -20,7 +20,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
+        reset, getValues,
         watch,
     } = useForm();
     const dispatch = useDispatch();
@@ -124,6 +124,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.name : ""}
                                     {...register('name', { required: 'This field is required' })}
+                                    data-has-value={!!getValues('name')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}
                                 >
                                     <option value="">Select</option>
                                     {plans?.map((plan) => (
@@ -142,6 +146,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.billingFrequency : ''}
                                     {...register('tenure', { required: 'This field is required' })}
+                                    data-has-value={!!getValues('tenure')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}
                                     onChange={(e) => {
                                         const selectedOption = tenure?.find(option => option.name === e.target.value);
                                         setTenureMonth(selectedOption?.months)

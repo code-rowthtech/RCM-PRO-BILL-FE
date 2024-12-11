@@ -18,7 +18,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
+        reset, getValues,
         watch, setValue
     } = useForm();
     const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
@@ -63,7 +63,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
         }
         const fields = {
             name: data?.firstName,
-            email: data?.email,
             phone: data?.phone,
             joiningDate: data?.joiningDate,
             role: data?.role?._id,
@@ -79,17 +78,15 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
-    const onSubmit = (data) => {
+    const onSubmit = (formdata) => {
         const payload = {
             id: updateId,
-            firstName: data.name,
-            email: data.email,
-            password: data.password,
-            phone: data?.phone,
-            // reportingTo: createdBy,
-            // createdById: createdBy,
-            ...(data.leavingDate ? { leavingDate: data.leavingDate } : {}),// Add conditionally
-            role: data.role,
+            ...(formdata.email !== data?.email ? { email: formdata.email } : {}), // Conditionally include email
+            // email: formdata.email,
+            password: formdata.password,
+            phone: formdata?.phone,
+            ...(formdata.leavingDate ? { leavingDate: formdata.leavingDate } : {}),// Add conditionally
+            role: formdata.role,
         };
         dispatch(updateUserRolesAction({ key: `${encryptMessage(payload)}` }))
     };
@@ -196,7 +193,11 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                             <Form.Group className='mb-2'>
                                 <Form.Label>Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
-                                    {...register('designation')}>
+                                    {...register('designation')}
+                                    data-has-value={!!getValues('designation')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}>
                                     <option value={''} key={''}>Designation</option>
                                     {designation?.map((data, i) => (
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
@@ -210,6 +211,10 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 <Form.Label>Role <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     {...register('role')}
+                                    data-has-value={!!getValues('role')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}
                                     className='text-capitalize'>
                                     <option value='' key=''>Select role</option>
                                     {decryptedRolesData?.map((data) => (
