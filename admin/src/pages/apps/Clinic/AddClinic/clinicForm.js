@@ -32,7 +32,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const navigate = useNavigate()
 
     // Variable initializations
-
     const clinicname = watch('clinicname');
     const email = watch('email');
     const contact = watch('contact');
@@ -417,6 +416,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             return updatedDetails;
         });
     };
+
     const handleStateSelection = (e) => {
         const selectedOption = e.target.selectedOptions[0]
         const key = JSON.parse(selectedOption.getAttribute('data-key'));
@@ -1519,7 +1519,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                 </Row >
             </Form >
-            <Row className={`${clinicsList?.length > 0 && parentClincId ? '' : 'd-none'}`}>
+            <Row className={`${clinicsList?.length > 0 || clinicData && parentClincId ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
                         <thead>
@@ -1533,6 +1533,17 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             </tr>
                         </thead>
                         <tbody className={`${!parentClincId ? 'd-none' : ''}`}>
+                            <tr>
+                                <td className='text-capitalize'>{clinicData?.name}</td>
+                                <td>{(clinicData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (clinicData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
+                                <td>{clinicData?.clinicType}</td>
+                                <td>{clinicData?.userId?.email}</td>
+                                <td>{clinicData?.userId?.phone}</td>
+                                <td style={{ cursor: 'not-allowed !important' }}> <i
+                                    className="mdi mdi-delete cursor-pointer"
+                                    style={{ cursor: 'not-allowed' }}
+                                ></i></td>
+                            </tr>
                             {store?.getClinicsByParentReducer?.loading ?
                                 <tr>
                                     <td colSpan={5} className='text-center'>
@@ -1540,6 +1551,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     </td>
                                 </tr>
                                 :
+
                                 clinicsList?.map((multipleData, index) => (
                                     <tr key={multipleData?._id}>
                                         <td className='text-capitalize'>{multipleData?.name}</td>

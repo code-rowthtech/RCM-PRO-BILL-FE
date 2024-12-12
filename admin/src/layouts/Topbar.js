@@ -124,6 +124,9 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/settings/roles': 'Roles',
         '/settings/clinicType': 'Practice Types',
         '/settings/jobtitle': 'Job Title',
+        '/settings/contractFormat': 'Contract Format',
+        '/settings/designation': 'Designation',
+        '/apps/rcm/addclinic?clincid': 'Add Sub Practices'
 
     };
 
