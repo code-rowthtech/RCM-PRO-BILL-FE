@@ -43,6 +43,8 @@ function* createClinicsFunction(data) {
 }
 
 function* updateClinicsFunction(data) {
+    const dataFromApi = JSON.parse(decryptMessage(data?.data?.key));
+    console.log({ dataFromApi })
     try {
         yield put({
             type: ClinicsActionTypes.UPDATE_CLINIC_LOADING,
@@ -52,7 +54,14 @@ function* updateClinicsFunction(data) {
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
 
         if (response.status === 200) {
-            ToastHandle(decryptedData?.message, 'success');
+            const ifStatus = dataFromApi?.status;
+            if (ifStatus === true) {
+                ToastHandle(`Practice activated successfully`, 'success');
+            } else if (ifStatus === false) {
+                ToastHandle(`Practice deactivated successfully`, 'success');
+            } else {
+                ToastHandle(decryptedData?.message, 'success');
+            }
             yield put({
                 type: ClinicsActionTypes.UPDATE_CLINIC_SUCCESS,
                 payload: { ...decryptedData },

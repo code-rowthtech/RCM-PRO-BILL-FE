@@ -159,7 +159,7 @@ const MENU_ITEMS = [
         key: 'logout',
         label: 'Logout',
         icon: 'mdi mdi-logout',
-        // url: '#'s,
+        // url: '',
     },
     // { key: 'components', label: 'Components', isTitle: true },
     // {

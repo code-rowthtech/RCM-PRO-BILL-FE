@@ -135,7 +135,6 @@ const AppMenu = ({ menuItems }: AppMenuProps): React$Element<React$FragmentType>
     const activeMenu = useCallback(() => {
         const div = document.getElementById('main-side-menu');
         let matchingMenuItem = null;
-
         if (div) {
             let items: any = div.getElementsByTagName('a');
             for (let i = 0; i < items.length; ++i) {

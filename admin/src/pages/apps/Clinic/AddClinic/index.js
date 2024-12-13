@@ -47,6 +47,9 @@ const Index = () => {
     const navigate = useNavigate()
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
+    const createResponse = store?.createClinicsReducer?.data?.status;
+    const createBillingResponse = store?.createSubscriptionPlanReducer?.data?.status;
+
     useEffect(() => {
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
         dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
@@ -64,7 +67,6 @@ const Index = () => {
         })
     }
     const handleActiveTab = (data) => {
-
         setActiveTab(data)
     }
     const [showMailModal, setShowMailModal] = useState(false);
@@ -77,6 +79,7 @@ const Index = () => {
 
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
+    console.log(quillBuffer, 'quillBufferquillBuffer')
     const handleContractGeneration = () => {
         const data = {
             adminId: user?._id,
@@ -85,12 +88,11 @@ const Index = () => {
             clinicId: billingResponse?._id,
             clinicEmail: billingResponse?.userId?.email,
             clinicName: billingResponse?.name,
-            pdfUint8Array: quillBuffer
+            html: quillBuffer
         }
-        console.log(data, 'from index pay')
+        console.log(data, 'data')
         dispatch(generateContractAction({ key: encryptMessage(data) }));
     }
-
     useEffect(() => {
         if (store?.generateContractReducer?.data?.status === 200) {
             const payload = {
@@ -114,12 +116,24 @@ const Index = () => {
                                         Practice Information
                                     </span>
                                     <span
-                                        onClick={() => handleActiveTab('billing')}
+                                        onClick={() => {
+                                            if (createResponse === 200) {
+                                                handleActiveTab('billing')
+                                            } else {
+                                                ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
+                                            }
+                                        }}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Billing and Subscription Information
                                     </span>
                                     <span
-                                        onClick={() => handleActiveTab('contract')}
+                                        onClick={() => {
+                                            if (createBillingResponse === 200) {
+                                                handleActiveTab('contract')
+                                            } else {
+                                                ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
+                                            }
+                                        }}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Contract
                                     </span>

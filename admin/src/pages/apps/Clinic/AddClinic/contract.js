@@ -31,29 +31,17 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [pdfUrl, setPdfUrl] = useState(null);
-
-    // Generate Uint8Array buffer for the current quillValue
-    // useEffect(() => {
-    //     if (quillValue) {
-    //         const encoder = new TextEncoder();
-    //         const buffer = encoder.encode(quillValue); // Convert string to Uint8Array
-    //         setQuillBuffer(buffer);
-    //         console.log('Uint8Array Buffer:', buffer);
-    //         console.log(typeof buffer)
-    //     }
-    // }, [quillValue]);
+    console.log(quillValue, 'qqqqqqqqqqqqq')
     useEffect(() => {
         if (quillValue) {
-            try {
-                const encoder = new TextEncoder();
-                const uint8ArrayBuffer = encoder.encode(quillValue); // Convert string to Uint8Array
-                const arrayFormat = Array.from(uint8ArrayBuffer); // Convert Uint8Array to Array
-                setQuillBuffer(arrayFormat); // Use setQuillBuffer to store the array
-                console.log('Uint8Array Buffer:', uint8ArrayBuffer);
-                console.log('Array Format:', arrayFormat);
-            } catch (error) {
-                console.error('Error generating Uint8Array buffer:', error);
-            }
+            // try {
+            //     const encoder = new TextEncoder();
+            //     const uint8ArrayBuffer = encoder.encode(quillValue); // Convert string to Uint8Array
+            //     const arrayFormat = Array.from(uint8ArrayBuffer); // Convert Uint8Array to Array
+            setQuillBuffer(quillValue); // Use setQuillBuffer to store the array 
+            // } catch (error) {
+            //     console.error('Error generating Uint8Array buffer:', error);
+            // }
         }
     }, [quillValue]);
 
@@ -89,6 +77,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
         adminName: 'Admin User',
     };
     // Generate HTML content for the PDF
+    console.log('error', quillValue)
     const generateHTML = (data) => {
         if (contractFormat) {
             return `

@@ -160,7 +160,7 @@ const Subscriptions = () => {
                                                                         : 'N/A'}
                                                                 </span>
                                                             </td>
-                                                            <td className='text-capitalize'>{data?.totalAmount}</td>
+                                                            <td className='text-capitalize'>${data?.totalAmount}</td>
                                                             <td className='text-capitalize'>{formatDate(data?.implimentFrom)}</td>
                                                             <td className='text-capitalize'>
                                                                 {data?.billingFrequency}

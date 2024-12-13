@@ -15,9 +15,10 @@ import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked } from 'react-icons/md';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMultiple, setContractId, setResetEmail, setIsModalRequest, isModalRequest, resetEmail }) => {
+
     const dispatch = useDispatch();
     const {
         register,
@@ -60,10 +61,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [mailingLatitude, setMailingLatitude] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
     const [mailingStateToSelect, setMailingStateToSelect] = useState(null);
-    const [accreditationDetails, setAccreditationDetails] = useState([
+    const [medicalDetails, setMedicalDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
     ]);
-    const [medicalDetails, setMedicalDetails] = useState([
+    const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' }
     ]);
     const [stateDetails, setStateDetails] = useState([
@@ -75,6 +76,28 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [ids, setIds] = useState({
         userId: null, clinicId: null,
     })
+    // const checkForDuplicateNumbers = () => {
+    //     // Combine all numbers from both accreditationDetails and stateDetails
+    //     const allNumbers = [
+    //         ...accreditationDetails.map((item) => item.number),
+    //         ...stateDetails.map((item) => item.number),
+    //     ];
+
+    //     // Filter out empty or null numbers and check for duplicates
+    //     const nonEmptyNumbers = allNumbers.filter((number) => number); // Filter out empty values
+    //     const duplicateExists = nonEmptyNumbers.some((number, index) =>
+    //         nonEmptyNumbers.indexOf(number) !== index
+    //     );
+
+    //     if (duplicateExists) {
+    //         ToastHandle('No two documents can have same document number.', 'danger');
+    //     }
+    // };
+
+    // Call this function whenever there's a change in either of the states
+    // useEffect(() => {
+    //     checkForDuplicateNumbers();
+    // }, [accreditationDetails, stateDetails]);
     const [formValid, setFormValid] = useState(false);
     const [createTableData, setCreateTableData] = useState(null);
     const [searchedLocations, setSearchedLocations] = useState(null);
@@ -102,8 +125,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const medicalFileInputRef = useRef(null);
     const stateFileInputRef = useRef(null);
     const createData = store?.createClinicsReducer?.data?.data;
-    const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log({ clinicData })
+    const parentData = store?.getClinicByIdReducer?.data?.clinic;
+    const [clinicData, setClinicData] = useState(null);
+    useEffect(() => {
+        if (parentClincId && parentData) {
+            setClinicData(parentData);
+        }
+    }, [parentClincId, parentData])
     // useEffects
 
     useEffect(() => {
@@ -112,6 +140,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 id: parentClincId
             }
             dispatch(getClinicById({ key: encryptMessage(payload) }))
+            const data = {
+                parentClinicId: parentClincId,
+            };
+            dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
         }
     }, [parentClincId])
     useEffect(() => {
@@ -181,17 +213,20 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         if (createResponse === 200 && parentClincId) {
             const payload = {
                 parentClinicId: parentClincId,
-            }
-            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-        }
-        if (deleteResponse === 200) {
-            const payload = {
-                parentClinic: parentClinic,
-            }
+            };
             dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
         }
 
-    }, [createResponse, clinicsList, parentClinic, deleteResponse, counter]);
+    }, [createResponse, clinicsList, parentClincId, counter]);
+    // useEffect(() => {
+    //     if (deleteResponse === 200 && parentClincId) {
+    //         const payload = {
+    //             parentClinicId: parentClincId,
+    //         };
+    //         dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
+    //     }
+    // }, [deleteResponse])
+    console.log(deleteResponse, 'deleteResponse')
     useEffect(() => {
         if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
             setFormValid(true)
@@ -436,35 +471,133 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
 
     // Submit Button 
+    // const onSubmit = (data) => {
+    //     const allNumbers = [
+    //         ...accreditationDetails.map((item) => item.number),
+    //         ...stateDetails.map((item) => item.number),
+    //     ];
+
+    //     // Filter out empty or null numbers and check for duplicates
+    //     const nonEmptyNumbers = allNumbers.filter((number) => number); // Filter out empty values
+    //     const duplicateExists = nonEmptyNumbers.some((number, index) =>
+    //         nonEmptyNumbers.indexOf(number) !== index
+    //     );
+
+    //     if (duplicateExists) {
+    //         ToastHandle('Kindly check your document details. No two documents can have same document number.', 'danger');
+    //     } else {
+    //         setIsModalRequest(false);
+    //         const newPayload = {
+    //             ...(parentClincId ? {
+    //                 parentUserId: parentUserId,
+    //                 parentClinicId: parentClincId,
+    //             } : {}),
+    //             flag: parentClincId ? "subClinic" : "Clinic",
+    //             name: data?.clinicname,
+    //             isPrimaryAndMailingAddressSame: sameAsPrimary,
+    //             email: data?.email,
+    //             phone: '+1' + data?.contact,
+    //             clinicType: data?.clinicType,
+    //             ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
+    //             ...(data?.npi ? { npiNumber: data?.npi } : ''),
+    //             stateOfLicensing: stateDetails,
+    //             accreditationDetails: accreditationDetails,
+    //             pos: posDetails,
+    //             primaryAddress: {
+    //                 ...(data?.address ? { address: data?.address } : {}),
+    //                 ...(data?.city ? { city: data?.city } : {}),
+    //                 ...(data?.zip ? { zip: data?.zip } : {}),
+    //                 ...(data?.street ? { street: data?.street } : {}),
+    //                 ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
+    //                 ...(latitude ? { latitude: latitude } : {}),
+    //                 ...(longitude ? { longitude: longitude } : {}),
+    //             },
+    //             mailingAddress: sameAsPrimary
+    //                 ? {
+    //                     ...(data?.address ? { address: data?.address } : {}),
+    //                     ...(data?.city ? { city: data?.city } : {}),
+    //                     ...(data?.zip ? { zip: data?.zip } : {}),
+    //                     ...(data?.street ? { street: data?.street } : {}),
+    //                     ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
+    //                     ...(latitude ? { latitude: latitude } : {}),
+    //                     ...(longitude ? { longitude: longitude } : {}),
+    //                 }
+    //                 : {
+    //                     ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
+    //                     ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
+    //                     ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
+    //                     ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
+    //                     ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
+    //                     ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
+    //                     ...(mailingLongitude ? { longitude: mailingLongitude } : {})
+    //                 },
+    //             logo: {
+    //                 url: logo?.url.split('?')[0],
+    //                 fileName: logoName
+    //             },
+    //             practiceSpecialty: data?.speciality,
+    //         };
+    //         console.log(newPayload, 'newPayloadnewPayloadnewPayload')
+    //         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
+    //     }
+
+    // };
+
+    const checkForDuplicates = (accreditationDetails, stateDetails) => {
+        const accreditationNumbers = accreditationDetails.map(item => item.number);
+        const stateNumbers = stateDetails.map(item => item.number);
+
+        // Helper function to check for duplicates
+        const hasDuplicates = (array) => {
+            const filteredArray = array.filter(number => number); // Remove empty/null values
+            return filteredArray.some((number, index) => filteredArray.indexOf(number) !== index);
+        };
+
+        const accreditationHasDuplicates = hasDuplicates(accreditationNumbers);
+        const stateHasDuplicates = hasDuplicates(stateNumbers);
+        const crossArrayDuplicates = hasDuplicates([...accreditationNumbers, ...stateNumbers]);
+
+        if (accreditationHasDuplicates) {
+            ToastHandle('Duplicate document numbers found in Accreditation Details. Please ensure all document numbers are unique.', 'danger');
+            return true;
+        } else if (stateHasDuplicates) {
+            ToastHandle('Duplicate document numbers found in State Details. Please ensure all document numbers are unique.', 'danger');
+            return true;
+        } else if (crossArrayDuplicates) {
+            ToastHandle('Duplicate document numbers found across Accreditation and State Details. Please ensure all document numbers are unique.', 'danger');
+            return true;
+        }
+        return false;
+    };
+
+    // Automatically validate on state changes (e.g., auto-filled data or manual changes)
+    useEffect(() => {
+        checkForDuplicates(accreditationDetails, stateDetails);
+    }, [accreditationDetails, stateDetails]);  // Trigger validation on changes to the state
+
     const onSubmit = (data) => {
-        setIsModalRequest(false);
-        const newPayload = {
-            ...(parentClincId ? {
-                parentUserId: parentUserId,
-                parentClinicId: parentClincId,
-            } : {}),
-            flag: parentClincId ? "subClinic" : "Clinic",
-            name: data?.clinicname,
-            isPrimaryAndMailingAddressSame: sameAsPrimary,
-            email: data?.email,
-            phone: '+1' + data?.contact,
-            clinicType: data?.clinicType,
-            ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
-            ...(data?.npi ? { npiNumber: data?.npi } : ''),
-            stateOfLicensing: stateDetails,
-            accreditationDetails: accreditationDetails,
-            pos: posDetails,
-            primaryAddress: {
-                ...(data?.address ? { address: data?.address } : {}),
-                ...(data?.city ? { city: data?.city } : {}),
-                ...(data?.zip ? { zip: data?.zip } : {}),
-                ...(data?.street ? { street: data?.street } : {}),
-                ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
-                ...(latitude ? { latitude: latitude } : {}),
-                ...(longitude ? { longitude: longitude } : {}),
-            },
-            mailingAddress: sameAsPrimary
-                ? {
+        // Run validation before proceeding with the submission
+        const isDuplicate = checkForDuplicates(accreditationDetails, stateDetails);
+
+        if (!isDuplicate) {
+            setIsModalRequest(false);
+            const newPayload = {
+                ...(parentClincId ? {
+                    parentUserId: parentUserId,
+                    parentClinicId: parentClincId,
+                } : {}),
+                flag: parentClincId ? "subClinic" : "Clinic",
+                name: data?.clinicname,
+                isPrimaryAndMailingAddressSame: sameAsPrimary,
+                email: data?.email,
+                phone: '+1' + data?.contact,
+                clinicType: data?.clinicType,
+                ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
+                ...(data?.npi ? { npiNumber: data?.npi } : ''),
+                stateOfLicensing: stateDetails,
+                accreditationDetails: accreditationDetails,
+                pos: posDetails,
+                primaryAddress: {
                     ...(data?.address ? { address: data?.address } : {}),
                     ...(data?.city ? { city: data?.city } : {}),
                     ...(data?.zip ? { zip: data?.zip } : {}),
@@ -472,26 +605,37 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
                     ...(latitude ? { latitude: latitude } : {}),
                     ...(longitude ? { longitude: longitude } : {}),
-                }
-                : {
-                    ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
-                    ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
-                    ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
-                    ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
-                    ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
-                    ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
-                    ...(mailingLongitude ? { longitude: mailingLongitude } : {})
                 },
-            logo: {
-                url: logo?.url.split('?')[0],
-                fileName: logoName
-            },
-            practiceSpecialty: data?.speciality,
-        };
-        console.log(newPayload, 'newPayloadnewPayloadnewPayload')
-        dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
-    };
+                mailingAddress: sameAsPrimary
+                    ? {
+                        ...(data?.address ? { address: data?.address } : {}),
+                        ...(data?.city ? { city: data?.city } : {}),
+                        ...(data?.zip ? { zip: data?.zip } : {}),
+                        ...(data?.street ? { street: data?.street } : {}),
+                        ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
+                        ...(latitude ? { latitude: latitude } : {}),
+                        ...(longitude ? { longitude: longitude } : {})
+                    }
+                    : {
+                        ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
+                        ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
+                        ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
+                        ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
+                        ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
+                        ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
+                        ...(mailingLongitude ? { longitude: mailingLongitude } : {})
+                    },
+                logo: {
+                    url: logo?.url.split('?')[0],
+                    fileName: logoName
+                },
+                practiceSpecialty: data?.speciality,
+            };
 
+            console.log(newPayload, 'ewPayload');
+            dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
+        }
+    };
     const handleDeleteClinic = (data) => {
         const payload = {
             id: data
@@ -690,29 +834,34 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Practice Speciality</Form.Label>
+                            <Form.Label className='mb-1'>Tax ID / EIN <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('speciality', {
-                                    validate: (value) =>
-                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                {...register('taxId', {
+                                    required: 'This field is required',
+                                    minLength: {
+                                        value: 9,
+                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                    },
                                 })}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (value.startsWith(' ')) {
-                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                // onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                onKeyPress={(event) => {
+                                    // Only allow numeric characters (0-9)
+                                    if (!/[0-9]/.test(event.key)) {
+                                        event.preventDefault();
                                     }
-                                    setResetEmail({ ...resetEmail, practiceSpecialty: value });
                                 }}
-                                placeholder="Practice speciality"
-                                onKeyPress={handleFirstSpace}
-                            />
-
-                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
-
+                                maxLength={9}
+                                onChange={(e) => setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value })}
+                                placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
                     </Col>
-
                     <Col sm={6}>
                         <Form.Group className="mb-0 position-relative">
                             <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
@@ -744,7 +893,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                         placeholder="1234-234-234"
                                         maxLength={10}
-                                        onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        // onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        onKeyPress={(event) => {
+                                            // Only allow numeric characters (0-9)
+                                            if (!/[0-9]/.test(event.key)) {
+                                                event.preventDefault();
+                                            }
+                                        }}
                                     />
                                 </InputGroup>
                             </Form.Group>
@@ -764,33 +919,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('taxId', {
-                                    minLength: {
-                                        value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
-                                    },
-                                    pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'Tax ID / EIN must contain numbers only', // Error message
-                                    },
-                                })}
-                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                maxLength={9}
-                                onChange={(e) => setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value })}
-                                placeholder="Tax ID / EIN" />
-                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>NPI Type 2  Number</Form.Label>
+                            <Form.Label className='mb-1'>NPI Type 2  Number <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('npi', {
+                                    required: "This field is required",
                                     minLength: {
                                         value: 10,
                                         message: 'NPI must be at least 10 characters long', // Error message
@@ -808,8 +941,66 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 placeholder="NPI Number"
                                 maxLength={10}
                                 onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)} />
+                                // onKeyPress={(event) => handleFirstSpace(event, 0)} 
+                                onKeyPress={(event) => {
+                                    // Only allow numeric characters (0-9)
+                                    if (!/[0-9]/.test(event.key)) {
+                                        event.preventDefault();
+                                    }
+                                }}
+                            />
                             {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Practice Speciality Description <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('speciality', {
+                                    required: 'This field is required',
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                })}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.startsWith(' ')) {
+                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                    }
+                                    setResetEmail({ ...resetEmail, practiceSpecialty: value });
+                                }}
+                                placeholder="Practice speciality"
+                                onKeyPress={handleFirstSpace}
+                            />
+                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>CLIA  Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('clia', {
+                                    required: "This field is required",
+                                    // minLength: {
+                                    //     value: 10,
+                                    //     message: 'NPI must be at least 10 characters long', // Error message
+                                    // },
+                                    // maxLength: {
+                                    //     value: 10,
+                                    //     message: 'NPI cannot exceed 10 characters', // Error message
+                                    // },
+                                    pattern: {
+                                        value: /^[A-Z0-9]{2}D[0-9]{7}$/, // Ensures the CLIA number matches the specific format
+                                        message: 'CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits',
+                                    },
+                                })}
+                                placeholder="CLIA Number"
+                                maxLength={10}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.clia && <span className="text-danger">{errors.clia.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
@@ -987,11 +1178,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Row className='position-relative'>
                                     <Col sm={12}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <Form.Label className="mb-1">Address <span className='text-danger'>*</span></Form.Label>
                                             <div style={{ position: 'relative' }}>
                                                 <Form.Control
                                                     type="text"
-                                                    {...register('address')}
+                                                    {...register('address', {
+                                                        required: 'This field is required'
+                                                    })}
                                                     onChange={(e) => {
                                                         getGeolocation(e);
                                                         setFocused(true);
@@ -1043,6 +1236,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     {searchedLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
                                                 </div>
                                             </div>
+                                            {errors.address && <span className="text-danger">{errors.address.message}</span>}
                                         </Form.Group>
                                     </Col>
 
@@ -1071,9 +1265,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Row>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1' >State</Form.Label>
+                                            <Form.Label className='mb-1' >State <span className='text-danger'>*</span></Form.Label>
                                             <Form.Select
-                                                {...register('stateName')}
+                                                {...register('stateName', { required: 'This field is required' })}
                                                 data-has-value={!!getValues('stateName')}
                                                 onBlur={(e) => {
                                                     e.target.setAttribute('data-has-value', !!e.target.value);
@@ -1094,15 +1288,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     </option>
                                                 ))}
                                             </Form.Select>
+                                            {errors.stateName && <span className="text-danger">{errors.stateName.message}</span>}
                                         </Form.Group>
 
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            <Form.Label className='mb-1'>City <span className='text-danger'>*</span></Form.Label>
                                             <Form.Select
                                                 disabled={store?.getCitiesReducer?.loading}
-                                                {...register('city')}
+                                                {...register('city', { required: 'This field is required' })}
                                                 data-has-value={!!getValues('city')}
                                                 onBlur={(e) => {
                                                     e.target.setAttribute('data-has-value', !!e.target.value);
@@ -1116,28 +1311,29 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     </option>
                                                 ))}
                                             </Form.Select>
-                                            {/* } */}
+                                            {errors.city && <span className="text-danger">{errors.city.message}</span>}
                                         </Form.Group>
                                     </Col>
 
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Label className='mb-1'>Street <span className='text-danger'>*</span></Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                {...register('street')}
+                                                {...register('street', { required: 'This field is required' })}
                                                 onKeyPress={handleFirstSpace}
                                                 placeholder="Street" />
-                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                            {errors.street && <span className="text-danger">{errors.street.message}</span>}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Zip</Form.Label>
+                                            <Form.Label className='mb-1'>Zip <span className='text-danger'>*</span></Form.Label>
                                             <Form.Control
                                                 defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
                                                 type="text"
                                                 {...register('zip', {
+                                                    required: 'This field is required',
                                                     minLength: {
                                                         value: 5,
                                                         message: 'ZIP code must be at least 5 characters long',
@@ -1162,7 +1358,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     <Col sm={12}>
                         <Row>
                             <Col sm={12} className='mb-2'>
-                                <span className='text-black fw-semibold form-label'>Mailing Address</span>
+                                <span className='text-black fw-semibold form-label'>Mailing Address <span className='text-danger'>*</span></span>
                                 <Form.Check
                                     type="checkbox"
                                     label="Same as Primary Address"
@@ -1189,12 +1385,12 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Row className='position-relative'>
                                     <Col sm={12}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <Form.Label className="mb-1">Address <span className='text-danger'>*</span></Form.Label>
                                             <div style={{ position: 'relative' }}>
                                                 <Form.Control
                                                     type="text"
                                                     defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
-                                                    {...register('mailingAddress')}
+                                                    {...register('mailingAddress', { required: 'This field is required' })}
                                                     onChange={(e) => {
                                                         getMailingGeolocation(e);
                                                         setMailingFocused(true);
@@ -1245,6 +1441,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     {searchedMailingLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
                                                 </div>
                                             </div>
+                                            {errors.mailingAddress && <span className="text-danger">{errors.mailingAddress.message}</span>}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
@@ -1279,7 +1476,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     readOnly />
                                                 :
                                                 <Form.Select
-                                                    {...register('mailingStateName')}
+                                                    {...register('mailingStateName', { required: 'This field is required' })}
                                                     data-has-value={!!getValues('mailingStateName')}
                                                     onBlur={(e) => {
                                                         e.target.setAttribute('data-has-value', !!e.target.value);
@@ -1300,13 +1497,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     ))}
                                                 </Form.Select>
                                             }
-
+                                            {errors.mailingStateName && <span className="text-danger">{errors.mailingStateName.message}</span>}
                                         </Form.Group>
 
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            <Form.Label className='mb-1'>City <span className='text-danger'>*</span></Form.Label>
                                             {sameAsPrimary ?
                                                 <Form.Control
                                                     value={cities1?.find((data) => data?._id === getValues('city'))?.name}
@@ -1314,7 +1511,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 :
                                                 <Form.Select
                                                     disabled={store?.getCitiesReducer?.loading}
-                                                    {...register('mailingCity')}
+                                                    {...register('mailingCity', { required: 'This field is required' })}
                                                     data-has-value={!!getValues('mailingCity')}
                                                     onBlur={(e) => {
                                                         e.target.setAttribute('data-has-value', !!e.target.value);
@@ -1329,18 +1526,19 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     ))}
                                                 </Form.Select>
                                             }
+                                            {errors.mailingCity && <span className="text-danger">{errors.mailingCity.message}</span>}
                                         </Form.Group>
                                     </Col>
 
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Label className='mb-1'>Street <span className='text-danger'>*</span></Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                {...register('mailingStreet')}
+                                                {...register('mailingStreet', { required: 'This field is required' })}
                                                 onKeyPress={handleFirstSpace}
                                                 placeholder="Street" />
-                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                            {errors.mailingStreet && <span className="text-danger">{errors.mailingStreet.message}</span>}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
@@ -1350,6 +1548,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
                                                 type="text"
                                                 {...register('mailingZip', {
+                                                    required: 'This field is required',
                                                     minLength: {
                                                         value: 5,
                                                         message: 'ZIP code must be at least 5 characters long',
@@ -1363,7 +1562,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 placeholder="Zip"
                                                 maxLength={5}
                                             />
-                                            {errors.zip && <span className="text-danger">{errors.zip.message}</span>}
+                                            {errors.mailingZip && <span className="text-danger">{errors.mailingZip.message}</span>}
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -1393,14 +1592,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Full Name</Form.Label>
+                                            <Form.Label className="mb-1">Full Name <span className='text-danger'>*</span></Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                {...register('pocFullName', { required: 'This field is required' })}
                                                 value={data.name}
                                                 onChange={(e) => handlePOSInputChange(e, 'name', index)}
                                                 onKeyPress={handleFirstSpace}
                                                 placeholder="Full Name"
                                             />
+                                            {errors.pocFullName && <span className="text-danger">{errors.pocFullName.message}</span>}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
@@ -1560,11 +1761,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         <td className='text-lowercase'>{multipleData?.userId?.email}</td>
                                         <td>{multipleData?.userId?.phone}</td>
                                         <td className='fs-4 d-flex gap-1'>
+                                            <Link to={`/apps/rcm/updateclinic?updateid=${multipleData?._id}`} className="action-icon">
+                                                <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
+                                            </Link>
                                             <i
                                                 className="mdi mdi-delete cursor-pointer"
                                                 onClick={() => {
                                                     const payload = {
-                                                        id: index === 0 ? multipleData?.clinicId : multipleData?._id,
+                                                        id: multipleData?._id,
                                                     };
                                                     dispatch(deleteClinicAction({ key: encryptMessage(payload) }));
                                                 }}

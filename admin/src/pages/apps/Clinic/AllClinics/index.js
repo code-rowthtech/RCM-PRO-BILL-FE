@@ -62,6 +62,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
     }, [updateSuccess])
     const handleStatusUpdate = () => {
         const payload = {
+            userId: deleteData?.userId?._id,
+            clinicId: deleteData?._id,
             id: deleteData?._id,
             status: !deleteData?.status
         }
@@ -94,6 +96,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
         const selectedValue = event.target.value;
         setSelectedClinicType(selectedValue);
     };
+
+    console.log(store?.updateClinicsReducer, 'store?.updateClinicsReducerstore?.updateClinicsReducer')
 
     return (
         <>

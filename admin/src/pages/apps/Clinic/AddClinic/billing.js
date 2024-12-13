@@ -353,8 +353,8 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                                             message: 'Contact must not exceed 10 digits'
                                                         },
                                                         minLength: {
-                                                            value: 10,
-                                                            message: 'Contact must not be less than 10 digits'
+                                                            value: 9,
+                                                            message: 'Contact must not be less than 9 digits'
                                                         }
                                                     })}
 
