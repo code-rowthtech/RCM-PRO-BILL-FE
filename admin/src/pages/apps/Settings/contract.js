@@ -14,7 +14,7 @@ const ContractFormat = () => {
   const [quillValue, setQuillValue] = useState('');
   const [editMode, setEditMode] = useState(false);
   const dispatch = useDispatch();
-
+  console.log(quillValue, 'quillValuequillValue')
   // Access Redux store for contract format
   const contractFormat = useSelector((state) => state?.getContractFormatReducer?.data?.templates?.html);
 
@@ -40,6 +40,97 @@ const ContractFormat = () => {
     adminName: 'Admin User',
   };
 
+
+  const htmlll = `
+     <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Contract Agreement</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+            line-height: 1.6;
+          }
+          h2 {
+            text-align: center;
+            color: #444;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+          }
+          .details, .signature-section {
+            margin-top: 30px;
+          }
+          .details p {
+            font-size: 14px;
+          }
+          .signature-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 40px;
+          }
+          .signature-table th, .signature-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            vertical-align: top;
+          }
+          .signature-table th {
+            background-color: #f9f9f9;
+            width: 20%;
+          }
+          .signature-placeholder {
+            position: relative;
+            height: 50px; / Space for the signature /
+          }
+          .anchor {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1px;
+            color: transparent;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>Contract Agreement</h2>
+        <div class="details">
+          <p><strong>Plan Name:</strong> ${data.planName}</p>
+          <p><strong>Amount:</strong> ${data.amount}</p>
+          <p><strong>Date:</strong> ${data.date}</p>
+          <p><strong>Clinic Name:</strong> ${data.clinicName}</p>
+          <p><strong>Admin Name:</strong> ${data.adminName}</p>
+        </div>
+
+        <h3>Signatures</h3>
+        <div class="signature-section">
+          <table class="signature-table">
+            <tr>
+              <th>Clinic</th>
+              <td>
+                <strong>Signature:</strong>
+                <div class="signature-placeholder">
+                  <span class="anchor">/ClinicSignature</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>Admin</th>
+              <td>
+                <strong>Signature:</strong>
+                <div class="signature-placeholder">
+                  <span class="anchor">/AdminSignature</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <h2>Terms and conditions: </h2>
+        </div>
+      </body>
+    </html>
+  `
   const generateHTML = (data) => {
     if (contractFormat) {
       return `
@@ -74,14 +165,20 @@ const ContractFormat = () => {
 
   const createContract = () => {
     const payload = {
-      html: quillValue,
+      html: htmlll,
       contractType: 'Primary',
     };
-    if (quillValue) {
+    if (quillValue || htmlll) {
       dispatch(createContractAction({ key: encryptMessage(payload) }));
     }
   };
 
+  // useEffect(() => {
+  //   setInterval(() => {
+
+  //     createContract()
+  //   }, 100000);
+  // }, [])
   return (
     <div>
       <Row className="mt-2">

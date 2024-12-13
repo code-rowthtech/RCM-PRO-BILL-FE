@@ -43,11 +43,11 @@ const Login = (): React$Element<any> => {
         userLoggedIn: state.Auth.userLoggedIn,
     }));
 
-    useEffect(() => {
-        if (error) {
-            ToastHandle(error, 'danger');
-        }
-    }, [error]);
+    // useEffect(() => {
+    //     if (error) {
+    //         ToastHandle(error, 'danger');
+    //     }
+    // }, [error]);
 
     /*
     form validation schema

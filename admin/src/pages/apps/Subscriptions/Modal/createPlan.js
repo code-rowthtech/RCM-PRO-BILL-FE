@@ -146,10 +146,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.billingFrequency : ''}
                                     {...register('tenure', { required: 'This field is required' })}
-                                    data-has-value={!!getValues('tenure')}
-                                    onBlur={(e) => {
-                                        e.target.setAttribute('data-has-value', !!e.target.value);
-                                    }}
+                                    // data-has-value={!!getValues('tenure')}
+                                    // onBlur={(e) => {
+                                    //     e.target.setAttribute('data-has-value', !!e.target.value);
+                                    // }}
                                     onChange={(e) => {
                                         const selectedOption = tenure?.find(option => option.name === e.target.value);
                                         setTenureMonth(selectedOption?.months)

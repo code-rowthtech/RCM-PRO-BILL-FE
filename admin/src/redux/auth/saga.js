@@ -13,6 +13,7 @@ import { APICore, setAuthorization } from '../../helpers/api/apiCore';
 import { authApiResponseSuccess, authApiResponseError } from './actions';
 import { AuthActionTypes } from './constants';
 import { decryptMessage, encryptMessage } from '../../cryptoUtils';
+import ToastHandle from '../../helpers/ToastMessage';
 const api = new APICore();
 
 /**
@@ -43,6 +44,7 @@ function* login({ payload }) {
 
         yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, userData));
     } catch (error) {
+        ToastHandle(error, 'danger')
         yield put(authApiResponseError(AuthActionTypes.LOGIN_USER, error));
         api.setLoggedInUser(null);
         setAuthorization(null);

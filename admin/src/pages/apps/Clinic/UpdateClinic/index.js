@@ -97,7 +97,7 @@ const Updateclinic = () => {
                                         activeTab === 'billing' ?
                                             <Billing setActiveTab={setActiveTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} activeTab={activeTab} />
                                             :
-                                            <Contracttable activeTab={activeTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} />
+                                            <Contracttable activeTab={activeTab} id={store?.getClinicByIdReducer?.data?.clinic?._id} />
                                     }
                                 </Col>
                             </Row>
