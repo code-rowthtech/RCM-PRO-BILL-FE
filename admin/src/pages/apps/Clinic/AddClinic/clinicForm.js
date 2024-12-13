@@ -76,6 +76,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [ids, setIds] = useState({
         userId: null, clinicId: null,
     })
+    const [taxonomyCodes, setTaxonomyCodes] = useState([''])
+    console.log({ taxonomyCodes })
     // const checkForDuplicateNumbers = () => {
     //     // Combine all numbers from both accreditationDetails and stateDetails
     //     const allNumbers = [
@@ -386,6 +388,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         ]);
     };
 
+
     const handleRemoveAccreditation = (index) => {
         setAccreditationDetails((prevDetails) => {
             const updatedDetails = prevDetails.filter((_, i) => i !== index);
@@ -596,6 +599,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 ...(data?.npi ? { npiNumber: data?.npi } : ''),
                 stateOfLicensing: stateDetails,
                 accreditationDetails: accreditationDetails,
+                ...(data?.clia ? { CLIA_Number: data?.clia } : {}),
+                taxonomyCodes: taxonomyCodes,
+                ...(data?.medicaid ? { medicaidNumber: data?.medicaid } : {}),
+                ...(data?.medicare ? { medicareNumber: data?.medicare } : {}),
                 pos: posDetails,
                 primaryAddress: {
                     ...(data?.address ? { address: data?.address } : {}),
@@ -632,7 +639,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 practiceSpecialty: data?.speciality,
             };
 
-            console.log(newPayload, 'ewPayload');
+            // console.log(newPayload, 'ewPayload');
             dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
         }
     };
@@ -766,6 +773,34 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         };
     }, []);
 
+    const handleAddTaxonomy = () => {
+        // Check if the last field has a value
+        const lastCode = taxonomyCodes[taxonomyCodes.length - 1];
+        // const lastCode = taxonomyCodes[taxonomyCodes.length - 1];
+
+        if (lastCode.trim()) {
+            // Add a new empty field while keeping current state intact
+            setTaxonomyCodes([...taxonomyCodes, '']);
+        } else {
+            ToastHandle('Please complete the current Taxonomy Code field before adding another.', 'danger')
+        }
+    };
+    const handleRemoveTaxonomy = (index) => {
+        // const updatedCodes = taxonomyCodes.filter((_, i) => i !== index);
+        // setTaxonomyCodes(updatedCodes);
+        setTaxonomyCodes((prev) => {
+            const updatedCodes = prev.filter((_, i) => i !== index);
+            return updatedCodes.length > 0 ? updatedCodes : ['']; // Ensure at least one field remains
+        });
+
+    };
+
+    // Function to handle field changes
+    const handleTaxonomyChange = (index, value) => {
+        const updatedCodes = [...taxonomyCodes];
+        updatedCodes[index] = value;
+        setTaxonomyCodes(updatedCodes);
+    };
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -912,8 +947,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     alt="country code flag"
                                     width={20} />
                             </div>
-
-
                         </Form.Group>
                         {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
                     </Col>
@@ -1003,6 +1036,67 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             {errors.clia && <span className="text-danger">{errors.clia.message}</span>}
                         </Form.Group>
                     </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Medicare Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('medicare')}
+                                placeholder="Medicare Number"
+                                maxLength={10}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.medicare && <span className="text-danger">{errors.medicare.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Medicaid Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('medicaid')}
+                                placeholder="Medicaid Number"
+                                maxLength={10}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.medicaid && <span className="text-danger">{errors.medicaid.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    {taxonomyCodes.map((code, index) => (
+                        <Col sm={6} key={index}>
+                            <Form.Group className="mb-2 position-relative">
+                                <Form.Label className="mb-1">
+                                    Taxonomy Code(s)
+                                    {index === taxonomyCodes.length - 1 && (
+                                        <span
+                                            className="fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer"
+                                            onClick={handleAddTaxonomy}
+                                        >
+                                        </span>
+                                    )}
+                                    <span className="text-danger">*</span>
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    {...register(`taxonomyCode[${index}]`, { required: 'This field is required' })}
+                                    value={code}
+                                    placeholder="Taxonomy Code"
+                                    maxLength={10}
+                                    onKeyPress={(event) => handleFirstSpace(event, index)}
+                                    onChange={(e) => handleTaxonomyChange(index, e.target.value)}
+                                />
+                                <span
+                                    style={{ top: '55%', right: '1%' }}
+                                    onClick={() => handleRemoveTaxonomy(index)} className={`${taxonomyCodes?.length === 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}></span>
+
+                                {errors.taxonomyCode?.[index] && (
+                                    <span className="text-danger">{errors.taxonomyCode[index].message}</span>
+                                )}
+                            </Form.Group>
+                        </Col>
+                    ))}
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
                         <Form.Label>Upload Logo</Form.Label>
                         <div onClick={handleLogoClick}

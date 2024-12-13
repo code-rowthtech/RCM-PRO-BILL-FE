@@ -16,11 +16,9 @@ export const handleUpload = async (file) => {
                 fileType: file.type,
             },
         });
-
         // Extract the URL
         let url = decryptMessage(response.data?.data);
         url = JSON.parse(url);
-
         const uploadResponse = await fetch(url?.url, {
             method: 'PUT',
             headers: {

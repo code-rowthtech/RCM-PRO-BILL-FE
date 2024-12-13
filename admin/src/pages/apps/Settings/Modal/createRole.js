@@ -67,11 +67,6 @@ const AddRoles = ({ show, closeModal }) => {
     }, [createResponse])
     return (
         <Modal centered show={show} >
-            {/* <Modal.Header
-                onHide={closeModal}
-                closeButton
-                className={'modal-colored-header pb-0 border-0 text-center'}>
-            </Modal.Header> */}
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>

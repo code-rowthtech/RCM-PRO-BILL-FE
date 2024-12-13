@@ -52,7 +52,8 @@ const Clinic = ({ id }) => {
     const [posDetails, setPosDetails] = useState([
         { name: '', email: '', role: '', contact: '' }
     ])
-    console.log(posDetails, 'posDetailsposDetails')
+    const [taxonomyCodes, setTaxonomyCodes] = useState([''])
+    console.log(taxonomyCodes, 'posDetailsposDetails')
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -82,6 +83,10 @@ const Clinic = ({ id }) => {
         setSameAsPrimary(clinicData?.userId?.isPrimaryAndMailingAddressSame);
         setField('stateName', clinicData?.userId?.primaryAddress?.state?._id)
         setField('mailingStateName', clinicData?.userId?.mailingAddress?.state?._id)
+        setField('medicaid', clinicData?.medicaidNumber)
+        setField('medicare', clinicData?.medicareNumber)
+        setField('clia', clinicData?.CLIA_Number)
+        setTaxonomyCodes(clinicData?.taxonomyCodes)
         if (clinicData?.userId?.primaryAddress?.city) {
             dispatch(getCitiesAction({ state_code: clinicData?.userId?.primaryAddress?.state?.id, name: clinicData?.userId?.primaryAddress?.city?.name, limit: '', skip: '' }))
         }
@@ -195,10 +200,14 @@ const Clinic = ({ id }) => {
             // medicalLicenses: formDetails.medicalDetails || clinicData?.medicalLicenses, // Medical Licenses
             stateOfLicensing: formDetails.stateDetails || clinicData?.stateOfLicensing, // State Licensing
             accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails,
+            taxonomyCodes: taxonomyCodes,
+            ...(data?.medicaid ? { medicaidNumber: data?.medicaid } : {}),
+            ...(data?.medicare ? { medicareNumber: data?.medicare } : {}),
             logo: {
                 url: logo?.url.split('?')[0],
                 fileName: logoName
             },
+            ...(data?.clia ? { CLIA_Number: data?.clia } : {}),
             id: id || clinicData?._id, // Clinic ID
             primaryAddress: {
                 ...(data?.address ? { address: data?.address } : {}),
@@ -232,7 +241,7 @@ const Clinic = ({ id }) => {
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
-        // console.log(newPayload, 'newPayload');
+        console.log(newPayload, 'newPayload');
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -426,6 +435,34 @@ const Clinic = ({ id }) => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+    const handleAddTaxonomy = () => {
+        // Check if the last field has a value
+        const lastCode = taxonomyCodes[taxonomyCodes.length - 1];
+
+        if (lastCode) {
+            // Filter out any empty values from the array
+            const validCodes = taxonomyCodes.filter((code) => code.trim() !== '');
+            setTaxonomyCodes([...validCodes, '']);
+            // setAddFieldError(false); // Clear error if the new field is added successfully
+        } else {
+            ToastHandle('Please complete the current Taxonomy Code field before adding another.', 'danger')
+        }
+    };
+    const handleRemoveTaxonomy = (index) => {
+        // const updatedCodes = taxonomyCodes.filter((_, i) => i !== index);
+        // setTaxonomyCodes(updatedCodes);
+        setTaxonomyCodes((prev) => {
+            const updatedCodes = prev.filter((_, i) => i !== index);
+            return updatedCodes.length > 0 ? updatedCodes : ['']; // Ensure at least one field remains
+        });
+
+    };
+    // Function to handle field changes
+    const handleTaxonomyChange = (index, value) => {
+        const updatedCodes = [...taxonomyCodes];
+        updatedCodes[index] = value;
+        setTaxonomyCodes(updatedCodes);
+    };
     return (
         <>
             <Form onSubmit={handleSubmit(onSubmit)}>
@@ -481,28 +518,26 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Practice Speciality Description</Form.Label>
+                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('speciality', {
-                                    validate: (value) =>
-                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                {...register('taxId', {
+                                    minLength: {
+                                        value: 9,
+                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                    },
                                 })}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (value.startsWith(' ')) {
-                                        e.target.value = value.trimStart(); // Prevent spaces at the start
-                                    }
-                                }}
-                                placeholder="Practice speciality"
-                                onKeyPress={handleFirstSpace}
-                            />
-
-                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
-
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                maxLength={9}
+                                placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
                     </Col>
-
                     <Col sm={6}>
                         <Form.Group className="mb-0 position-relative">
                             <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
@@ -548,28 +583,6 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('taxId', {
-                                    minLength: {
-                                        value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
-                                    },
-                                    pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'Tax ID / EIN must contain numbers only', // Error message
-                                    },
-                                })}
-                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                maxLength={9}
-                                placeholder="Tax ID / EIN" />
-                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
                             <Form.Label className='mb-1'>NPI Type 2 Number</Form.Label>
                             <Form.Control
                                 defaultValue={clinicData?.npiNumber}
@@ -594,6 +607,117 @@ const Clinic = ({ id }) => {
                             {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
                         </Form.Group>
                     </Col>
+
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Practice Speciality Description</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('speciality', {
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                })}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.startsWith(' ')) {
+                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                    }
+                                }}
+                                placeholder="Practice speciality"
+                                onKeyPress={handleFirstSpace}
+                            />
+
+                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
+
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>CLIA  Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('clia', {
+                                    required: "This field is required",
+                                    minLength: {
+                                        value: 10,
+                                        message: 'CLIA number must be at least 10 characters long', // Error message
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'CLIA number cannot exceed 10 characters', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[A-Z0-9]{2}D[0-9]{7}$/, // Ensures the CLIA number matches the specific format
+                                        message: 'CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits',
+                                    },
+                                })}
+                                placeholder="CLIA Number"
+                                maxLength={10}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.clia && <span className="text-danger">{errors.clia.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Medicare Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('medicare')}
+                                placeholder="Medicare Number"
+                                maxLength={10}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.medicare && <span className="text-danger">{errors.medicare.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Medicaid Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('medicaid')}
+                                placeholder="Medicaid Number"
+                                maxLength={10}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.medicaid && <span className="text-danger">{errors.medicaid.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    {taxonomyCodes && taxonomyCodes.map((code, index) => (
+                        <Col sm={6} key={index}>
+                            <Form.Group className="mb-2 position-relative">
+                                <Form.Label className="mb-1">
+                                    Taxonomy Code(s)
+                                    {index === taxonomyCodes.length - 1 && (
+                                        <span
+                                            className="fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer"
+                                            onClick={handleAddTaxonomy}
+                                        >
+                                        </span>
+                                    )}
+                                    <span className="text-danger">*</span>
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    {...register(`taxonomyCode[${index}]`)}
+                                    value={code}
+                                    placeholder="Taxonomy Code"
+                                    maxLength={10}
+                                    onKeyPress={(event) => handleFirstSpace(event, index)}
+                                    onChange={(e) => handleTaxonomyChange(index, e.target.value)}
+                                />
+                                <span
+                                    style={{ top: '55%', right: '1%' }}
+                                    onClick={() => handleRemoveTaxonomy(index)} className={`${taxonomyCodes?.length === 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}></span>
+                                {errors.taxonomyCode?.[index] && (
+                                    <span className="text-danger">{errors.taxonomyCode[index].message}</span>
+                                )}
+                            </Form.Group>
+                        </Col>
+                    ))}
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
                         <Form.Label>Upload Logo</Form.Label>
                         <div onClick={handleLogoClick}

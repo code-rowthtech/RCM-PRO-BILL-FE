@@ -19,9 +19,11 @@ const Updateclinic = () => {
     const [searchParams] = useSearchParams();
     const id = searchParams.get('updateid');
     const [activeTab, setActiveTab] = useState('clinic');
+    const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    // console.log(clinicData?.contractId, 'from-index')
+    console.log(clinicData, 'from-index==========')
+    console.log(store?.getClinicByIdReducer, 'store?.getClinicByIdReducerstore?.getClinicByIdReduceraaaaaa')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -45,11 +47,12 @@ const Updateclinic = () => {
             adminId: user?._id,
             adminEmail: user?.email,
             adminName: user?.name,
-            clinicId: billingDetails?.userId?.clinicId,
-            clinicEmail: billingDetails?.userId?.email,
-            clinicName: billingDetails,
-            pdfBuffer: "",
+            clinicId: clinicData?._id,
+            clinicEmail: clinicData?.userId?.email,
+            clinicName: clinicData?.userId?.firstName,
+            html: quillBuffer
         };
+        console.log(data, '================')
         dispatch(generateContractAction({ key: encryptMessage(data) }))
     }
 
@@ -97,7 +100,7 @@ const Updateclinic = () => {
                                         activeTab === 'billing' ?
                                             <Billing setActiveTab={setActiveTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} activeTab={activeTab} />
                                             :
-                                            <Contracttable activeTab={activeTab} id={store?.getClinicByIdReducer?.data?.clinic?._id} />
+                                            <Contracttable setQuillBuffer={setQuillBuffer} activeTab={activeTab} id={store?.getClinicByIdReducer?.data?.clinic?._id} />
                                     }
                                 </Col>
                             </Row>
