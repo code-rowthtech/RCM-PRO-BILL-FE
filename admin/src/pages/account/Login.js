@@ -30,7 +30,7 @@ const Login = (): React$Element<any> => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const location = useLocation();
-    const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/dashboard/project';
+    const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/apps/rcm/allclinics';
 
     useEffect(() => {
         dispatch(resetAuth());

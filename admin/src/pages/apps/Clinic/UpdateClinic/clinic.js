@@ -19,7 +19,7 @@ const Clinic = ({ id }) => {
         register,
         handleSubmit,
         setValue, watch, getValues,
-        formState: { errors },
+        formState: { errors }, clearErrors
     } = useForm();
     const dispatch = useDispatch()
     const stateGeoLocation = watch('stateName');
@@ -39,7 +39,6 @@ const Clinic = ({ id }) => {
     const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    // console.log({ clinicData })
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
@@ -53,14 +52,16 @@ const Clinic = ({ id }) => {
         { name: '', email: '', role: '', contact: '' }
     ])
     const [taxonomyCodes, setTaxonomyCodes] = useState([''])
+    // console.log(clinicData?.stateOfLicensing?.length, 'clinicData?.stateOfLicensing?.length')
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
-            accreditationDetails: clinicData?.accreditationDetails || prevDetails.accreditationDetails,
+            accreditationDetails: clinicData?.accreditationDetails?.length === 0 ? formDetails?.accreditationDetails : clinicData?.accreditationDetails || prevDetails.accreditationDetails,
             medicalDetails: clinicData?.medicalLicenses || prevDetails.medicalDetails,
-            stateDetails: clinicData?.stateOfLicensing || prevDetails.stateDetails,
+            stateDetails: clinicData?.stateOfLicensing?.length === 0 ? formDetails?.stateDetails : clinicData?.accreditationDetails,
+            // stateDetails: clinicData?.stateOfLicensing?.length === 0 ? formDetails?.stateDetails : clinicData?.accreditationDetails,
         }));
-        setPosDetails(clinicData?.pos || []);
+        setPosDetails(clinicData?.pos?.length === 0 ? posDetails : clinicData?.pos);
 
     }, [clinicData]);
 
@@ -527,10 +528,11 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
+                            <Form.Label className='mb-1'>Tax ID / EIN <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('taxId', {
+                                    required: 'This field is required',
                                     minLength: {
                                         value: 9,
                                         message: 'Tax ID / EIN must be at least 9 characters long', // Error message
@@ -592,11 +594,12 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>NPI Type 2 Number</Form.Label>
+                            <Form.Label className='mb-1'>NPI Type 2 Number <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 defaultValue={clinicData?.npiNumber}
                                 type="text"
                                 {...register('npi', {
+                                    required: 'This field is required',
                                     minLength: {
                                         value: 10,
                                         message: 'NPI must be at least 10 characters long', // Error message
@@ -619,10 +622,11 @@ const Clinic = ({ id }) => {
 
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Practice Speciality Description</Form.Label>
+                            <Form.Label className='mb-1'>Practice Speciality Description <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('speciality', {
+                                    required: 'This field is required',
                                     validate: (value) =>
                                         !value.startsWith(' ') || 'First character cannot be a space',
                                 })}
@@ -631,6 +635,7 @@ const Clinic = ({ id }) => {
                                     if (value.startsWith(' ')) {
                                         e.target.value = value.trimStart(); // Prevent spaces at the start
                                     }
+                                    clearErrors('speciality')
                                 }}
                                 placeholder="Practice speciality"
                                 onKeyPress={handleFirstSpace}
@@ -672,7 +677,9 @@ const Clinic = ({ id }) => {
                             <Form.Label className='mb-1'>Medicare Number <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('medicare')}
+                                {...register('medicare', {
+                                    required: 'This field is required.'
+                                })}
                                 placeholder="Medicare Number"
                                 maxLength={10}
                                 // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
@@ -686,7 +693,9 @@ const Clinic = ({ id }) => {
                             <Form.Label className='mb-1'>Medicaid Number <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('medicaid')}
+                                {...register('medicaid', {
+                                    required: 'This field is required'
+                                })}
                                 placeholder="Medicaid Number"
                                 maxLength={10}
                                 // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
@@ -711,12 +720,17 @@ const Clinic = ({ id }) => {
                                 </Form.Label>
                                 <Form.Control
                                     type="text"
-                                    {...register(`taxonomyCode[${index}]`)}
+                                    {...register(`taxonomyCode[${index}]`, {
+                                        required: 'This field is required.'
+                                    })}
                                     value={code}
                                     placeholder="Taxonomy Code"
                                     maxLength={10}
                                     onKeyPress={(event) => handleFirstSpace(event, index)}
-                                    onChange={(e) => handleTaxonomyChange(index, e.target.value)}
+                                    onChange={(e) => {
+                                        handleTaxonomyChange(index, e.target.value)
+                                        clearErrors(`taxonomyCode[${index}]`)
+                                    }}
                                 />
                                 <span
                                     style={{ top: '55%', right: '1%' }}
@@ -921,6 +935,7 @@ const Clinic = ({ id }) => {
                                                     {searchedLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
                                                 </div>
                                             </div>
+                                            {errors.address && <span className="text-danger">{errors.address.message}</span>}
                                         </Form.Group>
                                     </Col>
 
@@ -1348,13 +1363,20 @@ const Clinic = ({ id }) => {
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Full Name</Form.Label>
+                                            <Form.Label className="mb-1">Full Name <span className='text-danger'>*</span></Form.Label>
                                             <Form.Control
                                                 type="text"
+                                                {...register(`contactName_${index}`, { required: 'This field is required.' })}
                                                 value={data.name || ''} // Ensure it defaults to an empty string
-                                                onChange={(e) => handlePOSInputChange(e, 'name', index)}
+                                                onChange={(e) => {
+                                                    clearErrors(`contactName_${index}`)
+                                                    handlePOSInputChange(e, 'name', index)
+                                                }}
                                                 placeholder="Full Name"
                                             />
+                                            {errors[`contactName_${index}`] && (
+                                                <span className="text-danger">{errors[`contactName_${index}`].message}</span>
+                                            )}
                                         </Form.Group>
                                     </Col>
                                     <Col sm={6}>
