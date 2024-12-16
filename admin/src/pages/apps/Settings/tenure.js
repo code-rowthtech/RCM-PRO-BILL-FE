@@ -217,7 +217,7 @@ const Tenure = () => {
                             <IoMdClose className="fs-4 cursor-pointer" onClick={closeAddModal} />
                         </Col>
                     </Row>
-                    <Form onSubmit={handleSubmit(addTenure)}>
+                    <Form autoComplete='off' onSubmit={handleSubmit(addTenure)}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">

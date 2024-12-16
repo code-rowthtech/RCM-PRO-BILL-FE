@@ -77,7 +77,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         userId: null, clinicId: null,
     })
     const [taxonomyCodes, setTaxonomyCodes] = useState([''])
-    console.log({ taxonomyCodes })
     // const checkForDuplicateNumbers = () => {
     //     // Combine all numbers from both accreditationDetails and stateDetails
     //     const allNumbers = [
@@ -206,6 +205,12 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setMedicalDetails([{ name: '', number: '', url: null, fileName: '' }]);
             setSelectedCity(null);
             setSelectedState(null);
+            setLatitude(null);
+            setLongitude(null);
+            setMailingLatitude(null);
+            setMailingLongitude(null);
+            setTaxonomyCodes(['']);
+            setSameAsPrimary(false);
             if (!parentClincId && counter === 0) {
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
@@ -220,14 +225,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         }
 
     }, [createResponse, clinicsList, parentClincId, counter]);
-    // useEffect(() => {
-    //     if (deleteResponse === 200 && parentClincId) {
-    //         const payload = {
-    //             parentClinicId: parentClincId,
-    //         };
-    //         dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
-    //     }
-    // }, [deleteResponse])
+    useEffect(() => {
+        if (deleteResponse === 200 && parentClincId) {
+            const payload = {
+                parentClinicId: parentClincId,
+            };
+            dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
+        }
+    }, [deleteResponse])
     console.log(deleteResponse, 'deleteResponse')
     useEffect(() => {
         if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
@@ -801,9 +806,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         updatedCodes[index] = value;
         setTaxonomyCodes(updatedCodes);
     };
+    const clinicTypeSelected = watch('clinicType');
+
     return (
         <>
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
                 <Row>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
@@ -833,10 +840,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>Practice type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
                                 {...register('clinicType', { required: 'This field is required' })}
-                                data-has-value={!!getValues('clinicType')}
-                                // onBlur={(e) => {
-                                //     e.target.setAttribute('data-has-value', !!e.target.value);
-                                // }}
+                                className={` ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
                                 <option value="">Select practice type</option> {/* Ensure this has a value to represent unselected */}
@@ -1778,7 +1782,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid || store?.createClinicsReducer?.loading}
                             onClick={() => {
                                 if (!parentClincId) {
-
                                     setCounter(1)
                                 } else {
                                     setCounter(2)
@@ -1860,6 +1863,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             </Link>
                                             <i
                                                 className="mdi mdi-delete cursor-pointer"
+                                                style={{ cursor: store?.deleteClinicOnboardingReducer?.loading ? "not-allowed" : 'pointer' }}
                                                 onClick={() => {
                                                     const payload = {
                                                         id: multipleData?._id,

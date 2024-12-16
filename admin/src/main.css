@@ -235,3 +235,10 @@ table {
     font-weight: 700;
     transition-duration: 0.5s;
 }
+
+.emptyField {
+    color: #a9a9a9 !important;
+}
+.selectedField {
+    color: black !important;
+}

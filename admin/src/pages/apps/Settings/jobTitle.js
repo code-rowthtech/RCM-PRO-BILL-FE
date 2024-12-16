@@ -224,7 +224,7 @@ const JobTitle = () => {
                         </Col>
                     </Row>
                     {/* <h4 className="mt-0 text-center">New Clinic Type</h4> */}
-                    <Form onSubmit={handleSubmit(addJobTitle)}>
+                    <Form autoComplete='off' onSubmit={handleSubmit(addJobTitle)}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">

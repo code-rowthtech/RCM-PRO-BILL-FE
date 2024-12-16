@@ -101,7 +101,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
         setSelectedDate(e.target.value);
     };
     return (
-        <Form onSubmit={handleSubmit(onSubmit)}>
+        <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
             <Row>
                 <Col sm={6} className="mb-2">
                     <Form.Group >

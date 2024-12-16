@@ -131,7 +131,7 @@ const Permissions = () => {
                                                     decryptedPermissionsData && decryptedPermissionsData.map((data, index) => (
                                                         <tr key={index}>
                                                             <td colSpan={2}>{index + 1}</td>
-                                                            <td className='fw-bold text-body' colSpan={2} onClick={() => setSelected(data?._id)}>
+                                                            <td className='fw-bold text-body text-capitalize' colSpan={2} onClick={() => setSelected(data?._id)}>
                                                                 {/* <Link to="#" className="text-body fw-bold"> */}
                                                                 {data?.name}
                                                                 {/* </Link> */}

@@ -465,7 +465,7 @@ const Clinic = ({ id }) => {
     };
     return (
         <>
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
                 <Row>
                     {/* Clinic Name Field */}
                     <Col sm={6}>

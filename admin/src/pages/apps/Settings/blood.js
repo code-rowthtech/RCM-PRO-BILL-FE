@@ -187,7 +187,7 @@ const Blood = () => {
                             <IoMdClose className="fs-4 cursor-pointer" onClick={closeAddModal} />
                         </Col>
                     </Row>
-                    <Form onSubmit={handleSubmit(addDepartment)}>
+                    <Form autoComplete='off' onSubmit={handleSubmit(addDepartment)}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">

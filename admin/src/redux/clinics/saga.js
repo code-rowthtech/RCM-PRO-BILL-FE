@@ -367,6 +367,7 @@ function* generateContractFunction(data) {
         const response = yield call(generateContractApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
+            ToastHandle(decryptedData?.message, 'success');
             yield put({
                 type: ClinicsActionTypes.GENERATE_CONTRACT_SUCCESS,
                 payload: { ...decryptedData },
@@ -379,6 +380,7 @@ function* generateContractFunction(data) {
         }
     } catch (error) {
         // console.log({ error })
+        ToastHandle(error, 'danger');
         yield put({
             type: ClinicsActionTypes.GENERATE_CONTRACT_ERROR,
             payload: error,

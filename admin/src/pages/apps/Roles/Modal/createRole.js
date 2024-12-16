@@ -43,7 +43,7 @@ const AddRoles = ({ show, closeModal }) => {
         reset, getValues,
         watch
     } = useForm();
-
+    const joiningDate = watch('joiningDate');
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -94,7 +94,7 @@ const AddRoles = ({ show, closeModal }) => {
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
                     </Col>
                 </Row>
-                <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
                     <Row >
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
@@ -239,6 +239,7 @@ const AddRoles = ({ show, closeModal }) => {
                                 <Form.Label>Date of Joining <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
+                                    className={` ${!joiningDate ? 'emptyField' : 'selectedField'}`}
                                     {...register('joiningDate', { required: 'This field is required' })}
                                 />
                                 {errors.joiningDate && <span className="text-danger">{errors.joiningDate.message}</span>}

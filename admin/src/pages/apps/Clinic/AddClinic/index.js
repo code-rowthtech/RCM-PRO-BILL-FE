@@ -79,7 +79,6 @@ const Index = () => {
 
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
-    console.log(quillBuffer, 'quillBufferquillBuffer')
     const handleContractGeneration = () => {
         const data = {
             adminId: user?._id,
@@ -90,7 +89,6 @@ const Index = () => {
             clinicName: billingResponse?.name,
             html: quillBuffer
         }
-        console.log(data, 'data')
         dispatch(generateContractAction({ key: encryptMessage(data) }));
     }
     useEffect(() => {
@@ -140,7 +138,7 @@ const Index = () => {
                                 </Col>
                                 <Col className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
                                     <Button
-                                        className='custom-buttons'
+                                        className={`custom-buttons ${parentClincId ? 'd-none' : ''}`}
                                         // disabled={!resetEmail?.name && !resetEmail?.email && !resetEmail?.phone && !resetEmail?.clinicType}
                                         onClick={() => {
                                             if (!resetEmail?.name) {
