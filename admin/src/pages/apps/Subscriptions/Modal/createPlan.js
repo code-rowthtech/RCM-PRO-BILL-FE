@@ -21,7 +21,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         handleSubmit,
         formState: { errors },
         reset, getValues,
-        watch,
+        watch, clearErrors,
     } = useForm();
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -103,7 +103,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
             dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
         }
     };
-
+    const dateField = watch('date')
     return (
         <Modal centered show={show} size="md">
             <Modal.Body>
@@ -152,7 +152,8 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                     // }}
                                     onChange={(e) => {
                                         const selectedOption = tenure?.find(option => option.name === e.target.value);
-                                        setTenureMonth(selectedOption?.months)
+                                        setTenureMonth(selectedOption?.months);
+                                        clearErrors('tenure')
                                     }}                                >
                                     <option value="">Select tenure</option>
                                     {tenure?.map((data) => (
@@ -197,6 +198,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Implemented Date <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
+                                    className={` ${!dateField ? 'emptyField' : 'selectedField'}`}
                                     defaultValue={isUpdateMode ? formatDate(data?.implimentFrom) : ''} // Ensure the date is formatted correctly
                                     placeholder="Select date"
                                     {...register('date', { required: 'This field is required' })}

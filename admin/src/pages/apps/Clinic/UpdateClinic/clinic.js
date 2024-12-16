@@ -475,8 +475,12 @@ const Clinic = ({ id }) => {
                             </Form.Label>
                             <Form.Control
                                 placeholder="Enter clinic name"
-                                {...register('name', { required: 'This field is required' })}
-                                onKeyPress={handleFirstSpace}
+                                {...register('name', {
+                                    required: 'This field is required',
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                })}
+                            // onKeyPress={handleFirstSpace}
                             />
                             {errors.name && <span className="text-danger">{errors.name.message}</span>}
                         </Form.Group>
