@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { generateContractAction, getClinicById, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
+import { generateContractAction, getClinicById, getContractAction, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import Contract from '../AddClinic/contract';
@@ -23,21 +23,22 @@ const Updateclinic = () => {
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
 
-    // console.log(clinicData, 'from-index==========')
-    console.log(store?.generateContractReducer, '222222222222222222')
+    console.log(clinicData, 'from-index==========')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
         dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
         dispatch(getStatesByCountryAction());
 
-    }, [dispatch, activeTab, id])
+    }, [dispatch, activeTab, id]);
+    const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
+
     useEffect(() => {
-        if (store?.updateClinicsReducer?.data?.status === 200) {
+        if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200) {
             dispatch(getClinicById({ key: encryptMessage({ id }) }));
 
         }
-    }, [store?.updateClinicsReducer?.data?.status])
+    }, [store?.updateClinicsReducer?.data?.status, billingAddResponse])
     const handleActiveTab = (data) => {
         setActiveTab(data)
     }
@@ -53,9 +54,18 @@ const Updateclinic = () => {
             clinicName: clinicData?.userId?.firstName,
             html: quillBuffer
         };
-        console.log(data, '================')
+        console.log(data, '0000000000000000000000000')
         dispatch(generateContractAction({ key: encryptMessage(data) }))
     }
+    useEffect(() => {
+        if (store?.generateContractReducer?.data?.status === 200) {
+            const payload = {
+                clinicId: clinicData?._id,
+                // clinicId: billingId,
+            };
+            dispatch(getContractAction({ key: encryptMessage(payload) }));
+        }
+    }, [dispatch, store?.generateContractReducer?.data?.status])
 
     return (
         <>

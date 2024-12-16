@@ -176,7 +176,13 @@ const Index = () => {
                                     <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
                                 </Col>
                                 <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
-                                    <Button onClick={handleContractGeneration} disabled={!quillBuffer} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>Generate Contract</Button>
+                                    <Button onClick={handleContractGeneration} disabled={!quillBuffer || store?.generateContractReducer?.loading} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
+                                        {store?.generateContractReducer?.loading ?
+                                            <Spinner className='spinner-border-sm' color='white' />
+                                            :
+                                            'Generate Contract'
+                                        }
+                                    </Button>
                                     <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                 </Col>
                             </Row>

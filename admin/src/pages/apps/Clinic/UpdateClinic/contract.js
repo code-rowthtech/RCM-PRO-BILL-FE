@@ -82,91 +82,100 @@ const Contracttable = ({ activeTab, id, setQuillBuffer }) => {
     };
     return (
         <div>
-            {contracts ?
-                <Table responsive className="table-centered border border-muted table-nowrap mb-0">
-                    <thead>
-                        <tr>
-                            <th>Contract Name</th>
-                            <th>Practice Sign</th>
-                            <th>Probill Sign</th>
-                            <th>Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            store?.getContractReducer?.loading ?
-                                <tr>
-                                    <td className='text-center' colSpan={5}>
-                                        <Spinner />
-                                    </td>
-                                </tr>
-                                : contracts?.length === 0 ? (
-                                    <tr>
-                                        <td className="text-center" colSpan={5}>
-                                            No data found
-                                        </td>
-                                    </tr>
-                                ) :
-                                    // contracts?.map((contracts, index) => (
-                                    <tr key={contracts?._id}>
-                                        <td>{contracts?.contractName}</td>
-                                        <td><span className={`${contracts?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                        <td><span className={`${contracts?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                        <td>
-                                            {new Date(contracts?.sentDate).toLocaleDateString('en-GB')}
-                                        </td>
-                                        <td>
-                                            <i className="fs-4 me-1 uil-external-link-alt"
-                                                onClick={() => {
-                                                    setViewList(!viewList);
-                                                }}></i>
-                                            <div className={`${viewList ? 'px-1 position-absolute bg-white' : 'd-none'}`}>
-                                                <p className='mb-0 border px-1 pe-3 cursor-pointer view-docs' onClick={() => {
-                                                    handleDownload(contracts?.documentFileUrl);
-                                                    setViewList(false);
-                                                }}>Document</p>
-                                                <p className='mb-0 border px-1 pe-3 cursor-pointer view-docs' onClick={() => {
-                                                    handleDownload(contracts?.certificateFileUrl);
-                                                    setViewList(false);
-                                                }}>Certificate</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                            // ))
-                        }
-                    </tbody>
-                </Table>
+            {store?.getContractReducer?.loading ?
+                <Row>
+                    <Col className='d-flex justify-content-center align-items-center'>
+                        <Spinner />
+                    </Col>
+                </Row>
                 :
-                <Row style={{ height: '100%' }} className="">
-                    <Row className=" scroll-container">
-                        <Col className={`${!editMode ? 'd-flex justify-content-center ' : ''}`} sm={editMode ? 6 : 12}>
-                            <div dangerouslySetInnerHTML={{ __html: quillValue }} />
-                        </Col>
-                        <Col sm={editMode ? 6 : ''} className={editMode ? '' : 'd-none'}>
-                            <ReactQuill
-                                modules={modules}
-                                value={quillValue}
-                                onChange={(value) => setQuillValue(value)}
-                                theme="snow"
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={12} className="text-end">
-                            {editMode ? (
-                                <Button className="custom-buttons" onClick={() => setEditMode(false)}>
-                                    Close Editor
-                                </Button>
-                            ) : (
-                                <Button className="custom-buttons" onClick={() => setEditMode(true)}>
-                                    Edit Contract
-                                </Button>
-                            )}
-                        </Col>
-                    </Row>
+                contracts?.adminId ?
+                    <Table responsive className="table-centered border border-muted table-nowrap mb-0">
+                        <thead>
+                            <tr>
+                                <th>Contract Name</th>
+                                <th>Practice Sign</th>
+                                <th>Probill Sign</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                store?.getContractReducer?.loading ?
+                                    <tr>
+                                        <td className='text-center' colSpan={5}>
+                                            <Spinner />
+                                        </td>
+                                    </tr>
+                                    : contracts?.length === 0 ? (
+                                        <tr>
+                                            <td className="text-center" colSpan={5}>
+                                                No data found
+                                            </td>
+                                        </tr>
+                                    ) :
+                                        // contracts?.map((contracts, index) => (
+                                        <tr key={contracts?._id}>
+                                            <td>{contracts?.contractName}</td>
+                                            <td><span className={`${contracts?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                            <td><span className={`${contracts?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                            <td>
+                                                {new Date(contracts?.sentDate).toLocaleDateString('en-GB')}
+                                            </td>
+                                            <td>
+                                                <i className="fs-4 me-1 uil-external-link-alt"
+                                                    onClick={() => {
+                                                        setViewList(!viewList);
+                                                    }}></i>
+                                                <div className={`${viewList ? 'px-1 position-absolute bg-white' : 'd-none'}`}>
+                                                    <p className='mb-0 border px-1 pe-3 cursor-pointer view-docs' onClick={() => {
+                                                        handleDownload(contracts?.documentFileUrl);
+                                                        setViewList(false);
+                                                    }}>Document</p>
+                                                    <p className='mb-0 border px-1 pe-3 cursor-pointer view-docs' onClick={() => {
+                                                        handleDownload(contracts?.certificateFileUrl);
+                                                        setViewList(false);
+                                                    }}>Certificate</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                // ))
+                            }
+                        </tbody>
+                    </Table>
+                    :
+                    <Row style={{ height: '100%' }} className="">
+                        <Row className=" scroll-container">
+                            <Col className={`${!editMode ? 'd-flex justify-content-center ' : ''}`} sm={editMode ? 6 : 12}>
+                                <div dangerouslySetInnerHTML={{ __html: quillValue }} />
+                            </Col>
+                            <Col sm={editMode ? 6 : ''} className={editMode ? '' : 'd-none'}>
+                                <ReactQuill
+                                    modules={modules}
+                                    value={quillValue}
+                                    onChange={(value) => setQuillValue(value)}
+                                    theme="snow"
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm={12} className="text-end">
+                                {editMode ? (
+                                    <Button className="custom-buttons" onClick={() => setEditMode(false)}>
+                                        Close Editor
+                                    </Button>
+                                ) : (
+                                    <Button className="custom-buttons" onClick={() => setEditMode(true)}>
+                                        Edit Contract
+                                    </Button>
+                                )}
+                            </Col>
+                        </Row>
 
-                </Row>}
+                    </Row>
+            }
+
 
         </div>
     )
