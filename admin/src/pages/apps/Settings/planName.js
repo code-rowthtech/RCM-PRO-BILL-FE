@@ -219,7 +219,7 @@ const PlanName = () => {
                         </Col>
                     </Row>
                     {/* <h4 className="mt-0 text-center">New Clinic Type</h4> */}
-                    <Form onSubmit={handleSubmit(addPlanName)}>
+                    <Form autoComplete='off' onSubmit={handleSubmit(addPlanName)}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">

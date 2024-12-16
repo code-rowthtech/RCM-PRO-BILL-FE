@@ -22,8 +22,9 @@ const Updateclinic = () => {
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log(clinicData, 'from-index==========')
-    console.log(store?.getClinicByIdReducer, 'store?.getClinicByIdReducerstore?.getClinicByIdReduceraaaaaa')
+
+    // console.log(clinicData, 'from-index==========')
+    console.log(store?.generateContractReducer, '222222222222222222')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -83,7 +84,13 @@ const Updateclinic = () => {
                                     </span>
                                 </Col>
                                 <Col className='d-flex justify-content-end align-items-center'>
-                                    <Button onClick={handleContractGeneration} className={`custom-buttons me-2 ${clinicData?.contractId || activeTab !== 'contract' ? 'd-none' : ''}`}>Generate Contract</Button>
+                                    <Button onClick={handleContractGeneration} disabled={store?.generateContractReducer?.loading} className={`custom-buttons me-2 ${clinicData?.contractId || activeTab !== 'contract' ? 'd-none' : ''}`}>
+                                        {store?.generateContractReducer?.loading ?
+                                            <Spinner color='white' className='spinner-border-sm' />
+                                            :
+                                            'Generate Contract'
+                                        }
+                                    </Button>
                                     <Button onClick={() => navigate(-1)} className='custom-buttons'>Back</Button>
                                 </Col>
                             </Row>

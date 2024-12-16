@@ -46,7 +46,7 @@ const AddPermissions = ({ show, closeModal }) => {
                     </Col>
                 </Row>
                 {/* <h4 className="mt-0 text-center">Add Permissions</h4> */}
-                <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2">

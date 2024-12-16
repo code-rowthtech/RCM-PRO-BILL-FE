@@ -120,7 +120,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
                     </Col>
                 </Row>
-                <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
                     <Row >
                         <Col sm={6}>
                             <Form.Group className='mb-2'>

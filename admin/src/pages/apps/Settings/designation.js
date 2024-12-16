@@ -194,11 +194,11 @@ const Designation = () => {
                         </Col>
                     </Row>
                     {/* <h4 className="mt-0 text-center">New Clinic Type</h4> */}
-                    <Form onSubmit={handleSubmit(addDesignation)}>
+                    <Form autoComplete='off' onSubmit={handleSubmit(addDesignation)}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Designation Name *</Form.Label>
+                                    <Form.Label>Designation Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter designation name"
@@ -210,7 +210,7 @@ const Designation = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Name *</Form.Label>
+                                    <Form.Label>Re-Enter Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Designation Name"
