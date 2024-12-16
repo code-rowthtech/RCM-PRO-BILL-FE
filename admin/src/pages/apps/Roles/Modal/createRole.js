@@ -19,6 +19,9 @@ const AddRoles = ({ show, closeModal }) => {
     const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [designationValue, setDesignationValue] = useState('');
+    const [reEnterDesignationValue, setReEnterDesignationValue] = useState('');
+    const [designationError, setDesignationError] = useState('');
     const store = useSelector((state) => state);
     const createResponse = store?.createUserRolesReducer?.data?.status;
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
@@ -57,7 +60,7 @@ const AddRoles = ({ show, closeModal }) => {
             reportingTo: creatorId,
             createdById: creatorId,
             joiningDate: data.joiningDate,
-            designation: data.designation,
+            designation: designationValue,
             role: data.role,
         };
         // console.log(payload)
@@ -82,6 +85,25 @@ const AddRoles = ({ show, closeModal }) => {
         }
     }, [createResponse]);
 
+
+
+    const handleDesignationChange = (e) => {
+        setDesignationValue(e.target.value);
+        if (reEnterDesignationValue && e.target.value !== reEnterDesignationValue) {
+            setDesignationError('The designations do not match.');
+        } else {
+            setDesignationError('');
+        }
+    };
+
+    const handleReEnterDesignationChange = (e) => {
+        setReEnterDesignationValue(e.target.value);
+        if (designationValue && e.target.value !== designationValue) {
+            setDesignationError('The designations do not match.');
+        } else {
+            setDesignationError('');
+        }
+    };
     return (
         <Modal centered show={show} >
             <Modal.Body>
@@ -132,7 +154,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col> */}
                         <Col sm={6} className='mb-2'>
                             <Form.Group className="mb-0 position-relative">
-                                <Form.Label className='mb-1'>Billing Contact Phone Number <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label className='mb-1'>Contact Number <span className='text-danger'>*</span></Form.Label>
                                 <Form.Group>
                                     <InputGroup>
                                         <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>+1</InputGroup.Text> {/* This is the prefix */}
@@ -236,7 +258,7 @@ const AddRoles = ({ show, closeModal }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Date of Joining <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Start Date <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
                                     className={` ${!joiningDate ? 'emptyField' : 'selectedField'}`}
@@ -261,6 +283,8 @@ const AddRoles = ({ show, closeModal }) => {
                                 <Form.Select
                                     {...register('designation')}
                                     data-has-value={!!getValues('designation')}
+                                    value={designationValue} // Set the value from state
+                                    onChange={handleDesignationChange}
                                     onBlur={(e) => {
                                         e.target.setAttribute('data-has-value', !!e.target.value);
                                     }}>
@@ -269,21 +293,24 @@ const AddRoles = ({ show, closeModal }) => {
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
                                     ))}
                                 </Form.Select>
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                                {designationError && <span className="text-danger">{designationError}</span>}
                             </Form.Group>
                         </Col>
-                        {/* <Col sm={6}>
+
+                        <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Re-Enter Designation <span className='text-danger'>*</span></Form.Label>
-                                <Form.Select>
+                                <Form.Select
+                                    value={reEnterDesignationValue} // Set the value from state
+                                    onChange={handleReEnterDesignationChange}>
                                     <option value={''} key={''}>Re-Enter Designation</option>
-                                    {clinicTypeData?.map((data, i) => (
+                                    {designation?.map((data, i) => (
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
                                     ))}
                                 </Form.Select>
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                                {designationError && <span className="text-danger">{designationError}</span>}
                             </Form.Group>
-                        </Col> */}
+                        </Col>
                         <Col sm={6} >
                             <Form.Group className='mb-2'>
                                 <Form.Label>Role <span className='text-danger'>*</span></Form.Label>

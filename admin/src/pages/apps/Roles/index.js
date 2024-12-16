@@ -30,6 +30,7 @@ const RoleManagement = () => {
     const createResponse = store?.createUserRolesReducer?.data?.status;
     const updateResponse = store?.updateUserRolesReducer?.data?.status;
     const apiData = store?.getUserRolesReducer?.data?.users;
+    console.log(apiData)
     const isAddPresent = userPermissions.includes('Create Users');
     const isUpdatePresent = userPermissions.includes('Update Users');
     useEffect(() => {

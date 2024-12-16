@@ -1169,7 +1169,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Col sm={4}>
                                 <Form.Control
                                     type="text"
-                                    value={accreditation.name}
+                                    value={accreditation?.name}
                                     placeholder="Name"
                                     onChange={(e) => handleAccreditationInputChange(e, 'name', index)}
                                     onKeyPress={handleFirstSpace}
@@ -1178,7 +1178,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Col sm={4}>
                                 <Form.Control
                                     type="text"
-                                    value={accreditation.number}
+                                    value={accreditation?.number || ''}
                                     {...register('accDocno', {
                                         pattern: {
                                             value: /^[0-9]*$/,

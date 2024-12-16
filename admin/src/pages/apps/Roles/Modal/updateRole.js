@@ -14,6 +14,7 @@ import { createdBy } from '../../Settings/userId';
 const UpdateRoles = ({ show, closeModal, data }) => {
 
     const dispatch = useDispatch();
+    console.log(data, '---------')
     const {
         register,
         handleSubmit,
@@ -170,7 +171,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Date of Joining</Form.Label>
+                                <Form.Label>Start Date</Form.Label>
                                 <Form.Control
                                     type="date"
                                     readOnly
@@ -182,7 +183,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Date of Leaving</Form.Label>
+                                <Form.Label>Deactivation Date</Form.Label>
                                 <Form.Control
                                     type="date"
                                     {...register('leavingDate')}
