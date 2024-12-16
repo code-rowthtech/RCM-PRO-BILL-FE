@@ -79,7 +79,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const [taxonomyCodes, setTaxonomyCodes] = useState([''])
     useEffect(() => {
         const validCodes = taxonomyCodes.filter(code => code.trim() !== '');
-        console.log(validCodes?.length, 'vvvvvvvvvvv')
+        // console.log(validCodes?.length, 'vvvvvvvvvvv')
         if (validCodes?.length > 0) {
             setResetEmail({ ...resetEmail, taxonomyCodes: taxonomyCodes })
         }
@@ -104,7 +104,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const createResponse = store?.createClinicsReducer?.data?.status;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
-    console.log({ clinicsList })
+    // console.log({ clinicsList })
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
@@ -223,14 +223,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
         }
     }, [deleteResponse])
-    console.log(deleteResponse, 'deleteResponse')
+    // console.log(deleteResponse, 'deleteResponse')
     useEffect(() => {
         if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
             setFormValid(true)
         }
     }, [resetEmail])
     useEffect(() => {
-        console.log(store?.createClinicsReducer?.data, 'store?.createClinicsReducer?.data')
+        // console.log(store?.createClinicsReducer?.data, 'store?.createClinicsReducer?.data')
         if (createResponse === 200 && counter === 1) {
             setIds({
                 userId: store?.createClinicsReducer?.data?.data?._id,

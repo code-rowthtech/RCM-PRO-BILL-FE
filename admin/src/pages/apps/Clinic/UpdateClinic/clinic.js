@@ -39,7 +39,7 @@ const Clinic = ({ id }) => {
     const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log({ clinicData })
+    // console.log({ clinicData })
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
@@ -53,7 +53,6 @@ const Clinic = ({ id }) => {
         { name: '', email: '', role: '', contact: '' }
     ])
     const [taxonomyCodes, setTaxonomyCodes] = useState([''])
-    console.log(taxonomyCodes, 'posDetailsposDetails')
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -86,7 +85,12 @@ const Clinic = ({ id }) => {
         setField('medicaid', clinicData?.medicaidNumber)
         setField('medicare', clinicData?.medicareNumber)
         setField('clia', clinicData?.CLIA_Number)
-        setTaxonomyCodes(clinicData?.taxonomyCodes)
+        if (clinicData?.taxonomyCodes?.length === 0) {
+            setTaxonomyCodes([''])
+        } else {
+            setTaxonomyCodes(clinicData?.taxonomyCodes)
+        }
+        // alert(clinicData?.taxonomyCodes?.length)
         if (clinicData?.userId?.primaryAddress?.city) {
             dispatch(getCitiesAction({ state_code: clinicData?.userId?.primaryAddress?.state?.id, name: clinicData?.userId?.primaryAddress?.city?.name, limit: '', skip: '' }))
         }
@@ -200,7 +204,8 @@ const Clinic = ({ id }) => {
             // medicalLicenses: formDetails.medicalDetails || clinicData?.medicalLicenses, // Medical Licenses
             stateOfLicensing: formDetails.stateDetails || clinicData?.stateOfLicensing, // State Licensing
             accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails,
-            taxonomyCodes: taxonomyCodes,
+            // taxonomyCodes: taxonomyCodes,
+            taxonomyCodes: taxonomyCodes.filter(code => code), // Filter out empty taxonomy codes
             ...(data?.medicaid ? { medicaidNumber: data?.medicaid } : {}),
             ...(data?.medicare ? { medicareNumber: data?.medicare } : {}),
             logo: {
@@ -241,7 +246,7 @@ const Clinic = ({ id }) => {
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
-        console.log(newPayload, 'newPayload');
+        // console.log(newPayload, 'newPayload');
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 

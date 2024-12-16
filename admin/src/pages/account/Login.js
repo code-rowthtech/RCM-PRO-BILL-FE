@@ -54,7 +54,7 @@ const Login = (): React$Element<any> => {
     */
     const schemaResolver = yupResolver(
         yup.object().shape({
-            username: yup.string().required(t('Please enter Username')),
+            username: yup.string().required(t('Please enter Username')).email(t('Please enter a valid Email')),
             password: yup.string().required(t('Please enter Password')),
         })
     );
@@ -91,11 +91,11 @@ const Login = (): React$Element<any> => {
                 >
                     <FormInput
                         label={t('Email')}
-                        type="text"
+                        type="email"
                         name="username"
                         placeholder={t('Enter your Email')}
                         containerClass={'mb-3'}
-                        defaultValue="" // Ensures the field is initialized
+                        defaultValue=""
                     />
                     <FormInput
                         label={t('Password')}

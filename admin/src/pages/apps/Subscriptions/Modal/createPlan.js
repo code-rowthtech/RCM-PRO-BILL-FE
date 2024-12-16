@@ -123,7 +123,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.name : ""}
-                                    {...register('name', { required: 'This field is required' })}
+                                    {...register('name', { required: 'Please select a plan name' })}
                                     data-has-value={!!getValues('name')}
                                     onBlur={(e) => {
                                         e.target.setAttribute('data-has-value', !!e.target.value);
@@ -145,7 +145,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Plan Tenure <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.billingFrequency : ''}
-                                    {...register('tenure', { required: 'This field is required' })}
+                                    {...register('tenure', { required: 'Please select a tenure for the plan.' })}
                                     // data-has-value={!!getValues('tenure')}
                                     // onBlur={(e) => {
                                     //     e.target.setAttribute('data-has-value', !!e.target.value);
@@ -216,7 +216,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                     defaultValue={isUpdateMode ? data?.patientLimit : ''}
                                     placeholder="Enter patient count"
                                     {...register('patientcount', {
-                                        required: 'This field count is required',
+                                        required: 'This field is required',
                                         validate: value => parseInt(value) > 0 || 'Patient count must be positive',
                                     })}
                                 />
@@ -231,7 +231,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                     defaultValue={isUpdateMode ? data?.doctorLimit : ''}
                                     placeholder="Enter doctor count"
                                     {...register('doctorcount', {
-                                        required: 'This field count is required',
+                                        required: 'This field is required',
                                         validate: value => parseInt(value) > 0 || 'Doctor count must be positive',
                                     })}
                                 />
