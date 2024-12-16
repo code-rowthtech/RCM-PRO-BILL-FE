@@ -100,6 +100,24 @@ const Index = () => {
             dispatch(getContractAction({ key: encryptMessage(payload) }));
         }
     }, [dispatch, store?.generateContractReducer?.data?.status])
+    console.log({ resetEmail })
+    const requiredFields = [
+        { key: "name", message: "Name is required." },
+        { key: "email", message: "Email is required." },
+        { key: "phone", message: "Phone number is required." },
+        { key: "clinicType", message: "Clinic Type is required." },
+        { key: "taxIdOrEIN", message: "Tax ID is required." },
+        { key: "npiNumber", message: "NPI number is required." },
+        { key: "npiNumber", message: "NPI number is required." },
+        { key: "practiceSpecialty", message: "Practice specialty description is required." },
+        { key: "CLIA_Number", message: "Practice specialty description is required." },
+        { key: "medicareNumber", message: "Practice specialty description is required." },
+        { key: "medicaidNumber", message: "Practice specialty description is required." },
+        { key: "taxonomyCodes", message: "Practice specialty description is required." },
+    ];
+
+    // Check for missing fields
+    const missingField = requiredFields.find(field => !resetEmail?.[field.key]);
     return (
         <>
             <Row className='mt-2'>
@@ -139,16 +157,10 @@ const Index = () => {
                                 <Col className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
                                     <Button
                                         className={`custom-buttons ${parentClincId ? 'd-none' : ''}`}
-                                        // disabled={!resetEmail?.name && !resetEmail?.email && !resetEmail?.phone && !resetEmail?.clinicType}
+                                        disabled={missingField}
                                         onClick={() => {
-                                            if (!resetEmail?.name) {
-                                                ToastHandle("Name is required.", 'danger');
-                                            } else if (!resetEmail?.email) {
-                                                ToastHandle("Email is required.", 'danger');
-                                            } else if (!resetEmail?.phone) {
-                                                ToastHandle("Phone number is required.", 'danger');
-                                            } else if (!resetEmail?.clinicType) {
-                                                ToastHandle("Clinic Type is required.", 'danger');
+                                            if (missingField) {
+                                                ToastHandle('Please fill in all mandatory fields to proceed.', 'danger');
                                             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.email)) {
                                                 ToastHandle("Please enter a valid email address.", 'danger');
                                             }

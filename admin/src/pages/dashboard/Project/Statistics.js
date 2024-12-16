@@ -27,7 +27,7 @@ const Statistics = (data): React$Element<React$FragmentType> => {
                                             <h3>
                                                 <span>{statisticsData?.registeredClinics}</span>
                                             </h3>
-                                            <p className="text-muted font-15 mb-0">Registered Clinics</p>
+                                            <p className="text-muted font-15 mb-0">Registered Practices</p>
                                         </Card.Body>
                                     </Card>
                                 </Col>

@@ -77,23 +77,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         userId: null, clinicId: null,
     })
     const [taxonomyCodes, setTaxonomyCodes] = useState([''])
-    // const checkForDuplicateNumbers = () => {
-    //     // Combine all numbers from both accreditationDetails and stateDetails
-    //     const allNumbers = [
-    //         ...accreditationDetails.map((item) => item.number),
-    //         ...stateDetails.map((item) => item.number),
-    //     ];
-
-    //     // Filter out empty or null numbers and check for duplicates
-    //     const nonEmptyNumbers = allNumbers.filter((number) => number); // Filter out empty values
-    //     const duplicateExists = nonEmptyNumbers.some((number, index) =>
-    //         nonEmptyNumbers.indexOf(number) !== index
-    //     );
-
-    //     if (duplicateExists) {
-    //         ToastHandle('No two documents can have same document number.', 'danger');
-    //     }
-    // };
+    useEffect(() => {
+        const validCodes = taxonomyCodes.filter(code => code.trim() !== '');
+        // console.log(validCodes?.length, 'vvvvvvvvvvv')
+        if (validCodes?.length > 0) {
+            setResetEmail({ ...resetEmail, taxonomyCodes: taxonomyCodes })
+        }
+    }, [taxonomyCodes])
 
     // Call this function whenever there's a change in either of the states
     // useEffect(() => {
@@ -114,7 +104,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const createResponse = store?.createClinicsReducer?.data?.status;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.data;
-    console.log({ clinicsList })
+    // console.log({ clinicsList })
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
@@ -233,14 +223,14 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
         }
     }, [deleteResponse])
-    console.log(deleteResponse, 'deleteResponse')
+    // console.log(deleteResponse, 'deleteResponse')
     useEffect(() => {
         if (resetEmail?.name && resetEmail?.email && resetEmail?.phone && resetEmail?.clinicType) {
             setFormValid(true)
         }
     }, [resetEmail])
     useEffect(() => {
-        console.log(store?.createClinicsReducer?.data, 'store?.createClinicsReducer?.data')
+        // console.log(store?.createClinicsReducer?.data, 'store?.createClinicsReducer?.data')
         if (createResponse === 200 && counter === 1) {
             setIds({
                 userId: store?.createClinicsReducer?.data?.data?._id,
@@ -807,7 +797,33 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         setTaxonomyCodes(updatedCodes);
     };
     const clinicTypeSelected = watch('clinicType');
+    const watchAllFields = watch(['address', 'zip', 'stateName', 'city', 'street']);
+    // console.log(watchAllFields?.[0], 'watchAllFields')
+    // const [previousAddress, setPreviousAddress] = useState('');
 
+    // useEffect(() => {
+    //     // Only update if the address has changed (prevents unnecessary updates)
+    //     const resetAddress = watchAllFields?.[0];
+    //     const resetZip = watchAllFields?.[1];
+    //     const resetStreet = watchAllFields?.[4];
+
+    //     // Check if the address is different from the previous one
+    //     if (newAddress !== previousAddress) {
+    //         setResetEmail(prevState => ({
+    //             ...prevState,
+    //             primaryAddress: {
+    //                 ...prevState.primaryAddress,
+    //                 address: resetAddress,
+    //                 zip:resetZip,
+    //                 street:resetStreet
+    //             }
+    //         }));
+
+    //         // Update the previous address state to prevent future unnecessary updates
+    //         setPreviousAddress(newAddress);
+    //     }
+    // }, [watchAllFields, previousAddress]);
+    // console.log(resetEmail, 'watchAllFields')
     return (
         <>
             <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -830,7 +846,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     setResetEmail({ ...resetEmail, name: e.target.value });
                                 }}
                                 placeholder="Practice name"
-                                onKeyPress={handleFirstSpace}
+                            // onKeyPress={handleFirstSpace}
                             />
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
                         </Form.Group>
@@ -843,7 +859,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 className={` ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
-                                <option value="">Select practice type</option> {/* Ensure this has a value to represent unselected */}
+                                <option value="">Select practice type</option>
                                 {clinicTypeData?.map((data) => (
                                     <option key={data?._id} value={data?.name}>{data?.name}</option>
                                 ))}
@@ -880,23 +896,24 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     required: 'This field is required',
                                     minLength: {
                                         value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
+                                        message: 'Tax ID / EIN must be at least 9 characters long',
                                     },
                                     pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                        value: /^[0-9]+$/,
+                                        message: 'Tax ID / EIN must contain numbers only',
                                     },
                                 })}
-                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
-                                // onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 onKeyPress={(event) => {
-                                    // Only allow numeric characters (0-9)
                                     if (!/[0-9]/.test(event.key)) {
                                         event.preventDefault();
+                                        clearErrors('clinicname');
                                     }
                                 }}
                                 maxLength={9}
-                                onChange={(e) => setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value })}
+                                onChange={(e) => {
+                                    setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value })
+                                    clearErrors('taxId');
+                                }}
                                 placeholder="Tax ID / EIN" />
                             {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
@@ -927,7 +944,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         })}
                                         onChange={(e) => {
                                             setResetEmail({ ...resetEmail, phone: '+1' + e.target.value });
-                                            // handlePhoneChange(e.target.value)
+                                            clearErrors('contact');
                                         }}
                                         defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                         placeholder="1234-234-234"
@@ -977,7 +994,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 defaultValue={updatePage ? clinicDataToUpdate?.npiNumber : ''}
                                 placeholder="NPI Number"
                                 maxLength={10}
-                                onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onChange={(e) => {
+                                    setResetEmail({ ...resetEmail, npiNumber: e.target.value })
+                                    clearErrors('npi');
+                                }}
                                 // onKeyPress={(event) => handleFirstSpace(event, 0)} 
                                 onKeyPress={(event) => {
                                     // Only allow numeric characters (0-9)
@@ -1005,6 +1025,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         e.target.value = value.trimStart(); // Prevent spaces at the start
                                     }
                                     setResetEmail({ ...resetEmail, practiceSpecialty: value });
+                                    clearErrors('speciality');
                                 }}
                                 placeholder="Practice speciality"
                                 onKeyPress={handleFirstSpace}
@@ -1034,7 +1055,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 })}
                                 placeholder="CLIA Number"
                                 maxLength={10}
-                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onChange={(e) => {
+                                    setResetEmail({ ...resetEmail, CLIA_Number: e.target.value });
+                                    clearErrors('clia');
+                                }}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
                             />
                             {errors.clia && <span className="text-danger">{errors.clia.message}</span>}
@@ -1045,10 +1069,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>Medicare Number <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('medicare')}
+                                {...register('medicare', { required: 'This field is required' })}
                                 placeholder="Medicare Number"
                                 maxLength={10}
-                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onChange={(e) => {
+                                    setResetEmail({ ...resetEmail, medicareNumber: e.target.value })
+                                    clearErrors('medicare')
+                                }}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
                             />
                             {errors.medicare && <span className="text-danger">{errors.medicare.message}</span>}
@@ -1059,10 +1086,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>Medicaid Number <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('medicaid')}
+                                {...register('medicaid', { required: 'This field is required' })}
                                 placeholder="Medicaid Number"
                                 maxLength={10}
-                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onChange={(e) => {
+                                    clearErrors('medicaid')
+                                    setResetEmail({ ...resetEmail, medicaidNumber: e.target.value })
+                                }}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
                             />
                             {errors.medicaid && <span className="text-danger">{errors.medicaid.message}</span>}
@@ -1089,7 +1119,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     placeholder="Taxonomy Code"
                                     maxLength={10}
                                     onKeyPress={(event) => handleFirstSpace(event, index)}
-                                    onChange={(e) => handleTaxonomyChange(index, e.target.value)}
+                                    onChange={(e) => {
+                                        clearErrors(`taxonomyCode[${index}]`)
+                                        handleTaxonomyChange(index, e.target.value)
+                                    }}
                                 />
                                 <span
                                     style={{ top: '55%', right: '1%' }}
@@ -1136,7 +1169,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Col sm={4}>
                                 <Form.Control
                                     type="text"
-                                    value={accreditation.name}
+                                    value={accreditation?.name}
                                     placeholder="Name"
                                     onChange={(e) => handleAccreditationInputChange(e, 'name', index)}
                                     onKeyPress={handleFirstSpace}
@@ -1145,7 +1178,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Col sm={4}>
                                 <Form.Control
                                     type="text"
-                                    value={accreditation.number}
+                                    value={accreditation?.number || ''}
                                     {...register('accDocno', {
                                         pattern: {
                                             value: /^[0-9]*$/,
@@ -1286,6 +1319,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     onChange={(e) => {
                                                         getGeolocation(e);
                                                         setFocused(true);
+                                                        clearErrors('address')
                                                     }}
                                                     onFocus={() => setFocused(true)}
                                                     onBlur={() => {
@@ -1372,7 +1406,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 }}
                                                 onChange={(e) => {
                                                     handleStateSelection(e, 'primary');
-
+                                                    clearErrors('stateName')
                                                 }}
                                             >
                                                 <option value=''>State</option>
@@ -1400,7 +1434,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 onBlur={(e) => {
                                                     e.target.setAttribute('data-has-value', !!e.target.value);
                                                 }}
-                                                onChange={(e) => handleCitySelection(e)}
+                                                onChange={(e) => {
+                                                    handleCitySelection(e);
+                                                    clearErrors('city')
+                                                }}
                                             >
                                                 <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
                                                 {cities1?.map((data) => (
@@ -1420,6 +1457,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="text"
                                                 {...register('street', { required: 'This field is required' })}
                                                 onKeyPress={handleFirstSpace}
+                                                onChange={() => clearErrors('street')}
                                                 placeholder="Street" />
                                             {errors.street && <span className="text-danger">{errors.street.message}</span>}
                                         </Form.Group>
@@ -1460,6 +1498,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <Form.Check
                                     type="checkbox"
                                     label="Same as Primary Address"
+                                    disabled={!watchAllFields.every(field => field)}
+                                    style={{ cursor: !watchAllFields.every(field => field) ? 'not-allowed' : '' }}
                                     onChange={(e) => {
                                         if (e.target.checked) {
                                             setSameAsPrimary(true);
@@ -1492,6 +1532,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     onChange={(e) => {
                                                         getMailingGeolocation(e);
                                                         setMailingFocused(true);
+                                                        clearErrors('mailingAddress')
                                                     }}
                                                     onFocus={() => setMailingFocused(true)}
                                                     onBlur={() => {
@@ -1570,6 +1611,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Form.Label className='mb-1' >State</Form.Label>
                                             {sameAsPrimary ?
                                                 <Form.Control
+                                                    onChange={() => clearErrors('mailingStateName')}
                                                     value={statesData?.states?.find((data) => data?.state_code === getValues('stateName'))?.name}
                                                     readOnly />
                                                 :
@@ -1581,6 +1623,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     }}
                                                     onChange={(e) => {
                                                         handleMailingStateSelection(e);
+                                                        clearErrors('mailingStateName')
                                                     }}
                                                 >
                                                     <option value=''>State</option>
@@ -1695,7 +1738,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="text"
                                                 {...register('pocFullName', { required: 'This field is required' })}
                                                 value={data.name}
-                                                onChange={(e) => handlePOSInputChange(e, 'name', index)}
+                                                onChange={(e) => {
+                                                    clearErrors('pocFullName')
+                                                    handlePOSInputChange(e, 'name', index)
+                                                }}
                                                 onKeyPress={handleFirstSpace}
                                                 placeholder="Full Name"
                                             />
@@ -1853,7 +1899,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 clinicsList?.map((multipleData, index) => (
                                     <tr key={multipleData?._id}>
                                         <td className='text-capitalize'>{multipleData?.name}</td>
-                                        <td>{(multipleData?.userId?.address?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.address?.city?.name || 'N/A')}</td>
+                                        <td>{(multipleData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
                                         <td>{multipleData?.clinicType}</td>
                                         <td className='text-lowercase'>{multipleData?.userId?.email}</td>
                                         <td>{multipleData?.userId?.phone}</td>

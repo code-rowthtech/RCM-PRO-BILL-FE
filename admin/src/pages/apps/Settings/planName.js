@@ -242,7 +242,7 @@ const PlanName = () => {
                                         placeholder="Re-enter Plan Name"
                                         {...register("reEnterName", {
                                             required: "Please re-enter plan name",
-                                            validate: value => value === nameValue || "Plan names do not match"
+                                            validate: value => value === nameValue || "Plan name do not match"
                                         })}
                                         onKeyPress={handleFirstSpace}
                                     />

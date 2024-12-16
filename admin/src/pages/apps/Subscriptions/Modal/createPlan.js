@@ -21,7 +21,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         handleSubmit,
         formState: { errors },
         reset, getValues,
-        watch,
+        watch, clearErrors,
     } = useForm();
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -103,7 +103,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
             dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
         }
     };
-
+    const dateField = watch('date')
     return (
         <Modal centered show={show} size="md">
             <Modal.Body>
@@ -123,7 +123,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.name : ""}
-                                    {...register('name', { required: 'This field is required' })}
+                                    {...register('name', { required: 'Please select a plan name' })}
                                     data-has-value={!!getValues('name')}
                                     onBlur={(e) => {
                                         e.target.setAttribute('data-has-value', !!e.target.value);
@@ -145,14 +145,15 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Plan Tenure <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     defaultValue={isUpdateMode ? data?.billingFrequency : ''}
-                                    {...register('tenure', { required: 'This field is required' })}
+                                    {...register('tenure', { required: 'Please select a tenure for the plan.' })}
                                     // data-has-value={!!getValues('tenure')}
                                     // onBlur={(e) => {
                                     //     e.target.setAttribute('data-has-value', !!e.target.value);
                                     // }}
                                     onChange={(e) => {
                                         const selectedOption = tenure?.find(option => option.name === e.target.value);
-                                        setTenureMonth(selectedOption?.months)
+                                        setTenureMonth(selectedOption?.months);
+                                        clearErrors('tenure')
                                     }}                                >
                                     <option value="">Select tenure</option>
                                     {tenure?.map((data) => (
@@ -197,6 +198,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Implemented Date <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="date"
+                                    className={` ${!dateField ? 'emptyField' : 'selectedField'}`}
                                     defaultValue={isUpdateMode ? formatDate(data?.implimentFrom) : ''} // Ensure the date is formatted correctly
                                     placeholder="Select date"
                                     {...register('date', { required: 'This field is required' })}
@@ -214,7 +216,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                     defaultValue={isUpdateMode ? data?.patientLimit : ''}
                                     placeholder="Enter patient count"
                                     {...register('patientcount', {
-                                        required: 'This field count is required',
+                                        required: 'This field is required',
                                         validate: value => parseInt(value) > 0 || 'Patient count must be positive',
                                     })}
                                 />
@@ -229,7 +231,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                     defaultValue={isUpdateMode ? data?.doctorLimit : ''}
                                     placeholder="Enter doctor count"
                                     {...register('doctorcount', {
-                                        required: 'This field count is required',
+                                        required: 'This field is required',
                                         validate: value => parseInt(value) > 0 || 'Doctor count must be positive',
                                     })}
                                 />
