@@ -44,7 +44,6 @@ function* createClinicsFunction(data) {
 
 function* updateClinicsFunction(data) {
     const dataFromApi = JSON.parse(decryptMessage(data?.data?.key));
-    console.log({ dataFromApi })
     try {
         yield put({
             type: ClinicsActionTypes.UPDATE_CLINIC_LOADING,

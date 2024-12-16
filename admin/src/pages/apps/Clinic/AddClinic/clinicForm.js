@@ -468,79 +468,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         setSelectedCity(value)
     };
 
-    // Submit Button 
-    // const onSubmit = (data) => {
-    //     const allNumbers = [
-    //         ...accreditationDetails.map((item) => item.number),
-    //         ...stateDetails.map((item) => item.number),
-    //     ];
-
-    //     // Filter out empty or null numbers and check for duplicates
-    //     const nonEmptyNumbers = allNumbers.filter((number) => number); // Filter out empty values
-    //     const duplicateExists = nonEmptyNumbers.some((number, index) =>
-    //         nonEmptyNumbers.indexOf(number) !== index
-    //     );
-
-    //     if (duplicateExists) {
-    //         ToastHandle('Kindly check your document details. No two documents can have same document number.', 'danger');
-    //     } else {
-    //         setIsModalRequest(false);
-    //         const newPayload = {
-    //             ...(parentClincId ? {
-    //                 parentUserId: parentUserId,
-    //                 parentClinicId: parentClincId,
-    //             } : {}),
-    //             flag: parentClincId ? "subClinic" : "Clinic",
-    //             name: data?.clinicname,
-    //             isPrimaryAndMailingAddressSame: sameAsPrimary,
-    //             email: data?.email,
-    //             phone: '+1' + data?.contact,
-    //             clinicType: data?.clinicType,
-    //             ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
-    //             ...(data?.npi ? { npiNumber: data?.npi } : ''),
-    //             stateOfLicensing: stateDetails,
-    //             accreditationDetails: accreditationDetails,
-    //             pos: posDetails,
-    //             primaryAddress: {
-    //                 ...(data?.address ? { address: data?.address } : {}),
-    //                 ...(data?.city ? { city: data?.city } : {}),
-    //                 ...(data?.zip ? { zip: data?.zip } : {}),
-    //                 ...(data?.street ? { street: data?.street } : {}),
-    //                 ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
-    //                 ...(latitude ? { latitude: latitude } : {}),
-    //                 ...(longitude ? { longitude: longitude } : {}),
-    //             },
-    //             mailingAddress: sameAsPrimary
-    //                 ? {
-    //                     ...(data?.address ? { address: data?.address } : {}),
-    //                     ...(data?.city ? { city: data?.city } : {}),
-    //                     ...(data?.zip ? { zip: data?.zip } : {}),
-    //                     ...(data?.street ? { street: data?.street } : {}),
-    //                     ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
-    //                     ...(latitude ? { latitude: latitude } : {}),
-    //                     ...(longitude ? { longitude: longitude } : {}),
-    //                 }
-    //                 : {
-    //                     ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
-    //                     ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
-    //                     ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
-    //                     ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
-    //                     ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
-    //                     ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
-    //                     ...(mailingLongitude ? { longitude: mailingLongitude } : {})
-    //                 },
-    //             logo: {
-    //                 url: logo?.url.split('?')[0],
-    //                 fileName: logoName
-    //             },
-    //             practiceSpecialty: data?.speciality,
-    //         };
-    //         console.log(newPayload, 'newPayloadnewPayloadnewPayload')
-    //         dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
-    //     }
-
-    // };
-
     const checkForDuplicates = (accreditationDetails, stateDetails) => {
         const accreditationNumbers = accreditationDetails.map(item => item.number);
         const stateNumbers = stateDetails.map(item => item.number);
@@ -588,7 +515,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 name: data?.clinicname,
                 isPrimaryAndMailingAddressSame: sameAsPrimary,
                 email: data?.email,
-                phone: '+1' + data?.contact,
+                phone: '+1' + data?.contact?.replace(/\D/g, ''),
                 clinicType: data?.clinicType,
                 ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
                 ...(data?.npi ? { npiNumber: data?.npi } : ''),
@@ -798,32 +725,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
     const clinicTypeSelected = watch('clinicType');
     const watchAllFields = watch(['address', 'zip', 'stateName', 'city', 'street']);
-    // console.log(watchAllFields?.[0], 'watchAllFields')
-    // const [previousAddress, setPreviousAddress] = useState('');
 
-    // useEffect(() => {
-    //     // Only update if the address has changed (prevents unnecessary updates)
-    //     const resetAddress = watchAllFields?.[0];
-    //     const resetZip = watchAllFields?.[1];
-    //     const resetStreet = watchAllFields?.[4];
 
-    //     // Check if the address is different from the previous one
-    //     if (newAddress !== previousAddress) {
-    //         setResetEmail(prevState => ({
-    //             ...prevState,
-    //             primaryAddress: {
-    //                 ...prevState.primaryAddress,
-    //                 address: resetAddress,
-    //                 zip:resetZip,
-    //                 street:resetStreet
-    //             }
-    //         }));
-
-    //         // Update the previous address state to prevent future unnecessary updates
-    //         setPreviousAddress(newAddress);
-    //     }
-    // }, [watchAllFields, previousAddress]);
-    // console.log(resetEmail, 'watchAllFields')
     return (
         <>
             <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -930,25 +833,31 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         {...register('contact', {
                                             required: 'This field is required',
                                             pattern: {
-                                                value: /^[0-9]*$/,
-                                                message: 'Contact must be a number'
+                                                value: /^(\d{3}-\d{3}-\d{4}|\d{9,10})$/, // Accepts either the hyphenated format (XXX-XXX-XXXX) or 9–10 digits without hyphens
+                                                message: 'Contact must be in the format XXX-XXX-XXXX or contain only 9–10 digits',
                                             },
                                             maxLength: {
-                                                value: 10,
+                                                value: 12,
                                                 message: 'Contact must not exceed 10 digits'
                                             },
                                             minLength: {
-                                                value: 9,
+                                                value: 11,
                                                 message: 'Contact must not be less than 9 digits'
                                             }
                                         })}
                                         onChange={(e) => {
-                                            setResetEmail({ ...resetEmail, phone: '+1' + e.target.value });
+                                            const rawValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                                            const formattedValue = rawValue.replace(/(\d{3})(\d{3})(\d{0,4})/, (match, p1, p2, p3) =>
+                                                p3 ? `${p1}-${p2}-${p3}` : `${p1}-${p2}`
+                                            ); // Format dynamically
+                                            e.target.value = formattedValue; // Update input value
+                                            console.log(formattedValue, 'formattedValue')
+                                            setResetEmail({ ...resetEmail, phone: rawValue });
                                             clearErrors('contact');
                                         }}
                                         defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
                                         placeholder="1234-234-234"
-                                        maxLength={10}
+                                        maxLength={12}
                                         // onKeyPress={(event) => handleFirstSpace(event, 0)}
                                         onKeyPress={(event) => {
                                             // Only allow numeric characters (0-9)
@@ -1040,14 +949,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 type="text"
                                 {...register('clia', {
                                     required: "This field is required",
-                                    // minLength: {
-                                    //     value: 10,
-                                    //     message: 'NPI must be at least 10 characters long', // Error message
-                                    // },
-                                    // maxLength: {
-                                    //     value: 10,
-                                    //     message: 'NPI cannot exceed 10 characters', // Error message
-                                    // },
                                     pattern: {
                                         value: /^[A-Z0-9]{2}D[0-9]{7}$/, // Ensures the CLIA number matches the specific format
                                         message: 'CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits',
@@ -1799,7 +1700,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                             message: 'Contact must not be less than 9 digits'
                                                         }
                                                     })}
-                                                    onChange={(e) => handlePOSInputChange(e, 'contact', index)}
+                                                    onChange={(e) => {
+                                                        handlePOSInputChange(e, 'contact', index)
+                                                    }}
                                                     onKeyPress={handleFirstSpace}
                                                     placeholder="Phone Number"
                                                     maxLength={10}
