@@ -263,6 +263,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     useEffect(() => {
         if (citySearch) {
             setValue('city', cities1 && cities1.find((data) => data?.name === citySearch)?._id)
+            setResetEmail((prevState) => ({
+                ...prevState,
+                primaryAddress: {
+                    ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
+                    city: cities1 && cities1.find((data) => data?.name === citySearch)?._id,     // Update only the address field
+                }
+            }));
         }
         if (mailingCitySearch) {
             setValue('mailingCity', cities2 && cities2.find((data) => data?.name === mailingCitySearch)?._id)
@@ -722,15 +729,27 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     };
     const clinicTypeSelected = watch('clinicType');
     const watchAllFields = watch(['address', 'zip', 'stateName', 'city', 'street']);
-    // const [sameAllowed, setSameAllowed] = useState(false);
+    console.log(watchAllFields, 'watchAllFields')
     // useEffect(() => {
-    //     if (getValues('zip') === '' && getValues('address') === '' && getValues('address') === '' && getValues('stateName') === '' && getValues('street') === '') {
-    //         setSameAllowed(false);
-    //     } else {
-    //         setSameAllowed(true);
+    //     // Check if all fields are filled
+    //     const areAllFieldsFilled = watchAllFields.every((field) => field?.trim?.() !== '');
+
+    //     if (areAllFieldsFilled) {
+    //         const primaryAddress = {
+    //             address: watch('address'),
+    //             city: watch('city'),
+    //             zip: watch('zip'),
+    //             street: watch('street'),
+    //             state: stateToSelect?._id || null, // Assuming `stateToSelect` holds the state value
+    //         };
+
+    // setResetEmail((prevState) => ({
+    //     ...prevState,
+    //     ...primaryAddress
+    // }));
     //     }
-    // }, [getValues])
-    // console.log({ sameAllowed })
+    // }, [watchAllFields, stateToSelect]);
+    console.log(resetEmail, 'resetEmail')
     return (
         <>
             <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -1273,8 +1292,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     onChange={(e) => {
                                                         getGeolocation(e);
                                                         setFocused(true);
-                                                        clearErrors('address')
+                                                        clearErrors('address');
+                                                        setResetEmail((prevState) => ({
+                                                            ...prevState,
+                                                            primaryAddress: {
+                                                                ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
+                                                                address: e.target.value,     // Update only the address field
+                                                            }
+                                                        }));
                                                     }}
+
                                                     onFocus={() => setFocused(true)}
                                                     onBlur={() => {
                                                         setTimeout(() => setFocused(false), 200);
@@ -1308,6 +1335,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                                 setCitySearch(data?.components?.county)
                                                                 setValue('address', data?.formatted)
                                                                 setFocused(false);
+                                                                setResetEmail((prevState) => ({
+                                                                    ...prevState,
+                                                                    primaryAddress: {
+                                                                        ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
+                                                                        address: data?.formatted,     // Update only the address field
+                                                                        latitude: data?.bounds?.southwest?.lat,
+                                                                        longitude: data?.bounds?.southwest?.lng,
+                                                                        zip: data?.components?.postcode,
+                                                                    }
+                                                                }));
                                                             }}
                                                             style={{
                                                                 margin: 0,
@@ -1390,7 +1427,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 }}
                                                 onChange={(e) => {
                                                     handleCitySelection(e);
-                                                    clearErrors('city')
+                                                    clearErrors('city');
                                                 }}
                                             >
                                                 <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
@@ -1411,7 +1448,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 type="text"
                                                 {...register('street', { required: 'This field is required' })}
                                                 onKeyPress={handleFirstSpace}
-                                                onChange={() => clearErrors('street')}
+                                                onChange={(e) => {
+                                                    clearErrors('street');
+                                                    setResetEmail((prevState) => ({
+                                                        ...prevState,
+                                                        primaryAddress: {
+                                                            ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
+                                                            street: e.target.value,     // Update only the address field
+                                                        }
+                                                    }));
+                                                }}
                                                 placeholder="Street" />
                                             {errors.street && <span className="text-danger">{errors.street.message}</span>}
                                         </Form.Group>

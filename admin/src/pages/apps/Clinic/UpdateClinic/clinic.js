@@ -697,7 +697,7 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Medicaid Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Medicaid Number</Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('medicaid', {
