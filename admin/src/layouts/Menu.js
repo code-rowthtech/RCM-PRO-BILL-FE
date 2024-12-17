@@ -174,7 +174,10 @@ const AppMenu = ({ menuItems }: AppMenuProps): React$Element<React$FragmentType>
      * toggle the menus
      */
     const toggleMenu = (menuItem, show) => {
-        if (show) setActiveMenuItems([menuItem['key'], ...findAllParent(menuItems, menuItem)]);
+        if (show && menuItem.key !== 'logout') {
+            setActiveMenuItems([menuItem['key'], ...findAllParent(menuItems, menuItem)]);
+        }
+        // if (show) setActiveMenuItems([menuItem['key'], ...findAllParent(menuItems, menuItem)]);
     };
 
     /**
@@ -196,7 +199,10 @@ const AppMenu = ({ menuItems }: AppMenuProps): React$Element<React$FragmentType>
             if (matchingMenuItem) {
                 const mid = matchingMenuItem.getAttribute('data-menu-key');
                 const activeMt = findMenuItem(menuItems, mid);
-                if (activeMt) {
+                // if (activeMt) {
+                //     setActiveMenuItems([activeMt['key'], ...findAllParent(menuItems, activeMt)]);
+                // }
+                if (activeMt && activeMt.key !== 'logout') {
                     setActiveMenuItems([activeMt['key'], ...findAllParent(menuItems, activeMt)]);
                 }
             }

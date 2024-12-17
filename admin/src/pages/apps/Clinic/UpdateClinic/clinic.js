@@ -89,7 +89,11 @@ const Clinic = ({ id }) => {
         if (clinicData?.taxonomyCodes?.length === 0) {
             setTaxonomyCodes([''])
         } else {
-            setTaxonomyCodes(clinicData?.taxonomyCodes)
+            setTaxonomyCodes(clinicData?.taxonomyCodes);
+            clinicData?.taxonomyCodes?.forEach((code, index) => {
+                setValue(`taxonomyCode[${index}]`, code);
+            });
+            // setTaxonomyCodes(clinicData?.taxonomyCodes)
         }
         // alert(clinicData?.taxonomyCodes?.length)
         if (clinicData?.userId?.primaryAddress?.city) {
@@ -499,6 +503,7 @@ const Clinic = ({ id }) => {
                             <Form.Label className="mb-1">Practice Type <span className="text-danger">*</span></Form.Label>
                             <Form.Select
                                 {...register('clinicType', { required: 'This field is required' })}
+                            // className={`${getValues('clinicType') === "" ? 'emptyField' : 'selectedField'}`}
                             >
                                 <option value="">Select clinic type</option>
                                 {clinicTypeData?.map((data) => (
@@ -647,11 +652,10 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>CLIA  Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>CLIA  Number</Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('clia', {
-                                    required: "This field is required",
                                     minLength: {
                                         value: 10,
                                         message: 'CLIA number must be at least 10 characters long', // Error message
@@ -674,11 +678,14 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Medicare Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Medicare Number</Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('medicare', {
-                                    required: 'This field is required.'
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Medicare number must be at least 10 characters long', // Error message
+                                    },
                                 })}
                                 placeholder="Medicare Number"
                                 maxLength={10}
@@ -694,7 +701,10 @@ const Clinic = ({ id }) => {
                             <Form.Control
                                 type="text"
                                 {...register('medicaid', {
-                                    required: 'This field is required'
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Medicaid number must be at least 10 characters long',
+                                    },
                                 })}
                                 placeholder="Medicaid Number"
                                 maxLength={10}
@@ -716,12 +726,12 @@ const Clinic = ({ id }) => {
                                         >
                                         </span>
                                     )}
-                                    <span className="text-danger">*</span>
+                                    {/* <span className="text-danger">*</span> */}
                                 </Form.Label>
                                 <Form.Control
                                     type="text"
                                     {...register(`taxonomyCode[${index}]`, {
-                                        required: 'This field is required.'
+                                        // required: 'This field is required.'
                                     })}
                                     value={code}
                                     placeholder="Taxonomy Code"
@@ -1262,7 +1272,7 @@ const Clinic = ({ id }) => {
                                 <Row>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1' >State</Form.Label>
+                                            <Form.Label className='mb-1' >State <span className='text-danger'>*</span></Form.Label>
                                             <Form.Select
                                                 {...register('mailingStateName')}
                                                 onChange={(e) => handleMailingStateSelection(e)}

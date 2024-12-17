@@ -35,7 +35,6 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
     const [loading, setLoading] = useState(false);
     const billingDone = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscription?.isActive;
     const billingData = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscription;
-    console.log(store?.getClinicByIdReducer, 'store?.getClinicByIdReducerstore?.getClinicByIdReducer')
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));

@@ -54,7 +54,7 @@ const Updateclinic = () => {
             clinicName: clinicData?.userId?.firstName,
             html: quillBuffer
         };
-        console.log(data, '0000000000000000000000000')
+        // console.log(data, '0000000000000000000000000')
         dispatch(generateContractAction({ key: encryptMessage(data) }))
     }
     useEffect(() => {
