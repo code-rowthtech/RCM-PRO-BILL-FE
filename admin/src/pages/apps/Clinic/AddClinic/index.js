@@ -100,7 +100,6 @@ const Index = () => {
             dispatch(getContractAction({ key: encryptMessage(payload) }));
         }
     }, [dispatch, store?.generateContractReducer?.data?.status])
-    console.log({ resetEmail })
     const requiredFields = [
         { key: "name", message: "Name is required." },
         { key: "email", message: "Email is required." },
@@ -110,10 +109,11 @@ const Index = () => {
         { key: "npiNumber", message: "NPI number is required." },
         { key: "npiNumber", message: "NPI number is required." },
         { key: "practiceSpecialty", message: "Practice specialty description is required." },
-        { key: "CLIA_Number", message: "Practice specialty description is required." },
-        { key: "medicareNumber", message: "Practice specialty description is required." },
-        { key: "medicaidNumber", message: "Practice specialty description is required." },
-        { key: "taxonomyCodes", message: "Practice specialty description is required." },
+        // { key: "CLIA_Number", message: "Practice specialty description is required." },
+        // { key: "medicareNumber", message: "Practice specialty description is required." },
+        // { key: "medicaidNumber", message: "Practice specialty description is required." },
+        // { key: "taxonomyCodes", message: "Practice specialty description is required." },
+        { key: "primaryAddress", message: "Practice specialty description is required." },
     ];
 
     // Check for missing fields

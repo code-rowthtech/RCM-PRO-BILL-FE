@@ -32,6 +32,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [pdfUrl, setPdfUrl] = useState(null);
+    console.log({ billingResponse })
     useEffect(() => {
         if (quillValue) {
             // try {
