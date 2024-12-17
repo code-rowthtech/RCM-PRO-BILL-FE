@@ -16,7 +16,7 @@ const Contracttable = ({ activeTab, id, setQuillBuffer }) => {
     const contracts = store?.getContractReducer?.data?.contract;
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
 
-    console.log(store?.getContractReducer, 'aaaaaaaaaaaaaaaaaaaaaaaa')
+    // console.log(store?.getContractReducer, 'aaaaaaaaaaaaaaaaaaaaaaaa')
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {

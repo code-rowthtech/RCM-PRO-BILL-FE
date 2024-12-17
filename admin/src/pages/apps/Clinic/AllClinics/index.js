@@ -27,6 +27,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
+    console.log(clinicsData, 'clinicsDataclinicsDataclinicsDataclinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -214,8 +215,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td>
                                                             <span
-                                                                className={`${data?.userId?.contractId?.clinicSignStatus === true && data?.userId?.contractId?.adminSignStatus === true ? 'bg-success' : 'bg-secondary'} rounded-1 text-white py-0 px-1`}>
-                                                                {data?.userId?.contractId?.clinicSignStatus === true && data?.userId?.contractId?.adminSignStatus === true ?
+                                                                className={`${data?.contractId?.contractSignStatus === true ? 'bg-success' : 'bg-secondary'} rounded-1 text-white py-0 px-1`}>
+                                                                {data?.contractId?.contractSignStatus === true ?
                                                                     'Signed'
                                                                     :
                                                                     'Pending'

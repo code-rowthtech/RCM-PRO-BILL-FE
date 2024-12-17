@@ -110,14 +110,12 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                             {...register('subscription', {
                                 required: 'This field is required'
                             })}
-                            // data-has-value={!!getValues('subscription')}
-                            // onBlur={(e) => {
-                            //     e.target.setAttribute('data-has-value', !!e.target.value);
-                            // }}
+                            // className={`${!!getValues('subscription') ? 'emptyField' : 'selectedField'}`}
                             onChange={(e) => {
                                 const selectedId = e.target.value;
                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
                                 setAmount(selectedSubscription || 0);
+                                clearErrors('subscription')
                             }}
                         >
                             <option value="">Select plan type</option>
@@ -219,17 +217,17 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                             {...register('method', {
                                                 required: 'This field is required'
                                             })}
-                                            // data-has-value={!!getValues('method')}
-                                            // onBlur={(e) => {
-                                            // e.target.setAttribute('data-has-value', !!e.target.value);
-                                            // }}
-                                            onChange={(e) => setPaymentType(e.target.value)}>
+                                            className={`${!!getValues('method') ? 'emptyField' : 'selectedField'}`}
+                                            onChange={(e) => {
+                                                setPaymentType(e.target.value)
+                                                clearErrors('method')
+                                            }}>
                                             <option value=''>Select payment method</option>
                                             <option value='card'>Card</option>
                                             <option value='online'>Online banking</option>
                                             <option value='cheque'>Cheque</option>
                                         </Form.Select>
-                                        {/* {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>} */}
+                                        {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12}>
