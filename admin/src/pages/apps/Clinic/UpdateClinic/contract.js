@@ -23,7 +23,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.contract;
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
-    // console.log(store?.getContractReducer, 'aaaaaaaaaaaaaaaaaaaaaaaa')
+    console.log(store?.getContractReducer, 'store?.getContractReducer')
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {
@@ -186,8 +186,8 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                     <Row>
                         <Col sm={12}>
                             <iframe
-                                src={contracts?.contractTemplateId?.fileUrl}
-                                title={contracts?.contractTemplateId?.fileName}
+                                src={contracts?.documentFileUrl ? contracts?.documentFileUrl : contracts?.contractTemplateId?.fileUrl}
+                                title={contracts?.documentFileName ? contracts?.documentFileName : contracts?.contractTemplateId?.fileName}
                                 width="100%"
                                 height="620px"
                                 className="px-4"
