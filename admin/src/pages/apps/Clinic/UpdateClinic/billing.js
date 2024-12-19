@@ -54,7 +54,6 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
             billingContactemail: data?.email.toLowerCase(),
             adminId: createdBy,
         }
-        console.log(payload)
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
     };
 

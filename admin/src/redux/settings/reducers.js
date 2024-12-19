@@ -10,6 +10,11 @@ const CREATE_NEW_CONTRACT_INITIAL_STATE = {
     loading: false
 }
 
+const UPDATE_CONTRACT_INITIAL_STATE = {
+    data: [],
+    loading: false
+}
+
 const GET_NEW_CONTRACT_INITIAL_STATE = {
     data: [],
     loading: false
@@ -67,6 +72,32 @@ export const createContractReducer = (state = CREATE_NEW_CONTRACT_INITIAL_STATE,
                 loading: false
             }
         case SettingsActionTypes.CREATE_NEW_CONTRACT_ERROR:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.STATE_EMPTY_INTIAL_STATE:
+            return {
+                data: [],
+                loading: false
+            }
+        default: return state
+    }
+}
+
+export const updateContractReducer = (state = UPDATE_CONTRACT_INITIAL_STATE, action) => {
+    switch (action.type) {
+        case SettingsActionTypes.UPDATE_CONTRACT_LOADING:
+            return {
+                data: state.data,
+                loading: true
+            }
+        case SettingsActionTypes.UPDATE_CONTRACT_SUCCESS:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.UPDATE_CONTRACT_ERROR:
             return {
                 data: action.payload,
                 loading: false

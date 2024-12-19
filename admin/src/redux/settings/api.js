@@ -13,9 +13,14 @@ export function createContractApi(params: any): any {
     return api.create(URL.createContract, data);
 }
 
+export function updateContractApi(params: any): any {
+    const { data } = params;
+    return api.update(URL.updateContract, data);
+}
+
 export function getContractApi(params: any): any {
     const { data } = params;
-    return api.get(URL.getContractapi, data);
+    return api.create(URL.getContractapi, data);
 }
 
 export function getMastersDataApi(params: any): any {

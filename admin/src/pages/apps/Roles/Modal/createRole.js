@@ -267,16 +267,6 @@ const AddRoles = ({ show, closeModal }) => {
                                 {errors.joiningDate && <span className="text-danger">{errors.joiningDate.message}</span>}
                             </Form.Group>
                         </Col>
-                        {/* <Col sm={6}>
-                            <Form.Group className='mb-2'>
-                                <Form.Label>Date of Leaving <span className='text-danger'>*</span></Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    {...register('leavingDate', { required: 'This field is required' })}
-                                />
-                                {errors.leavingDate && <span className="text-danger">{errors.leavingDate.message}</span>}
-                            </Form.Group>
-                        </Col> */}
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Designation <span className='text-danger'>*</span></Form.Label>
@@ -299,7 +289,7 @@ const AddRoles = ({ show, closeModal }) => {
 
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
-                                <Form.Label>Re-Enter Designation <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Re-Select Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
                                     value={reEnterDesignationValue} // Set the value from state
                                     onChange={handleReEnterDesignationChange}>

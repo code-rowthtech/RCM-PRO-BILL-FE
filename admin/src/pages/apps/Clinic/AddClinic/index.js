@@ -79,15 +79,14 @@ const Index = () => {
 
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
+    const contracts = store?.getContractReducer?.data?.contract;
     const handleContractGeneration = () => {
         const data = {
-            adminId: user?._id,
-            adminEmail: user?.email,
-            adminName: user?.name,
-            clinicId: billingResponse?._id,
-            clinicEmail: billingResponse?.userId?.email,
-            clinicName: billingResponse?.name,
-            html: quillBuffer
+            id: contracts?._id,
+            adminName: contracts?.adminId?.firstName,
+            adminEmail: contracts?.adminId?.email,
+            clinicName: contracts?.clinicId?.name,
+            clinicEmail: contracts?.clinicId?.userId?.email
         }
         dispatch(generateContractAction({ key: encryptMessage(data) }));
     }
@@ -105,15 +104,15 @@ const Index = () => {
         { key: "email", message: "Email is required." },
         { key: "phone", message: "Phone number is required." },
         { key: "clinicType", message: "Clinic Type is required." },
-        { key: "taxIdOrEIN", message: "Tax ID is required." },
-        { key: "npiNumber", message: "NPI number is required." },
-        { key: "npiNumber", message: "NPI number is required." },
-        { key: "practiceSpecialty", message: "Practice specialty description is required." },
+        // { key: "taxIdOrEIN", message: "Tax ID is required." },
+        // { key: "npiNumber", message: "NPI number is required." },
+        // { key: "npiNumber", message: "NPI number is required." },
+        // { key: "practiceSpecialty", message: "Practice specialty description is required." },
         // { key: "CLIA_Number", message: "Practice specialty description is required." },
         // { key: "medicareNumber", message: "Practice specialty description is required." },
         // { key: "medicaidNumber", message: "Practice specialty description is required." },
         // { key: "taxonomyCodes", message: "Practice specialty description is required." },
-        { key: "primaryAddress", message: "Practice specialty description is required." },
+        // { key: "primaryAddress", message: "Practice specialty description is required." },
     ];
 
     // Check for missing fields
@@ -176,11 +175,11 @@ const Index = () => {
                                     <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
                                 </Col>
                                 <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
-                                    <Button onClick={handleContractGeneration} disabled={!quillBuffer || store?.generateContractReducer?.loading} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
+                                    <Button onClick={handleContractGeneration} disabled={!store?.getContractReducer?.data?.contract?.contractTemplateId?.html} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
                                         {store?.generateContractReducer?.loading ?
                                             <Spinner className='spinner-border-sm' color='white' />
                                             :
-                                            'Generate Contract'
+                                            'Send Email'
                                         }
                                     </Button>
                                     <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
