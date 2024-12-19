@@ -33,8 +33,9 @@ export const createSubscriptions = '/api/v1/admin/subscription/add'
 export const updateSubscriptions = '/api/v1/admin/subscription/update'
 // SETTINGS
 export const addMastersData = '/api/v1/admin/masterdata';
-export const createContract = '/api/v1/admin/create-template';
-export const getContractapi = '/api/v1/admin/get-template';
+export const createContract = '/api/v1/admin/createOrUpdateContractTemplate';
+export const updateContract = "/api/v1/admin/update-template";
+export const getContractapi = '/api/v1/admin/getTemplates?type=Standard';
 export const getMastersData = '/api/v1/admin/masterdata/getmasterData';
 export const getTenure = '/api/v1/admin/masterdata/tenure';
 export const updateMastersData = '/api/v1/admin/masterdata/edit';

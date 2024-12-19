@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Row, Table } from 'react-bootstrap';
+import { Button, Col, Modal, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { getContractAction } from '../../../../redux/actions';
@@ -11,6 +11,7 @@ import { ImageDrop } from 'quill-image-drop-module';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getContractFormatAction } from '../../../../redux/settings/actions';
+import { IoMdClose } from 'react-icons/io';
 const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId, setQuillBuffer }) => {
     const {
         register,
@@ -21,13 +22,16 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
         setError,
         clearErrors,
     } = useForm();
-
+    const [show, setShow] = useState(false);
+    const handleCloseContractModal = () => {
+        setShow(false);
+    }
     const [quillValue, setQuillValue] = useState('');
     const [editMode, setEditMode] = useState(false);
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.contract;
-    console.log(contracts, 'contractscontracts')
+    console.log(store?.getContractReducer?.data, 'contractscontracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
@@ -60,8 +64,9 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                 clinicId: billingResponse?._id,
                 // clinicId: billingId,
             };
+            console.log(payload)
             dispatch(getContractAction({ key: encryptMessage(payload) }));
-            dispatch(getContractFormatAction());
+            // dispatch(getContractFormatAction());
         }
 
         if (store?.getContractReducer?.data?.status === 200) {
@@ -125,8 +130,8 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                                 <th>Contract Name</th>
                                 <th>Practice Sign</th>
                                 <th>Probill Sign</th>
-                                <th>Date</th>
-                                {/* <th>Action</th> */}
+                                {/* <th>Date</th> */}
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -149,25 +154,16 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                                             <td>{contracts?.contractName}</td>
                                             <td><span className={`${contracts?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
                                             <td><span className={`${contracts?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                            <td>
-                                                {new Date(contracts?.sentDate).toLocaleDateString('en-GB')}
-                                            </td>
                                             {/* <td>
-                                            <i className="fs-4 me-1 uil-external-link-alt"
-                                                onClick={() => {
-                                                    setViewList(!viewList);
-                                                }}></i>
-                                            <div className={`${viewList ? 'px-1 position-absolute bg-white' : 'd-none'}`}>
-                                                <p className='mb-0 border px-1 pe-3 cursor-pointer view-docs' onClick={() => {
-                                                    handleDownload(contracts?.documentFileUrl);
-                                                    setViewList(false);
-                                                }}>Document</p>
-                                                <p className='mb-0 border px-1 pe-3 cursor-pointer view-docs' onClick={() => {
-                                                    handleDownload(contracts?.certificateFileUrl);
-                                                    setViewList(false);
-                                                }}>Certificate</p>
-                                            </div>
-                                        </td> */}
+                                                {new Date(contracts?.sentDate).toLocaleDateString('en-GB')}
+                                            </td> */}
+                                            <td>
+                                                <i className="fs-4 me-1 uil-eye cursor-pointer"
+                                                    onClick={() => {
+                                                        setShow(true)
+                                                    }}></i>
+                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
+                                            </td>
                                         </tr>
                                 // ))
                             }
@@ -204,7 +200,31 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                     </>
 
             }
-
+            <Modal centered show={show} size='xl'>
+                <Modal.Body>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Contract</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={handleCloseContractModal} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={12}>
+                            <iframe
+                                src={contracts?.contractTemplateId?.fileUrl}
+                                title={contracts?.contractTemplateId?.fileName}
+                                width="100%"
+                                height="620px"
+                                className="px-4"
+                                style={{ border: 'none' }}
+                            />
+                        </Col>
+                    </Row>
+                </Modal.Body>
+            </Modal>
         </Row>
     );
 };

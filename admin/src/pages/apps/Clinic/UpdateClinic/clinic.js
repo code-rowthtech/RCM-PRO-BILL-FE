@@ -12,7 +12,7 @@ import { getCities2Action, getCitiesAction, updateClinicAction } from '../../../
 import Spinner from '../../../../constants/Spinner';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
-import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked } from 'react-icons/md';
+import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked, MdVerified } from 'react-icons/md';
 
 const Clinic = ({ id }) => {
     const {
@@ -514,9 +514,10 @@ const Clinic = ({ id }) => {
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
-                        <Form.Group className="mb-2">
+                        <Form.Group className="mb-2 position-relative">
                             <Form.Label className='mb-1'>Email ID <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
+                                readOnly
                                 type="text"
                                 {...register('email', {
                                     required: 'This field is required',
@@ -527,17 +528,20 @@ const Clinic = ({ id }) => {
                                 })}
                                 placeholder="Email ID"
                             />
-
+                            <span
+                                style={{ right: "2%", top: '48%' }}
+                                className={`${clinicData?.userId?.verified_email ? 'text-success position-absolute fs-4' : 'd-none'}`}>
+                                <MdVerified />
+                            </span>
                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
                         </Form.Group>
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('taxId', {
-                                    required: 'This field is required',
                                     minLength: {
                                         value: 9,
                                         message: 'Tax ID / EIN must be at least 9 characters long', // Error message
@@ -599,12 +603,11 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>NPI Type 2 Number <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>NPI Type 2 Number</Form.Label>
                             <Form.Control
                                 defaultValue={clinicData?.npiNumber}
                                 type="text"
                                 {...register('npi', {
-                                    required: 'This field is required',
                                     minLength: {
                                         value: 10,
                                         message: 'NPI must be at least 10 characters long', // Error message
@@ -627,11 +630,10 @@ const Clinic = ({ id }) => {
 
                     <Col sm={6}>
                         <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Practice Speciality Description <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Practice Speciality Description</Form.Label>
                             <Form.Control
                                 type="text"
                                 {...register('speciality', {
-                                    required: 'This field is required',
                                     validate: (value) =>
                                         !value.startsWith(' ') || 'First character cannot be a space',
                                 })}
@@ -1373,10 +1375,10 @@ const Clinic = ({ id }) => {
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Full Name <span className='text-danger'>*</span></Form.Label>
+                                            <Form.Label className="mb-1">Full Name</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                {...register(`contactName_${index}`, { required: 'This field is required.' })}
+                                                {...register(`contactName_${index}`)}
                                                 value={data.name || ''} // Ensure it defaults to an empty string
                                                 onChange={(e) => {
                                                     clearErrors(`contactName_${index}`)

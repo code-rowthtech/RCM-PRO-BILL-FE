@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { SettingsActionTypes } from './constants';
-import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi, createContractApi, getContractApi } from './api';
+import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi, createContractApi, updateContractApi, getContractApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -47,7 +47,6 @@ function* createContractFunction(data) {
         });
         const response = yield call(createContractApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-        console.log(decryptedData, 'decryptedDatadecryptedData')
         if (response.status === 201) {
             ToastHandle(decryptedData?.message, 'success')
             yield put({
@@ -64,6 +63,35 @@ function* createContractFunction(data) {
         ToastHandle(error, 'danger')
         yield put({
             type: SettingsActionTypes.CREATE_NEW_CONTRACT_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* updateContractFunction(data) {
+    try {
+        yield put({
+            type: SettingsActionTypes.UPDATE_CONTRACT_LOADING,
+            payload: {},
+        });
+        const response = yield call(updateContractApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        if (response.status === 201) {
+            ToastHandle(decryptedData?.message, 'success')
+            yield put({
+                type: SettingsActionTypes.UPDATE_CONTRACT_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: SettingsActionTypes.UPDATE_CONTRACT_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        ToastHandle(error, 'danger')
+        yield put({
+            type: SettingsActionTypes.UPDATE_CONTRACT_ERROR,
             payload: error,
         });
     }
@@ -207,6 +235,9 @@ export function* watchCreateMastersData() {
 export function* watchCreateContractData() {
     yield takeEvery(SettingsActionTypes.CREATE_NEW_CONTRACT, createContractFunction);
 }
+export function* watchUpdateContractData() {
+    yield takeEvery(SettingsActionTypes.UPDATE_CONTRACT, updateContractFunction);
+}
 
 export function* watchGetContractData() {
     yield takeEvery(SettingsActionTypes.GET_NEW_CONTRACT, getContractFunction);
@@ -233,6 +264,7 @@ function* settingsSaga() {
         fork(watchGetMastersData),
         fork(watchGetContractData),
         fork(watchCreateContractData),
+        fork(watchUpdateContractData),
         fork(watchGetTenureData),
         fork(watchUpdateMastersData),
         fork(watchresetState)

@@ -22,8 +22,6 @@ const Updateclinic = () => {
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-
-    console.log(clinicData, 'from-index==========')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -44,17 +42,16 @@ const Updateclinic = () => {
     }
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingDetails = store?.createSubscriptionPlanReducer?.data?.result;
+    const contracts = store?.getContractReducer?.data?.contract;
+
     const handleContractGeneration = () => {
         const data = {
-            adminId: user?._id,
-            adminEmail: user?.email,
-            adminName: user?.name,
-            clinicId: clinicData?._id,
-            clinicEmail: clinicData?.userId?.email,
-            clinicName: clinicData?.userId?.firstName,
-            html: quillBuffer
-        };
-        // console.log(data, '0000000000000000000000000')
+            id: contracts?._id,
+            adminName: contracts?.adminId?.firstName,
+            adminEmail: contracts?.adminId?.email,
+            clinicName: contracts?.clinicId?.name,
+            clinicEmail: contracts?.clinicId?.userId?.email
+        }
         dispatch(generateContractAction({ key: encryptMessage(data) }))
     }
     useEffect(() => {
@@ -94,11 +91,11 @@ const Updateclinic = () => {
                                     </span>
                                 </Col>
                                 <Col className='d-flex justify-content-end align-items-center'>
-                                    <Button onClick={handleContractGeneration} disabled={store?.generateContractReducer?.loading} className={`custom-buttons me-2 ${clinicData?.contractId || activeTab !== 'contract' ? 'd-none' : ''}`}>
+                                    <Button onClick={handleContractGeneration} disabled={!store?.getContractReducer?.data?.contract?.contractTemplateId?.html} className={`custom-buttons me-2 ${contracts?.envelopeId || activeTab !== 'contract' ? 'd-none' : ''}`}>
                                         {store?.generateContractReducer?.loading ?
                                             <Spinner color='white' className='spinner-border-sm' />
                                             :
-                                            'Generate Contract'
+                                            'Send Email'
                                         }
                                     </Button>
                                     <Button onClick={() => navigate(-1)} className='custom-buttons'>Back</Button>

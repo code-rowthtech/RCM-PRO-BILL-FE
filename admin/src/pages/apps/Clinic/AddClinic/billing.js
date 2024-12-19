@@ -65,22 +65,6 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
         }
     }, [billingAddResponse]);
 
-
-    // useEffect(() => {
-    //     if (amount?.months) {
-    //         const calculateEndDate = () => {
-    //             const currentDate = new Date();
-    //             let newDate = new Date();
-
-    //             // Add the number of months from `amount?.months`
-    //             newDate.setMonth(currentDate.getMonth() + amount.months);
-
-    //             return newDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-    //         };
-
-    //         setEndDate(calculateEndDate());
-    //     }
-    // }, [amount?.months]);
     useEffect(() => {
         if (amount?.months && selectedDate) {
             const calculateEndDate = () => {
