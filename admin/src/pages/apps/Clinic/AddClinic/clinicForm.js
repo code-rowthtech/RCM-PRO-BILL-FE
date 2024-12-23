@@ -357,7 +357,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         );
 
         if (isIncomplete) {
-            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            ToastHandle('Please fill available accreditation fields before adding a new one.', 'danger');
             return;
         }
         setAccreditationDetails([
@@ -381,7 +381,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         );
 
         if (isIncomplete) {
-            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            ToastHandle('Please fill available medical details fields before adding a new one', 'danger');
             return;
         }
         setMedicalDetails([
@@ -404,7 +404,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         );
 
         if (isIncomplete) {
-            ToastHandle('Please fill all the fields before adding a new one', 'danger');
+            ToastHandle('Please fill available POC fields before adding a new one', 'danger');
             return;
         }
         setPosDetails([
@@ -1057,7 +1057,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     value={accreditation?.name}
                                     placeholder="Name"
                                     onChange={(e) => handleAccreditationInputChange(e, 'name', index)}
-                                    onKeyPress={handleFirstSpace}
+                                // onKeyPress={han  dleFirstSpace}
                                 />
                             </Col>
                             <Col sm={4}>
@@ -1283,10 +1283,13 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                                     ...prevState,
                                                                     primaryAddress: {
                                                                         ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
-                                                                        address: data?.formatted,     // Update only the address field
-                                                                        latitude: data?.bounds?.southwest?.lat,
-                                                                        longitude: data?.bounds?.southwest?.lng,
-                                                                        zip: data?.components?.postcode,
+                                                                        ...(data?.formatted ? { address: data?.formatted } : {}),     // Update only the address field
+                                                                        ...(data?.components?.postcode ? { zip: data?.components?.postcode } : {}),     // Update only the address field
+                                                                        ...(data?.bounds?.southwest?.lat ? { latitude: data?.bounds?.southwest?.lat } : {}),     // Update only the address field
+                                                                        ...(data?.bounds?.southwest?.lng ? { longitude: data?.bounds?.southwest?.lng } : {}),     // Update only the address field
+                                                                        // latitude: data?.bounds?.southwest?.lat,
+                                                                        // longitude: data?.bounds?.southwest?.lng,
+                                                                        // zip: data?.components?.postcode,
                                                                     }
                                                                 }));
                                                             }}

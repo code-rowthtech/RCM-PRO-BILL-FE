@@ -30,10 +30,4 @@ export function decryptMessage(encryptedText) {
     const decrypted = decipher.decrypt(encryptedText, "utf8");
     return decrypted;
 }
-
-// Example usage
-// const text = { email: "djvndfkjsn@mdg/sdfsv", password: 'sfjndkjfndsfn' };
-// const encrypted = encryptMessage(text);
-// // console.log("encrypted: ", encrypted);
-
 // const decrypted = decryptMessage("RDnepna056QEAqwkys1L/NxPL78qwmyYQfLDvYlBQkla82WT4GXXiNo9BRmriEUanIhCH/vfZOp6yIwbyblbQlxw50svbTr62HaUQt0zmshTIfz93xp9r54So2lW+oy8eNHuH1g7W2/B3jJI/qE3DsyMqjw3yECyFp+a72GL5dA=");

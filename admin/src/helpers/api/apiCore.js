@@ -87,7 +87,6 @@ const AUTH_SESSION_KEY = 'hyper_user';
  * @param {*} token
  */
 const setAuthorization = (token) => {
-    // console.log({ token })
     if (token) axios.defaults.headers.common['Authorization'] = `${encryptMessage(token)}`;
     else delete axios.defaults.headers.common['Authorization'];
 };

@@ -14,11 +14,9 @@ const ContractFormat = () => {
   const [quillValue, setQuillValue] = useState('');
   const [editMode, setEditMode] = useState(false);
   const dispatch = useDispatch();
-  // console.log(quillValue, 'quillValuequillValue')
   // Access Redux store for contract format
   const store = useSelector((state) => state);
   const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
-  console.log(store?.getContractFormatReducer?.data?.templates?.fileUrl, 'contractFormat')
   // Fetch contract format on mount
   useEffect(() => {
     dispatch(getContractFormatAction());

@@ -14,7 +14,6 @@ import { createdBy } from '../../Settings/userId';
 const UpdateRoles = ({ show, closeModal, data }) => {
 
     const dispatch = useDispatch();
-    console.log(data, '---------')
     const {
         register,
         handleSubmit,

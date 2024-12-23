@@ -58,7 +58,8 @@ const Designation = () => {
     const handleUpdate = (data) => {
         const payload = {
             id: data?._id,
-            isActive: !data?.isActive
+            isActive: !data?.isActive,
+            settingType: 'designation'
         }
         dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     }

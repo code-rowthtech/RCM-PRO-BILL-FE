@@ -105,7 +105,6 @@ function* getContractFunction(data) {
         });
         const response = yield call(getContractApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-        console.log(decryptedData, 'decryptedDatadecryptedData')
         if (response.status === 201) {
             ToastHandle(decryptedData?.message, 'success')
             yield put({

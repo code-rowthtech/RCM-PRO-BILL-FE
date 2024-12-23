@@ -53,7 +53,6 @@ const PlanName = () => {
     };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
-    console.log(clinicTypeData)
     const updateResponse = store?.updateMastersDataReducer?.data?.status;
     useEffect(() => {
         dispatch(getMastersDataAction({ status: status, category: 'plan_name', search: search, skip: skip, limit: 10 }));
