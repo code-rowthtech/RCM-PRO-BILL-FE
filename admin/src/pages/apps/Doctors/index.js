@@ -20,7 +20,6 @@ const Doctors = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const doctorsResponse = store?.getDoctorsReducer?.data?.data;
-    // console.log(doctorsResponse, 'doctorsResponsedoctorsResponsedoctorsResponse')
     useEffect(() => {
         const payload = {
             skip: skip,

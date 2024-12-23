@@ -27,7 +27,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log(clinicsData, 'clinicsDataclinicsDataclinicsDataclinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -97,9 +96,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
         const selectedValue = event.target.value;
         setSelectedClinicType(selectedValue);
     };
-
-    console.log(store?.updateClinicsReducer, 'store?.updateClinicsReducerstore?.updateClinicsReducer')
-
     return (
         <>
             <Row className='mt-2'>

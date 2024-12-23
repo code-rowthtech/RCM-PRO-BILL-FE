@@ -40,7 +40,6 @@ const Tenure = () => {
             category: 'tenure',
             createdBy: createdBy,
         }
-        // console.log(payload, 'payloadpayload')
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
     };
     const updateTenure = (data) => {
@@ -50,7 +49,6 @@ const Tenure = () => {
             months: parseInt(data?.months),
             category: 'tenure',
         }
-        // console.log(payload)
         dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     };
     const createResponse = store?.createMastersDataReducer?.data;

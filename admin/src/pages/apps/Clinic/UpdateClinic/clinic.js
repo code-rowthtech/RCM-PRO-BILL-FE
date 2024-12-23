@@ -52,7 +52,6 @@ const Clinic = ({ id }) => {
         { name: '', email: '', role: '', contact: '' }
     ])
     const [taxonomyCodes, setTaxonomyCodes] = useState([''])
-    // console.log(clinicData?.stateOfLicensing?.length, 'clinicData?.stateOfLicensing?.length')
     useEffect(() => {
         setFormDetails((prevDetails) => ({
             ...prevDetails,
@@ -251,7 +250,6 @@ const Clinic = ({ id }) => {
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
-        // console.log(newPayload, 'newPayload');
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -348,7 +346,6 @@ const Clinic = ({ id }) => {
                 }
             });
     }
-    // console.log(cities)
     const [selectedLocation, setSelectedLocation] = useState(null);
     const [selectedMailingLocation, setSelectedMailingLocation] = useState(null);
     useEffect(() => {
@@ -520,7 +517,6 @@ const Clinic = ({ id }) => {
                                 readOnly
                                 type="text"
                                 {...register('email', {
-                                    required: 'This field is required',
                                     pattern: {
                                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
                                         message: 'Please enter a valid email address'
@@ -825,7 +821,7 @@ const Clinic = ({ id }) => {
 
                                 </Form.Label>
                             </Col>
-                            {formDetails[type].map((item, index) => (
+                            {formDetails[type] && formDetails[type].map((item, index) => (
                                 <React.Fragment key={index}>
                                     {type === 'stateDetails' ? (
                                         <Col sm={4}>
@@ -1364,7 +1360,7 @@ const Clinic = ({ id }) => {
                                     </span>
                                 </span>
                             </Col>
-                            {posDetails.map((data, index) => (
+                            {posDetails && posDetails?.map((data, index) => (
                                 <React.Fragment key={index}>
                                     <Col sm={12} className="form-label">
                                         {'POS ' + `${index + 1}`}

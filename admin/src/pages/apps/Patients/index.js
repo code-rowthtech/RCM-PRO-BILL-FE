@@ -34,7 +34,6 @@ const Patients = () => {
     const [detailsModal, setDetailsModal] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
     const decrytedPatientsData = store?.getPatientsReducer?.data?.patients;
-    console.log(decrytedPatientsData, 'decrytedPatientsData')
     useEffect(() => {
         const payload = {
             clinicId: clinicId,

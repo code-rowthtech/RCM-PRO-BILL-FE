@@ -14,6 +14,7 @@ import logoSm from '../assets/images/logo_sm.png';
 import logoDark from '../assets/images/logo-dark.png';
 import logoDarkSm from '../assets/images/logo_sm_dark.png';
 import logo from '../assets/images/logo.png';
+import smallLogo from '../assets/images/smallLogo.png';
 import helpBoxImage from '../assets/images/help-icon.svg';
 import profileImg from '../assets/images/users/avatar-1.jpg';
 
@@ -99,7 +100,7 @@ const LeftSidebar = ({ isCondensed, isLight, hideLogo, hideUserProfile }: LeftSi
                                 <img src={logo} alt="logo" height="16" />
                             </span>
                             <span className="logo-sm">
-                                <img src={logo} alt="logo" height="10" />
+                                <img src={smallLogo} alt="logo" height={25} />
                             </span>
                         </Link>
 

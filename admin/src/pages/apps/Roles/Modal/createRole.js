@@ -63,9 +63,7 @@ const AddRoles = ({ show, closeModal }) => {
             designation: designationValue,
             role: data.role,
         };
-        // console.log(payload)
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }))
-        // dispatch(createUserRolesAction(payload))
     };
 
     const handleSelect = (selectedList) => {

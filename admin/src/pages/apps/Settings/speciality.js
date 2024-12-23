@@ -25,7 +25,6 @@ const Speciality = () => {
     }
     const addDepartment = (data) => {
         // Handle form submission logic, e.g., API call
-        console.log("Form data submitted:", data);
         const payload = {
             name: data?.name,
             description: data?.description,

@@ -39,7 +39,6 @@ const JobTitle = () => {
             createdBy: JSON.parse(sessionStorage.getItem('hyper_user'))?._id,
         }
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
-        console.log({ payload })
     };
 
     const updateJobTitle = (data) => {
@@ -53,7 +52,6 @@ const JobTitle = () => {
     };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
-    console.log(clinicTypeData)
     const updateResponse = store?.updateMastersDataReducer?.data?.status;
     useEffect(() => {
         dispatch(getMastersDataAction({ status: status, category: 'job_title', search: search, skip: skip, limit: 10 }));

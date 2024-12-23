@@ -31,12 +31,10 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.contract;
-    console.log(store?.getContractReducer?.data, 'contractscontracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [pdfUrl, setPdfUrl] = useState(null);
-    console.log({ billingResponse })
     useEffect(() => {
         if (quillValue) {
             // try {
@@ -64,9 +62,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                 clinicId: billingResponse?._id,
                 // clinicId: billingId,
             };
-            console.log(payload)
             dispatch(getContractAction({ key: encryptMessage(payload) }));
-            // dispatch(getContractFormatAction());
         }
 
         if (store?.getContractReducer?.data?.status === 200) {
