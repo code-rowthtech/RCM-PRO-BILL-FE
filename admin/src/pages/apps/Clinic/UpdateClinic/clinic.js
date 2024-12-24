@@ -250,6 +250,7 @@ const Clinic = ({ id }) => {
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
+        console.log(newPayload, 'newPayload')
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -979,7 +980,7 @@ const Clinic = ({ id }) => {
                                                 {...register('stateName')}
                                                 onChange={(e) => handleStateSelection(e)}
                                             >
-                                                <option>State</option>
+                                                <option value=''>State</option>
                                                 {statesData?.states?.map((data) => (
                                                     <option
                                                         key={data?.id} // Unique key for each option
@@ -1276,7 +1277,7 @@ const Clinic = ({ id }) => {
                                                 onChange={(e) => handleMailingStateSelection(e)}
                                                 disabled={sameAsPrimary}
                                             >
-                                                <option>State</option>
+                                                <option value=''>State</option>
                                                 {statesData?.states?.map((data) => (
                                                     <option
                                                         key={data?.id} // Unique key for each option
