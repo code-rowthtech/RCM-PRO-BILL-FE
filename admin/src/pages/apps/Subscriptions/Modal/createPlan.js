@@ -9,9 +9,15 @@ import { getMastersDataAction, getTenureAction } from '../../../../redux/setting
 import { formatDate } from '../../../../helpers/dateFormat';
 import Spinner from '../../../../constants/Spinner';
 
-const calculateFinalAmount = (price, taxPercentage) => {
-    const taxAmount = (price * taxPercentage) / 100;
-    return price + taxAmount;
+// const calculateFinalAmount = (price, taxPercentage) => {
+//     const taxAmount = (price * taxPercentage) / 100;
+//     return price + taxAmount;
+// };
+const calculateFinalAmount = (price, taxPercentage, discountPercentage) => {
+    const discountAmount = (price * discountPercentage) / 100;
+    const priceAfterDiscount = price - discountAmount;
+    const taxAmount = (priceAfterDiscount * taxPercentage) / 100;
+    return priceAfterDiscount + taxAmount;
 };
 
 
@@ -21,7 +27,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         handleSubmit,
         formState: { errors },
         reset, getValues,
-        watch, clearErrors,
+        watch, clearErrors, setValue
     } = useForm();
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -30,58 +36,55 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
     const isUpdateMode = Boolean(data); // Determines if this is "update" mode
     const watchedPrice = watch('amount');
     const watchedTax = watch('tax');
-    useEffect(() => {
-        const parsedPrice = parseFloat(watchedPrice) || 0;
-        const parsedTax = parseFloat(watchedTax) || 0;
-        const calculatedAmount = calculateFinalAmount(parsedPrice, parsedTax);
-        setFinalAmount(calculatedAmount);
-    }, [watchedPrice, watchedTax]);
-
-    useEffect(() => {
-        // if (show) {
-        dispatch(getMastersDataAction({ status: true, category: 'plan_name', search: '', skip: '', limit: '' }));
-        dispatch(getTenureAction({ status: true, search: '', skip: '', limit: '' }));
-        if (isUpdateMode && data) {
-            reset();
-        }
-        // }
-    }, [data])
+    const watchedDiscount = watch('discount');
     const plans = store?.getMastersDataReducer?.data?.clinicTypes;
     const tenure = store?.getTenureReducer?.data?.tenure;
     const updateResponse = store?.updateSubscriptionsReducer?.data?.status;
     const createResponse = store?.createSubscriptionsReducer?.data?.status;
+    // useEffect(() => {
+    //     const parsedPrice = parseFloat(watchedPrice) || 0;
+    //     const parsedTax = parseFloat(watchedTax) || 0;
+    //     const calculatedAmount = calculateFinalAmount(parsedPrice, parsedTax);
+    //     setFinalAmount(calculatedAmount);
+    // }, [watchedPrice, watchedTax]);
+    useEffect(() => {
+        const parsedPrice = parseFloat(watchedPrice) || 0;
+        const parsedTax = parseFloat(watchedTax) || 0;
+        const parsedDiscount = parseFloat(watchedDiscount) || 0;
+
+        const calculatedAmount = calculateFinalAmount(parsedPrice, parsedTax, parsedDiscount);
+        setFinalAmount(calculatedAmount);
+    }, [watchedPrice, watchedTax, watchedDiscount]);
+
+    useEffect(() => {
+        if (show) {
+            dispatch(getMastersDataAction({ status: true, category: 'plan_name', search: '', skip: '', limit: '' }));
+            dispatch(getTenureAction({ status: true, search: '', skip: '', limit: '' }));
+        }
+    }, [dispatch, show])
+    useEffect(() => {
+        if (isUpdateMode && data) {
+            console.log(data?.implimentFrom)
+            setValue('name', plans && plans.find((plans) => plans?.name === data?.name)?.name);
+            setValue('tenure', tenure && tenure.find((tenure) => tenure?.name === data?.billingFrequency)?.name);
+            setValue('amount', data?.amount);
+            setValue('tax', data?.tax);
+            setValue('patientcount', data?.patientLimit);
+            setValue('doctorcount', data?.doctorLimit);
+            setValue('discount', data?.discount);
+            setValue('description', data?.description);
+            setValue('date', data?.implimentFrom ? new Date(data.implimentFrom).toISOString().split('T')[0] : '');
+        }
+    }, [isUpdateMode, data, setValue, plans, tenure])
+
     useEffect(() => {
         if (updateResponse === 200 || createResponse === 201) {
             closeModal();
             reset();
         }
     }, [createResponse, updateResponse])
-    // const onSubmit = (formData) => {
-    //     const payload = {
-    //         name: formData.name,
-    //         amount: formData.amount,
-    //         billingFrequency: formData.tenure,
-    //         description: formData.description,
-    //         doctorLimit: formData.doctorcount,
-    //         patientLimit: formData.patientcount,
-    //         implimentFrom: formData.date,
-    //         tax: formData.tax,
-    //         totalAmount: finalAmount,
-    //         ...(isUpdateMode ? { id: data._id } : {}), // Only add id if in update mode
-    //     };
-
-    //     if (isUpdateMode) {
-    //         dispatch(updateSubscriptionsAction({ key: encryptMessage(payload) }));
-    //     } else {
-    //         dispatch(createSubscriptionsAction({ key: encryptMessage(payload) }));
-    //     }
-    //     closeModal();
-    // };
-
     const onSubmit = (formData) => {
-        // Prepare payload with only changed values
         const payload = {};
-
         if (formData.name !== data?.name) payload.name = formData.name;
         if (formData.amount !== data?.amount) payload.amount = formData.amount;
         if (formData.tenure !== data?.billingFrequency) payload.billingFrequency = formData.tenure;
@@ -94,8 +97,6 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
         if (formData.discount !== data?.discount) payload.discount = formData.discount;
         payload.totalAmount = finalAmount;
         payload.months = tenureMonth;
-
-        // If it's an update, include the ID
         if (isUpdateMode) {
             payload.id = data._id;
             dispatch(updateSubscriptionsAction({ key: encryptMessage(payload) }));
@@ -113,7 +114,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         <h4 className="mb-0 text-center">{isUpdateMode ? 'Edit Plan' : 'New Plan'}</h4>
                     </Col>
                     <Col sm={1}>
-                        <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
+                        <IoMdClose className="fs-4 cursor-pointer" onClick={() => {
+                            closeModal();
+                            reset();
+                        }} />
                     </Col>
                 </Row>
                 <Form onSubmit={handleSubmit(onSubmit)}>
@@ -122,7 +126,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                             <Form.Group className="mb-2">
                                 <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
-                                    defaultValue={isUpdateMode ? data?.name : ""}
+                                    // defaultValue={isUpdateMode ? data?.name : ""}
                                     {...register('name', { required: 'Please select a plan name' })}
                                     data-has-value={!!getValues('name')}
                                     onBlur={(e) => {
@@ -131,7 +135,7 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 >
                                     <option value="">Select</option>
                                     {plans?.map((plan) => (
-                                        <option key={plan._id} value={plan.name}>
+                                        <option key={plan?._id} value={plan?.name}>
                                             {plan.name}
                                         </option>
                                     ))}
@@ -144,16 +148,11 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
 
                                 <Form.Label>Plan Tenure <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
-                                    defaultValue={isUpdateMode ? data?.billingFrequency : ''}
                                     {...register('tenure', { required: 'Please select a tenure for the plan.' })}
-                                    // data-has-value={!!getValues('tenure')}
-                                    // onBlur={(e) => {
-                                    //     e.target.setAttribute('data-has-value', !!e.target.value);
-                                    // }}
                                     onChange={(e) => {
                                         const selectedOption = tenure?.find(option => option.name === e.target.value);
                                         setTenureMonth(selectedOption?.months);
-                                        clearErrors('tenure')
+                                        clearErrors('tenure');
                                     }}                                >
                                     <option value="">Select tenure</option>
                                     {tenure?.map((data) => (
@@ -168,74 +167,39 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                                 <Form.Label>Amount <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
-                                    defaultValue={isUpdateMode ? data?.amount : ''}
+                                    // defaultValue={isUpdateMode ? data?.amount : ''}
                                     placeholder="Enter amount"
                                     {...register('amount', {
                                         required: 'This field is required',
                                         validate: value => parseFloat(value) >= 0 || 'Amount must be a positive number',
                                     })}
+                                    onInput={(e) => {
+                                        if (e.target.value < 0) {
+                                            e.target.value = ''; // Clear the input if it's negative
+                                        }
+                                    }}
                                 />
                                 {errors.amount && <span className="text-danger fs-6">{errors.amount.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Tax <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Tax Rate <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
-                                    defaultValue={isUpdateMode ? data?.tax : ''}
+                                    // defaultValue={isUpdateMode ? data?.tax : ''}
                                     type="text"
                                     placeholder="Enter tax"
                                     {...register('tax', {
                                         required: 'This field is required',
                                         validate: value => parseFloat(value) >= 0 || 'Tax must be a positive number.',
                                     })}
+                                    onInput={(e) => {
+                                        if (e.target.value < 0) {
+                                            e.target.value = ''; // Clear the input if it's negative
+                                        }
+                                    }}
                                 />
                                 {errors.tax && <span className="text-danger fs-6">{errors.tax.message}</span>}
-                            </Form.Group>
-                        </Col>
-                        <Col sm={6}>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Implemented Date <span className='text-danger'>*</span></Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    className={` ${!dateField ? 'emptyField' : 'selectedField'}`}
-                                    defaultValue={isUpdateMode ? formatDate(data?.implimentFrom) : ''} // Ensure the date is formatted correctly
-                                    placeholder="Select date"
-                                    {...register('date', { required: 'This field is required' })}
-                                />
-
-
-                                {errors.date && <span className="text-danger fs-6">{errors.date.message}</span>}
-                            </Form.Group>
-                        </Col>
-                        <Col sm={6}>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Patient Count <span className='text-danger'>*</span></Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    defaultValue={isUpdateMode ? data?.patientLimit : ''}
-                                    placeholder="Enter patient count"
-                                    {...register('patientcount', {
-                                        required: 'This field is required',
-                                        validate: value => parseInt(value) > 0 || 'Patient count must be positive',
-                                    })}
-                                />
-                                {errors.patientcount && <span className="text-danger fs-6">{errors.patientcount.message}</span>}
-                            </Form.Group>
-                        </Col>
-                        <Col sm={6}>
-                            <Form.Group className="mb-2">
-                                <Form.Label>Doctor Count <span className='text-danger'>*</span></Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    defaultValue={isUpdateMode ? data?.doctorLimit : ''}
-                                    placeholder="Enter doctor count"
-                                    {...register('doctorcount', {
-                                        required: 'This field is required',
-                                        validate: value => parseInt(value) > 0 || 'Doctor count must be positive',
-                                    })}
-                                />
-                                {errors.doctorcount && <span className="text-danger fs-6">{errors.doctorcount.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
@@ -251,14 +215,74 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Discount <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Discount</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    {...register('discount', { required: 'This field is required' })}
+                                    {...register('discount',
+                                        //  { required: 'This field is required' }
+                                    )}
                                     placeholder="Discount Percentage"
+                                    onInput={(e) => {
+                                        if (e.target.value < 0) {
+                                            e.target.value = ''; // Clear the input if it's negative
+                                        }
+                                    }}
                                 />
                             </Form.Group>
                             {errors.discount && <span className="text-danger fs-6">{errors.discount.message}</span>}
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className="mb-2">
+                                <Form.Label>Start Date <span className='text-danger'>*</span></Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    className={` ${!dateField ? 'emptyField' : 'selectedField'}`}
+                                    // defaultValue={isUpdateMode ? formatDate(data?.implimentFrom) : ''} // Ensure the date is formatted correctly
+                                    placeholder="Select date"
+                                    {...register('date', { required: 'This field is required' })}
+                                />
+                                {errors.date && <span className="text-danger fs-6">{errors.date.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className="mb-2">
+                                <Form.Label>Patient Count </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    // defaultValue={isUpdateMode ? data?.patientLimit : ''}
+                                    placeholder="Enter patient count"
+                                    {...register('patientcount', {
+                                        // required: 'This field is required',
+                                        validate: value => parseInt(value) > 0 || 'Patient count must be positive',
+                                    })}
+                                    onInput={(e) => {
+                                        if (e.target.value < 0) {
+                                            e.target.value = ''; // Clear the input if it's negative
+                                        }
+                                    }}
+                                />
+                                {errors.patientcount && <span className="text-danger fs-6">{errors.patientcount.message}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className="mb-2">
+                                <Form.Label>Doctor Count <span className='text-danger'>*</span></Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    defaultValue={isUpdateMode ? data?.doctorLimit : ''}
+                                    placeholder="Enter doctor count"
+                                    {...register('doctorcount', {
+                                        required: 'This field is required',
+                                        validate: value => parseInt(value) > 0 || 'Doctor count must be positive',
+                                    })}
+                                    onInput={(e) => {
+                                        if (e.target.value < 0) {
+                                            e.target.value = ''; // Clear the input if it's negative
+                                        }
+                                    }}
+                                />
+                                {errors.doctorcount && <span className="text-danger fs-6">{errors.doctorcount.message}</span>}
+                            </Form.Group>
                         </Col>
                         <Col sm={6}>
                             <Form.Group className="mb-2">
@@ -275,7 +299,10 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                     </Row>
                     <Modal.Footer className='pb-0 px-0'>
-                        <Button className="custom-buttons" onClick={closeModal}>
+                        <Button className="custom-buttons" onClick={() => {
+                            closeModal();
+                            reset();
+                        }}>
                             Cancel
                         </Button>
                         <Button disabled={store?.createSubscriptionsReducer?.loading || store?.updateSubscriptionsReducer?.loading} type="submit" className="custom-buttons">

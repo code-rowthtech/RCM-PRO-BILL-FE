@@ -31,6 +31,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.contract;
+    console.log(store?.getContractReducer, 'store?.getContractReducerstore?.getContractReducer')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));

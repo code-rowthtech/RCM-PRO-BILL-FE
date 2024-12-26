@@ -87,19 +87,19 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
         <>
             {billingDone ?
                 <>
-                    <Row>
+                    {/* <Row>
                         <Col>
                             <h5 className=''>
                                 There is already a subscription attached to this account. Below are the details of the current subscription:
                             </h5>
                         </Col>
-                    </Row>
+                    </Row> */}
                     <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                         <thead>
                             <tr>
                                 <th>Subscription Name</th>
-                                <th>Renewal Date</th>
                                 <th>Start Date</th>
+                                <th>Renewal Date</th>
                                 <th>Amount</th>
                                 <th>Status</th>
                             </tr>
@@ -108,17 +108,17 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                             <tr>
                                 <td>{billingData?.name}</td>
                                 <td>
-                                    {billingData?.subscriptionRenewalDate ?
-                                        new Date(billingData.subscriptionRenewalDate).toLocaleDateString('en-GB') :
-                                        'N/A'}
-                                </td>
-                                <td>
                                     {billingData?.subscriptionStartDate ?
                                         new Date(billingData.subscriptionStartDate).toLocaleDateString('en-GB') :
                                         'N/A'}
                                 </td>
                                 <td>
-                                    {billingData?.totalAmount}
+                                    {billingData?.subscriptionRenewalDate ?
+                                        new Date(billingData.subscriptionRenewalDate).toLocaleDateString('en-GB') :
+                                        'N/A'}
+                                </td>
+                                <td>
+                                    ${billingData?.totalAmount}
                                 </td>
                                 <td>
                                     <Form.Switch checked={billingData?.isActive} />
@@ -236,11 +236,11 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                 </Col>
                             </Row>
                             <hr />
-                            <Row className='mt-2'>
+                            <Row className=''>
                                 <Col sm={12}>
                                     <Row>
                                         <Col sm={6} className=''>
-                                            <Row className='mt-2'>
+                                            <Row className=''>
                                                 <Col sm={12}>
                                                     <span className='text-black fw-semibold'>Payment Information</span>
                                                 </Col>
@@ -314,7 +314,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
 
                                         </Col>
                                         <Col sm={6}>
-                                            <Row className='mt-2'>
+                                            <Row className=''>
                                                 <Col sm={12}>
                                                     <span className='text-black fw-semibold'>Billing Contact Information</span>
                                                 </Col>

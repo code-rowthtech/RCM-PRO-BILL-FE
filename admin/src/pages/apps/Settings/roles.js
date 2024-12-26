@@ -116,7 +116,7 @@ const Roles = () => {
                                                 <th>
                                                     S.no
                                                 </th>
-                                                <th>Name</th>
+                                                <th>Role Name</th>
                                                 <th>Description</th>
                                                 <th>Status</th>
                                                 <th>Action</th>

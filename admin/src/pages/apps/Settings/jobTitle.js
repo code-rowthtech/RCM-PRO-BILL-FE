@@ -137,6 +137,7 @@ const JobTitle = () => {
                                 <Table responsive className="table-centered table-nowrap mb-0">
                                     <thead className="ght">
                                         <tr key={''}>
+                                            <th>S.no</th>
                                             <th>Name</th>
                                             <th>Description</th>
                                             <th>Created Date</th>
@@ -162,6 +163,7 @@ const JobTitle = () => {
 
                                                 clinicTypeData?.map((data, index) => (
                                                     <tr key={index}>
+                                                        <td>{index + 1}</td>
                                                         <td className='text-capitalize'>
                                                             {data?.name}
                                                         </td>
@@ -297,7 +299,7 @@ const JobTitle = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Title Name</Form.Label>
+                                    <Form.Label>Title Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter title name"
@@ -309,7 +311,7 @@ const JobTitle = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Plan Name</Form.Label>
+                                    <Form.Label>Re-Enter Plan Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Title Name"

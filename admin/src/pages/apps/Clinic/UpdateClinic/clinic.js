@@ -118,10 +118,11 @@ const Clinic = ({ id }) => {
         }
     };
 
+    const [logoUploading, setLogoUploading] = useState(false)
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         try {
-            const url = await handleUpload(selectedFile);
+            const url = await handleUpload(selectedFile, setLogoUploading);
             setLogo(url);
             setLogoName(selectedFile?.name);
 
@@ -134,6 +135,9 @@ const Clinic = ({ id }) => {
 
     const handleInputChange = (e, field, type, index) => {
         const value = e.target.value;
+        if (type === 'accreditationDetails' && /\s/.test(value)) {
+            return;
+        }
         setFormDetails((prevDetails) => {
             const updatedDetails = { ...prevDetails };
             updatedDetails[type][index] = {
@@ -143,17 +147,18 @@ const Clinic = ({ id }) => {
             return updatedDetails;
         });
     };
-
+    const [accreditationUploading, setAccreditationUploading] = useState(false);
+    const [stateUploading, setStateUploading] = useState(false);
     const handleFileUpload = async (e, type, index) => {
         const selectedFile = e.target.files[0];
         try {
-            const url = await handleUpload(selectedFile);
+            const url = await handleUpload(selectedFile, type === 'accreditationDetails' ? setAccreditationUploading : setStateUploading);
             setFormDetails((prevDetails) => {
                 const updatedDetails = { ...prevDetails };
                 updatedDetails[type][index] = {
                     ...updatedDetails[type][index],
                     url: url?.url?.split('?')[0],
-                    fileName: selectedFile.name,
+                    fileName: selectedFile?.name,
                 };
                 return updatedDetails;
             });
@@ -753,8 +758,12 @@ const Clinic = ({ id }) => {
                     <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
                         <Form.Label>Upload Logo</Form.Label>
                         <div onClick={handleLogoClick}
-                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName ? 'form-control' : 'custom-form-fields'}`}>
-                            {logoName ? logoName : 'Upload Document'}
+                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName || logoUploading ? 'form-control' : 'custom-form-fields'}`}>
+                            {logoUploading
+                                ? 'Uploading...'
+                                : logoName
+                                    ? logoName
+                                    : 'Upload Logo'}
                             <p className='mb-0'><FiDownloadCloud /></p>
                         </div>
                         <Form.Control
@@ -828,7 +837,7 @@ const Clinic = ({ id }) => {
                                         <Col sm={4}>
                                             <Form.Control
                                                 type="text"
-                                                value={item.name}
+                                                value={item?.name}
                                                 placeholder="Name"
                                                 readOnly
                                                 onChange={(e) => handleInputChange(e, 'name', type, index)}
@@ -838,7 +847,7 @@ const Clinic = ({ id }) => {
                                         <Col sm={4}>
                                             <Form.Control
                                                 type="text"
-                                                value={item.name}
+                                                value={item?.name}
                                                 placeholder="Name"
                                                 onChange={(e) => handleInputChange(e, 'name', type, index)}
                                             />
@@ -849,16 +858,25 @@ const Clinic = ({ id }) => {
                                             type="text"
                                             value={item.number}
                                             placeholder="Document Number"
-                                            onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                            onKeyPress={(event) => {
+                                                if (type !== 'accreditationDetails')
+                                                    handleFirstSpace(event, 0)
+                                            }}
                                             onChange={(e) => handleInputChange(e, 'number', type, index)}
                                         />
                                     </Col>
                                     <Col sm={4} className="mb-2 position-relative">
                                         <div
                                             onClick={() => document.getElementById(`fileInput-${type}-${index}`).click()}
-                                            className={`custom-file-upload justify-content-between cursor-pointer ${item.fileName ? 'form-control' : 'custom-form-fields'}`}
+                                            className={`custom-file-upload justify-content-between cursor-pointer ${item.fileName || accreditationUploading || stateUploading ? 'form-control' : 'custom-form-fields'}`}
                                         >
-                                            {item.fileName ? item.fileName?.slice(0, 35) + '...' : 'Upload Document'}
+                                            {/* {item.fileName ? item.fileName?.slice(0, 35) + '...' : 'Upload Document'} */}
+                                            {(type === 'accreditationDetails' && accreditationUploading) ||
+                                                (type === 'stateDetails' && stateUploading)
+                                                ? 'Uploading...'
+                                                : item.fileName
+                                                    ? item.fileName.slice(0, 35) + '...'
+                                                    : 'Upload Document'}
                                             <p className="mb-0"><FiDownloadCloud /></p>
                                         </div>
                                         <Form.Control

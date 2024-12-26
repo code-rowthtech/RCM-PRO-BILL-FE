@@ -114,6 +114,7 @@ const Designation = () => {
                                 <Table responsive className="table-centered table-nowrap mb-0">
                                     <thead className="ght">
                                         <tr key={''}>
+                                            <th>S.no</th>
                                             <th>Clinic Type</th>
                                             <th>Created Date</th>
                                             <th>Status</th>
@@ -138,6 +139,7 @@ const Designation = () => {
 
                                                 clinicTypeData?.map((data, index) => (
                                                     <tr key={index}>
+                                                        <td>{index + 1}</td>
                                                         <td>
                                                             {data?.name}
                                                         </td>
@@ -149,7 +151,7 @@ const Designation = () => {
                                                                 {data?.description.substring(0, 20) + '...'}
                                                             </span>
                                                         </td> */}
-                                                        <td className='text-capitalize'>{formatDate(data?.createdAt)}</td>
+                                                        <td className='text-capitalize'>{new Date(data?.createdAt).toLocaleDateString('en-GB')}</td>
                                                         <td>
                                                             <Form.Switch checked={data?.isActive} onChange={() => handleUpdate(data)} />
                                                         </td>
@@ -211,7 +213,7 @@ const Designation = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>Re-Enter Designation Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Designation Name"

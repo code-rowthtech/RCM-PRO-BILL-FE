@@ -141,6 +141,7 @@ const ClinicType = () => {
                                 <Table responsive className="table-centered table-nowrap mb-0">
                                     <thead className="ght">
                                         <tr key={''}>
+                                            <th>S.no</th>
                                             <th>Practice Type</th>
                                             <th>Description</th>
                                             <th>Created Date</th>
@@ -165,6 +166,7 @@ const ClinicType = () => {
                                                 :
                                                 clinicTypeData?.map((data, index) => (
                                                     <tr key={index}>
+                                                        <td>{index + 1}</td>
                                                         <td className='text-capitalize'>
                                                             {data?.name}
                                                         </td>
@@ -180,7 +182,7 @@ const ClinicType = () => {
                                                                     : 'N/A'}
                                                             </span>
                                                         </td>
-                                                        <td className='text-capitalize'>{formatDate(data?.createdAt)}</td>
+                                                        <td className='text-capitalize'>{new Date(data?.createdAt).toLocaleDateString('en-GB')}</td>
                                                         <td>
                                                             <Form.Switch checked={data?.isActive} onChange={() => handleUpdate(data)} />
                                                         </td>
@@ -229,7 +231,7 @@ const ClinicType = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>Name<span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter name"
@@ -298,7 +300,7 @@ const ClinicType = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Name</Form.Label>
+                                    <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter plan name"
@@ -310,7 +312,7 @@ const ClinicType = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Name</Form.Label>
+                                    <Form.Label>Re-Enter Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Plan Name"

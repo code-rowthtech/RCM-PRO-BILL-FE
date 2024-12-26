@@ -133,23 +133,12 @@ const AddRoles = ({ show, closeModal }) => {
                                 <Form.Control
                                     type="email"
                                     placeholder="Email ID"
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                     {...register('email', { required: 'This field is required' })}
                                 />
                                 {errors.email && <span className="text-danger">{errors.email.message}</span>}
                             </Form.Group>
                         </Col>
-                        {/* <Col sm={6}>
-                            <Form.Group className='mb-2'>
-                                <Form.Label>Contact No <span className='text-danger'>*</span></Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    maxLength={10}
-                                    placeholder="Contact No"
-                                    {...register('phone', { required: 'This field is required' })}
-                                />
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
-                            </Form.Group>
-                        </Col> */}
                         <Col sm={6} className='mb-2'>
                             <Form.Group className="mb-0 position-relative">
                                 <Form.Label className='mb-1'>Contact Number <span className='text-danger'>*</span></Form.Label>
@@ -216,6 +205,10 @@ const AddRoles = ({ show, closeModal }) => {
                                                 message: 'At least 8 characters required, including 1 uppercase letter, 1 number, and 1 special character',
                                             },
                                         })}
+                                        onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        onCopy={(e) => e.preventDefault()}
+                                        onCut={(e) => e.preventDefault()}
+                                        onPaste={(e) => e.preventDefault()}
                                     />
                                     <span
                                         className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
@@ -243,6 +236,10 @@ const AddRoles = ({ show, closeModal }) => {
                                             validate: value =>
                                                 value === password || 'Passwords do not match'
                                         })}
+                                        onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        onCopy={(e) => e.preventDefault()}
+                                        onCut={(e) => e.preventDefault()}
+                                        onPaste={(e) => e.preventDefault()}
                                     />
                                     <span
                                         className="position-absolute end-0 top-0 mt-1 me-2 cursor-pointer"
@@ -285,7 +282,7 @@ const AddRoles = ({ show, closeModal }) => {
                             </Form.Group>
                         </Col>
 
-                        <Col sm={6}>
+                        {/* <Col sm={6}>
                             <Form.Group className='mb-2'>
                                 <Form.Label>Re-Select Designation <span className='text-danger'>*</span></Form.Label>
                                 <Form.Select
@@ -298,7 +295,7 @@ const AddRoles = ({ show, closeModal }) => {
                                 </Form.Select>
                                 {designationError && <span className="text-danger">{designationError}</span>}
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                         <Col sm={6} >
                             <Form.Group className='mb-2'>
                                 <Form.Label>Role <span className='text-danger'>*</span></Form.Label>

@@ -13,7 +13,7 @@ const AddRoles = ({ show, closeModal }) => {
     const dispatch = useDispatch();
     const idFromStorage = JSON.parse(sessionStorage.getItem('hyper_user'));
     const [selectedPermissionIds, setSelectedPermissionIds] = useState([]);
-    const [permissionError, setPermissionError] = useState(false)
+    const [permissionError, setPermissionError] = useState(false);
     const store = useSelector((state) => state);
     const createResponse = store?.createRolesReducer?.data?.status;
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
@@ -81,7 +81,7 @@ const AddRoles = ({ show, closeModal }) => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>Role name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Enter role name"

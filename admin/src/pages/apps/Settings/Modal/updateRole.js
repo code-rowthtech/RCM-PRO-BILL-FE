@@ -12,7 +12,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const {
         register,
         handleSubmit,
-        setValue,
+        setValue, setError,
         formState: { errors },
     } = useForm();
     const store = useSelector((state) => state);
@@ -37,7 +37,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
             setValue('name', data.name || '');
             setValue('description', data.description || '');
             setInitialPermissions(data?.permissions || []);
-            setSelectedPermissions(data?.permissions?.map(permission => ({ name: permission?.name })) || []);
+            setSelectedPermissions(data?.permissions?.map(permission => (permission)) || []);
         }
         if (updateSuccess === 200) {
             closeModal();
@@ -48,21 +48,20 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const onRemove = (selectedList) => setSelectedPermissions(selectedList);
 
     const onSubmit = (formData) => {
-        // Ensure the selected permissions are only the ones that changed
         const changedPermissions = selectedPermissions.filter(
             (permission) => !initialPermissions.some((p) => p.name === permission.name)
         );
 
-        // If no permissions changed, use the initial permissions
         const payload = {
             id: data?._id,
             name: formData.name,
             description: formData.description,
-            permissions: changedPermissions.length > 0 ? changedPermissions : initialPermissions,
+            permissions: selectedPermissions?.map((data) => data?._id),
         };
-
         dispatch(updateRolesAction({ key: encryptMessage(payload) }));
     };
+
+
 
     return (
         <Modal centered show={show} >
@@ -80,7 +79,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Name</Form.Label>
+                                <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Enter role name"
@@ -92,7 +91,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
 
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Description</Form.Label>
+                                <Form.Label>Description <span className='text-danger'>*</span></Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
@@ -105,7 +104,7 @@ const UpdateRole = ({ show, closeModal, data }) => {
 
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Permissions</Form.Label>
+                                <Form.Label>Permissions <span className='text-danger'>*</span></Form.Label>
                                 <Multiselect
                                     options={decryptedPermissionsData}
                                     displayValue="name"

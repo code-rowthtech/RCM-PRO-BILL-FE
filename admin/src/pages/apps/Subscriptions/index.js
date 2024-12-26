@@ -52,7 +52,7 @@ const Subscriptions = () => {
 
     const handleStatusUpdate = (data) => {
         if (isUpdatePresent) {
-            dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive }) }))
+            dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive, type: 'toggle' }) }))
         } else {
             ToastHandle('You are not authoized for updating subscription plans.', 'danger')
         }
@@ -114,13 +114,14 @@ const Subscriptions = () => {
                                     <Table responsive className="table-centered table-nowrap mb-0">
                                         <thead className="">
                                             <tr key={''}>
+                                                <th>S.no</th>
                                                 <th>Plan name</th>
-                                                <th>Description</th>
                                                 <th>Amount</th>
                                                 <th>Date</th>
                                                 <th>Plan Tenure</th>
                                                 <th>Doctor Count</th>
                                                 <th>Patient Count</th>
+                                                <th>Description</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -143,25 +144,12 @@ const Subscriptions = () => {
 
                                                     subscriptionsResponse?.plans?.map((data, index) => (
                                                         <tr key={index}>
+                                                            <td>{index + 1}</td>
                                                             <td className='text-capitalize'>
-                                                                <Link to="#" className="text-body fw-bold">
-                                                                    {data?.name}
-                                                                </Link>
-                                                            </td>
-                                                            <td>
-                                                                <span
-                                                                    data-bs-toggle="tooltip"
-                                                                    title={data?.description}
-                                                                    className="d-inline-block text-truncate text-capitalize cursor-pointer">
-                                                                    {data?.description
-                                                                        ? (data?.description?.length > 20
-                                                                            ? data?.description.slice(0, 20) + '...'
-                                                                            : data?.description)
-                                                                        : 'N/A'}
-                                                                </span>
+                                                                {data?.name}
                                                             </td>
                                                             <td className='text-capitalize'>${data?.totalAmount}</td>
-                                                            <td className='text-capitalize'>{formatDate(data?.implimentFrom)}</td>
+                                                            <td className='text-capitalize'>{new Date(data?.implimentFrom)?.toLocaleDateString('en-GB')}</td>
                                                             <td className='text-capitalize'>
                                                                 {data?.billingFrequency}
 
@@ -172,6 +160,18 @@ const Subscriptions = () => {
                                                             </td>
                                                             <td>
                                                                 {data?.patientLimit}
+                                                            </td>
+                                                            <td>
+                                                                <span
+                                                                    data-bs-toggle="tooltip"
+                                                                    title={data?.description}
+                                                                    className="d-inline-block text-truncate text-capitalize">
+                                                                    {data?.description
+                                                                        ? (data?.description?.length > 20
+                                                                            ? data?.description.slice(0, 20) + '...'
+                                                                            : data?.description)
+                                                                        : 'N/A'}
+                                                                </span>
                                                             </td>
                                                             <td>
                                                                 <Form.Switch onClick={() => handleStatusUpdate(data)} checked={data?.isActive} />

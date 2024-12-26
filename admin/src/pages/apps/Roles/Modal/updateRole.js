@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { createPermissionAction, createRolesAction, createUserRolesAction, getPermissionAction, updateUserRolesAction } from '../../../../redux/actions';
+import { createPermissionAction, createRolesAction, createUserRolesAction, getPermissionAction, stateEmptydAction, updateUserRolesAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import Multiselect from "multiselect-react-dropdown";
 import { IoMdClose } from 'react-icons/io';
@@ -10,9 +10,10 @@ import Spinner from '../../../../constants/Spinner';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for eye visibility toggle
 import { getMastersDataAction } from '../../../../redux/settings/actions';
 import { createdBy } from '../../Settings/userId';
+import us from '../../../../assets/images/flags/us.jpg'
+import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const UpdateRoles = ({ show, closeModal, data }) => {
-
     const dispatch = useDispatch();
     const {
         register,
@@ -39,13 +40,10 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             setValue('name', data?.name)
             setValue('email', data?.email)
             setValue('phone', data?.phone)
-            // if (data?.joiningDate) {
-            //     const formattedJoiningDate = new Date(data.joiningDate)
-            //         .toISOString()
-            //         .split('T')[0]; // Format as YYYY-MM-DD
-            //     setValue('joiningDate', formattedJoiningDate);
-            // }
-
+            const formattedJoiningDate = data?.joiningDate
+                ? new Date(data?.joiningDate).toISOString().split('T')[0]
+                : '';
+            setValue('joiningDate', formattedJoiningDate)
             setValue('designation', data?.designation)
             setValue('role', data?.role?._id)
             const formattedLeavingDate = data?.leavingDate
@@ -91,19 +89,8 @@ const UpdateRoles = ({ show, closeModal, data }) => {
         dispatch(updateUserRolesAction({ key: `${encryptMessage(payload)}` }))
     };
 
-    const handleSelect = (selectedList) => {
-        const selectedIds = selectedList.map((item) => item._id);
-        setSelectedPermissionIds(selectedIds);
-    };
-
-    const handleRemove = (selectedList) => {
-        const selectedIds = selectedList.map((item) => item._id);
-        setSelectedPermissionIds(selectedIds);
-    };
-
     useEffect(() => {
         if (createResponse === 201) {
-            reset();
             closeModal();
         }
     }, [createResponse]);
@@ -139,22 +126,52 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 <Form.Control
                                     type="email"
                                     placeholder="Email ID"
+                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
                                     {...register('email')}
                                 />
                                 {errors.email && <span className="text-danger">{errors.email.message}</span>}
                             </Form.Group>
                         </Col>
-                        <Col sm={6}>
-                            <Form.Group className='mb-2'>
-                                <Form.Label>Contact No</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    maxLength={10}
-                                    placeholder="Contact No"
-                                    {...register('phone')}
-                                />
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
+                        <Col sm={6} className='mb-2'>
+                            <Form.Group className="mb-0 position-relative">
+                                <Form.Label className='mb-1'>Contact Number <span className='text-danger'>*</span></Form.Label>
+                                <Form.Group>
+                                    <InputGroup>
+                                        <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>+1</InputGroup.Text> {/* This is the prefix */}
+                                        <Form.Control
+                                            type="tel"
+                                            {...register('phone', {
+                                                required: 'This field is required',
+                                                pattern: {
+                                                    value: /^[0-9]*$/,
+                                                    message: 'Contact must be a number'
+                                                },
+                                                maxLength: {
+                                                    value: 10,
+                                                    message: 'Contact must not exceed 10 digits'
+                                                },
+                                                minLength: {
+                                                    value: 9,
+                                                    message: 'Contact must not be less than 9 digits'
+                                                }
+                                            })}
+
+                                            placeholder="1234-234-234"
+                                            maxLength={10}
+                                            onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        />
+                                    </InputGroup>
+                                </Form.Group>
+                                <div
+                                    className='position-absolute ' style={{ top: '52%', left: '1%' }}
+                                >
+                                    <img
+                                        src={us}
+                                        alt="country code flag"
+                                        width={20} />
+                                </div>
                             </Form.Group>
+                            {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                         </Col>
                         <Col sm={6}>
                             <Form.Group className='mb-2'>
@@ -165,7 +182,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                     <option value="">2</option>
                                     <option value="">3</option>
                                 </Form.Select>
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6}>
@@ -174,7 +190,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 <Form.Control
                                     type="date"
                                     readOnly
-                                    value={data?.joiningDate ? new Date(data.joiningDate).toISOString().split('T')[0] : ''}
                                     {...register('joiningDate')}
                                 />
 
@@ -203,7 +218,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                         <option key={data?._id} value={data?.name}>{data?.name}</option>
                                     ))}
                                 </Form.Select>
-                                {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                             </Form.Group>
                         </Col>
                         <Col sm={6} >
