@@ -192,33 +192,6 @@ function* getStatesFunction(data) {
     }
 }
 
-// function* getCitiesFunction(data) {
-//     try {
-//         yield put({
-//             type: ClinicsActionTypes.GET_CITIES_LOADING,
-//             payload: {},
-//         });
-//         const response = yield call(getCityByStateApi, data);
-//         const decryptedData = JSON.parse(decryptMessage(response.data.data));
-//         if (response.status === 200) {
-//             yield put({
-//                 type: ClinicsActionTypes.GET_CITIES_SUCCESS,
-//                 payload: { ...decryptedData },
-//             });
-//         } else {
-//             yield put({
-//                 type: ClinicsActionTypes.GET_CITIES_ERROR,
-//                 payload: { ...decryptedData },
-//             });
-//         }
-//     } catch (error) {
-//         yield put({
-//             type: ClinicsActionTypes.GET_CITIES_ERROR,
-//             payload: error,
-//         });
-//     }
-// }
-
 function* getCitiesFunction(data) {
     try {
         yield put({
@@ -299,6 +272,7 @@ function* createSubscriptionPlanFunction(data) {
         });
     }
 }
+
 function* deleteClinicFunction(data) {
     try {
         yield put({
@@ -327,6 +301,7 @@ function* deleteClinicFunction(data) {
         });
     }
 }
+
 function* getContractFunction(data) {
     try {
         yield put({
@@ -408,9 +383,6 @@ export function* watchGetClinics() {
 export function* watchGetStates() {
     yield takeEvery(ClinicsActionTypes.GET_STATES, getStatesFunction);
 }
-// export function* watchGetCities() {
-//     yield takeEvery(ClinicsActionTypes.GET_CITIES, getCitiesFunction);
-// }
 
 export function* watchGetCities() {
     yield takeEvery(ClinicsActionTypes.GET_CITIES, getCitiesFunction);

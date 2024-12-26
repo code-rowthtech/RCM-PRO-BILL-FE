@@ -65,6 +65,8 @@ function* createSubscriptionsFunction(data) {
     }
 }
 function* updateSubscriptionsFunction(data) {
+    const requestType = JSON.parse(decryptMessage(data?.data?.key));
+    console.log(JSON.parse(decryptMessage(data?.data?.key)))
     try {
         yield put({
             type: SubscriptionsActionTypes.UPDATE_SUBSCRIPTIONS_LOADING,
@@ -73,7 +75,11 @@ function* updateSubscriptionsFunction(data) {
         const response = yield call(updateSubscriptionsApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
-            ToastHandle(decryptedData?.message, 'success');
+            if (requestType?.type === 'toggle') {
+                ToastHandle(`Subscription plan ${requestType?.isActive === false ? 'deactivated' : 'activated'} successfully.`, 'success');
+            } else {
+                ToastHandle(decryptedData?.message, 'success');
+            }
             yield put({
                 type: SubscriptionsActionTypes.UPDATE_SUBSCRIPTIONS_SUCCESS,
                 payload: { ...decryptedData },

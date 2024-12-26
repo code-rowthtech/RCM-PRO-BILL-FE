@@ -337,9 +337,15 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
     const handleAccreditationInputChange = (e, field, index) => {
         const value = e.target.value;
-        if (field === 'number' && !/^[a-zA-Z0-9]{0,10}$/.test(value)) {
+        // if (field === 'number'
+        //     // && !/^[a-zA-Z0-9]{0,10}$/.test(value)
+        // ) {
+        //     return;
+        // }
+        if (/\s/.test(value)) {
             return;
         }
+
         setAccreditationDetails((prevDetails) => {
             const updatedDetails = [...prevDetails];
             updatedDetails[index] = {
@@ -1045,7 +1051,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <span
                                 onClick={handleAddAccreditation}
                                 className=' fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer'>
-                                {/* <CiCirclePlus size={20} /> */}
                             </span>
                         </Form.Label>
                     </Col>
@@ -1061,31 +1066,16 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 />
                             </Col>
                             <Col sm={4}>
-                                {/* <Form.Control
-                                    type="text"
-                                    value={accreditation?.number || ''}
-                                    {...register('accDocno', {
-                                        pattern: {
-                                            value: /^[0-9]*$/,
-                                            message: 'Document no must be a number'
-                                        },
-                                    })}
-                                    placeholder="Document Number"
-                                    onChange={(e) => handleAccreditationInputChange(e, 'number', index)}
-                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                />
-                                {errors.accDocno && <span className="text-danger">{errors.accDocno.message}</span>} */}
                                 <Form.Control
                                     type="text"
                                     value={accreditation?.number || ''}
                                     placeholder="Document Number"
                                     onChange={(e) => handleAccreditationInputChange(e, 'number', index)}
-                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                // onKeyPress={(event) => handleFirstSpace(event, 0)}
                                 />
                                 {errors?.accDocno && index === 0 && (
                                     <span className="text-danger">{errors.accDocno.message}</span>
                                 )}
-
                             </Col>
                             <Col sm={4} className="mb-2 position-relative">
                                 <div
@@ -1105,7 +1095,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                 : accreditation.fileName
                                             : 'Upload Document'}
 
-                                    {/* <p className='mb-0'><FiDownloadCloud /></p> */}
+                                    <p className='mb-0'><FiDownloadCloud /></p>
                                     {/* <p
                                         onClick={() => handleRemoveAccreditation(index)}
                                         style={{ right: '-2%', top: '20%' }}

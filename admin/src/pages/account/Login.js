@@ -103,6 +103,9 @@ const Login = (): React$Element<any> => {
                         name="password"
                         placeholder={t('Enter your password')}
                         containerClass={'mb-3'}
+                        onCopy={(e) => e.preventDefault()}
+                        onCut={(e) => e.preventDefault()}
+                        onPaste={(e) => e.preventDefault()}
                         defaultValue="" // Ensures the field is initialized
                     />
 

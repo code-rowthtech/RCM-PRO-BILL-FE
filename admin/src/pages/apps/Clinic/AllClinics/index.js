@@ -153,7 +153,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                             <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>S.no</th>
                                         <th >Practice Name</th>
                                         <th>Location</th>
                                         <th>Practice Type</th>
@@ -211,7 +211,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td>
                                                             <span
-                                                                className={`${data?.contractId?.contractSignStatus === true ? 'bg-success' : 'bg-secondary'} rounded-1 text-white py-0 px-1`}>
+                                                                className={`${data?.contractId?.contractSignStatus === true ? 'bg-success' : 'bg-secondary'} fs-6 rounded-1 text-white py-0 px-1`}>
                                                                 {data?.contractId?.contractSignStatus === true ?
                                                                     'Signed'
                                                                     :

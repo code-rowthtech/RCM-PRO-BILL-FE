@@ -135,7 +135,7 @@ const RoleManagement = () => {
                                     <Table responsive className="table-centered table-nowrap mb-0">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
+                                                <th>S.no</th>
                                                 <th>Name</th>
                                                 <th>Role</th>
                                                 <th>Username</th>

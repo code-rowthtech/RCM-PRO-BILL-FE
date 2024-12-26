@@ -139,7 +139,8 @@ const Tenure = () => {
                                 <Table responsive className="table-centered table-nowrap mb-0">
                                     <thead className="ght">
                                         <tr key={''}>
-                                            <th>Name</th>
+                                            <th>S.no</th>
+                                            <th>Tenure Name</th>
                                             <th>Months</th>
                                             <th>Status</th>
                                             <th>Action</th>
@@ -163,6 +164,7 @@ const Tenure = () => {
 
                                                 clinicTypeData?.map((data, index) => (
                                                     <tr key={index}>
+                                                        <td>{index + 1}</td>
                                                         <td>
                                                             {data?.name}
                                                         </td>
@@ -216,7 +218,7 @@ const Tenure = () => {
                         </Col>
                     </Row>
                     <Form autoComplete='off' onSubmit={handleSubmit(addTenure)}>
-                        <Row>
+                        <Row className='mb-2'>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
                                     <Form.Label>Tenure Name <span className='text-danger'>*</span></Form.Label>
@@ -297,7 +299,7 @@ const Tenure = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Tenure Name</Form.Label>
+                                    <Form.Label>Tenure Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter Tenure Name"
@@ -310,7 +312,7 @@ const Tenure = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Tenure Name</Form.Label>
+                                    <Form.Label>Re-Enter Tenure Name <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter tenure name"
@@ -325,7 +327,7 @@ const Tenure = () => {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Months</Form.Label>
+                                    <Form.Label>Months <span className='text-danger'>*</span></Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter no of months"

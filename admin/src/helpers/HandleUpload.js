@@ -6,7 +6,7 @@ import { decryptMessage } from '../cryptoUtils'
 export const handleUpload = async (file, setLoading) => {
     if (!file) {
         alert('Please select a file first');
-        return null;
+        return;
     }
     setLoading(true); // Start loading
 
