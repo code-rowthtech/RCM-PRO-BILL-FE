@@ -160,8 +160,10 @@ const Index = () => {
                                         onClick={() => {
                                             if (missingField) {
                                                 ToastHandle('Please fill in all mandatory fields to proceed.', 'danger');
-                                            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.email)) {
+                                            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail?.email)) {
                                                 ToastHandle("Please enter a valid email address.", 'danger');
+                                            } else if (!/^\d{9,10}$/.test(resetEmail?.phone)) {
+                                                ToastHandle("Please enter a valid phone number with 9 or 10 digits.", 'danger');
                                             }
                                             else {
                                                 setResetEmailError(null); // Clear the error when all inputs are valid
