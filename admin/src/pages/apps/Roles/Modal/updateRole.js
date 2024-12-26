@@ -14,6 +14,7 @@ import us from '../../../../assets/images/flags/us.jpg'
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const UpdateRoles = ({ show, closeModal, data }) => {
+    console.log(data, 'dataaaaaaaaaaaaa')
     const dispatch = useDispatch();
     const {
         register,
@@ -62,7 +63,9 @@ const UpdateRoles = ({ show, closeModal, data }) => {
         const fields = {
             name: data?.firstName,
             phone: data?.phone,
-            joiningDate: data?.joiningDate,
+            joiningDate: data?.joiningDate
+                ? new Date(data?.joiningDate).toISOString().split('T')[0]
+                : '',
             role: data?.role?._id,
             designation: data?.designation,
         };
@@ -71,8 +74,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             if (value) setValue(key, value);
         });
     }, [data, setValue]);
-
-
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
