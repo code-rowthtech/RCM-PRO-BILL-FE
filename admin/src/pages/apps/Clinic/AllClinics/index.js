@@ -83,12 +83,13 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setDeleteModal(false);
     }
     const handleOpenDeleteModal = (data) => {
-        if (isUpdatePresent) {
-            setDeleteModal(true);
-            setDeleteData(data);
-        } else {
-            ToastHandle("You are not authorized to update a clinic.", 'danger')
-        }
+        // if (isUpdatePresent) {
+
+        // } else {
+        //     ToastHandle("You are not authorized to update a clinic.", 'danger')
+        // }
+        setDeleteModal(true);
+        setDeleteData(data);
 
     }
 
