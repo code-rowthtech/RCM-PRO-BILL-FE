@@ -236,7 +236,7 @@ const AddRoles = ({ show, closeModal }) => {
                                             validate: value =>
                                                 value === password || 'Passwords do not match'
                                         })}
-                                        // onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        // onKeyPress={(event)   => handleFirstSpace(event, 0)}
                                         onCopy={(e) => e.preventDefault()}
                                         onCut={(e) => e.preventDefault()}
                                         onPaste={(e) => e.preventDefault()}
