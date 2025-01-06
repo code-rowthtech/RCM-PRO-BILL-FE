@@ -18,7 +18,7 @@ const AddRoles = ({ show, closeModal }) => {
     const createResponse = store?.createRolesReducer?.data?.status;
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
         ...item,
-        name: `${item?.name}`,
+        name: `${item?.permission}`,
     }));
     const {
         register,

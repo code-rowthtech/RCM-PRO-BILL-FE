@@ -22,7 +22,6 @@ const ContractFormat = () => {
     dispatch(getContractFormatAction());
   }, [dispatch]);
 
-
   // Update `quillValue` when `contractFormat` is loaded
   useEffect(() => {
     if (contractFormat) {

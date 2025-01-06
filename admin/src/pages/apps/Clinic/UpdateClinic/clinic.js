@@ -1,7 +1,7 @@
 // src/components/Clinic.js
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Col, Form, Row, Button, InputGroup } from 'react-bootstrap';
+import { Col, Form, Row, Button, InputGroup, Modal } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { FiDownloadCloud } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,6 +36,7 @@ const Clinic = ({ id }) => {
     const [mailingLongitude, setMailingLongitude] = useState(null);
     const [citySearch, setCitySearch] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
+    const [showReset, setShowReset] = useState(false);
     const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
@@ -476,6 +477,13 @@ const Clinic = ({ id }) => {
         updatedCodes[index] = value;
         setTaxonomyCodes(updatedCodes);
     };
+
+    const closeResetModal = () => {
+        setShowReset(false);
+    }
+    const sendResetMail = (data) => {
+        alert('asdfg')
+    }
     return (
         <>
             <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -506,7 +514,6 @@ const Clinic = ({ id }) => {
                             <Form.Label className="mb-1">Practice Type <span className="text-danger">*</span></Form.Label>
                             <Form.Select
                                 {...register('clinicType', { required: 'This field is required' })}
-                            // className={`${getValues('clinicType') === "" ? 'emptyField' : 'selectedField'}`}
                             >
                                 <option value="">Select clinic type</option>
                                 {clinicTypeData?.map((data) => (
@@ -1478,7 +1485,10 @@ const Clinic = ({ id }) => {
                     </Col>
                 </Row >
                 <Row>
-                    <Col className='text-end'>
+                    <Col className='d-flex gap-2 justify-content-end'>
+                        <Button className='custom-buttons' onClick={() => setShowReset(true)}>
+                            Change Password
+                        </Button>
                         <Button type="submit" disabled={store?.updateClinicsReducer?.loading} className="mt-3">
                             {store?.updateClinicsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />
@@ -1489,6 +1499,43 @@ const Clinic = ({ id }) => {
                     </Col>
                 </Row>
             </Form >
+            <Modal centered size='md' show={showReset} onHide={closeResetModal}>
+                <Modal.Body>
+                    <Row className=" mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Email to clinic</h4>
+                        </Col>
+                        <Col sm={1}>
+                        </Col>
+                    </Row>
+                    <Form onSubmit={handleSubmit(sendResetMail)}>
+                        <Row>
+                            <Col md={12}
+                                className='d-flex justify-content-center'>
+                                <Form.Group
+                                    className="mb-2 w-50">
+                                    <Form.Control
+                                        type="email"
+                                        readOnly
+                                        // defaultValue={mailId?.email}
+                                        {...register('resetEmail', { required: 'Email is required' })}
+                                    />
+                                    {errors.resetEmail && <span className="text-danger">{errors.resetEmail.message}</span>}
+                                </Form.Group>
+                            </Col>
+                            <Col sm={12} className='text-center'>
+                                The clinic will receive a reset password email at {'asdvc'}.
+                            </Col>
+                            <Col sm={12} className='text-center mt-2' >
+                                <Button type='submit' className='custom-buttons' >
+                                    Send
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Modal.Body>
+            </Modal>
         </>
 
     );

@@ -30,8 +30,8 @@ const RoleManagement = () => {
     const createResponse = store?.createUserRolesReducer?.data?.status;
     const updateResponse = store?.updateUserRolesReducer?.data?.status;
     const apiData = store?.getUserRolesReducer?.data?.users;
-    const isAddPresent = userPermissions.includes('Create Users');
-    const isUpdatePresent = userPermissions.includes('Update Users');
+    const isAddPresent = userPermissions.includes('Create Users') || userPermissions.includes('ADD_A_USER');
+    const isUpdatePresent = userPermissions.includes('Update Users') || userPermissions.includes('UPDATE_A_USER');
     useEffect(() => {
         dispatch(getUserRolesAction({ skip: skip, limit: 10, search: '', status: status }))
         if (createResponse === 201 || updateResponse === 200) {
@@ -116,11 +116,11 @@ const RoleManagement = () => {
                                                 placeholder="Search..."
                                             />
                                             <Button className='custom-buttons' onClick={() => {
-                                                if (isAddPresent) {
-                                                    setShowModal(true)
-                                                } else {
-                                                    ToastHandle('You dont have permission to create new user.', 'danger')
-                                                }
+                                                setShowModal(true)
+                                                // if (isAddPresent) {
+                                                // } else {
+                                                //     ToastHandle('You dont have permission to create new user.', 'danger')
+                                                // }
                                             }
                                             }>
                                                 <span className='uil-plus'></span> Add New User
@@ -167,12 +167,13 @@ const RoleManagement = () => {
                                                             <td>
                                                                 <Form.Switch
                                                                     onClick={() => {
-                                                                        if (isUpdatePresent) {
-                                                                            setStatusModal(true);
-                                                                            setDataToUpdate(data);
-                                                                        } else {
-                                                                            ToastHandle('You dont have permission for updating users', 'danger')
-                                                                        }
+                                                                        // if (isUpdatePresent) {
+
+                                                                        // } else {
+                                                                        //     ToastHandle('You dont have permission for updating users', 'danger')
+                                                                        // }
+                                                                        setStatusModal(true);
+                                                                        setDataToUpdate(data);
                                                                     }}
                                                                     checked={data?.status} />
                                                             </td>
@@ -181,12 +182,12 @@ const RoleManagement = () => {
                                                                     to="#"
                                                                     className="action-icon"
                                                                     onClick={() => {
-                                                                        if (isUpdatePresent) {
-                                                                            setUpdateModal(true);
-                                                                            setDataToUpdate(data);
-                                                                        } else {
-                                                                            ToastHandle("You are not authorized to update a user", 'danger')
-                                                                        }
+                                                                        setUpdateModal(true);
+                                                                        setDataToUpdate(data);
+                                                                        // if (isUpdatePresent) {
+                                                                        // } else {
+                                                                        //     ToastHandle("You are not authorized to update a user", 'danger')
+                                                                        // }
                                                                     }}
                                                                 >
                                                                     <i className="mdi fs-4 cursor-pointer mdi-square-edit-outline"></i>

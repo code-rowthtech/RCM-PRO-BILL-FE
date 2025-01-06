@@ -35,11 +35,6 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
     }
     return (
         <Modal centered size='md' show={show} onHide={closeModal}>
-            {/* <Modal.Header
-                onHide={closeModal}
-                closeButton
-                className={'modal-colored-header pb-0 border-0 text-center'}>
-            </Modal.Header> */}
             <Modal.Body>
                 <Row className=" mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
@@ -47,10 +42,8 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
                         <h4 className="mb-0 text-center">Email to clinic</h4>
                     </Col>
                     <Col sm={1}>
-                        {/* <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} /> */}
                     </Col>
                 </Row>
-                {/* <h4 className="mt-0 text-center">Add Permissions</h4> */}
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md={12}
