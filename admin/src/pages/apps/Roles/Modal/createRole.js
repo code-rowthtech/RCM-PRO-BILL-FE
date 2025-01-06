@@ -133,7 +133,7 @@ const AddRoles = ({ show, closeModal }) => {
                                 <Form.Control
                                     type="email"
                                     placeholder="Email ID"
-                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                    // onKeyPress={(event) => handleFirstSpace(event, 0)}
                                     {...register('email', { required: 'This field is required' })}
                                 />
                                 {errors.email && <span className="text-danger">{errors.email.message}</span>}
@@ -205,7 +205,7 @@ const AddRoles = ({ show, closeModal }) => {
                                                 message: 'At least 8 characters required, including 1 uppercase letter, 1 number, and 1 special character',
                                             },
                                         })}
-                                        onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        // onKeyPress={(event) => handleFirstSpace(event, 0)}
                                         onCopy={(e) => e.preventDefault()}
                                         onCut={(e) => e.preventDefault()}
                                         onPaste={(e) => e.preventDefault()}
@@ -236,7 +236,7 @@ const AddRoles = ({ show, closeModal }) => {
                                             validate: value =>
                                                 value === password || 'Passwords do not match'
                                         })}
-                                        onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        // onKeyPress={(event) => handleFirstSpace(event, 0)}
                                         onCopy={(e) => e.preventDefault()}
                                         onCut={(e) => e.preventDefault()}
                                         onPaste={(e) => e.preventDefault()}

@@ -22,7 +22,6 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
     const [editMode, setEditMode] = useState(false);
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data?.contract;
-    console.log(store?.getContractReducer?.data, 'store?.getContractReducer?.datastore?.getContractReducer?.data')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     useEffect(() => {
         if (activeTab === 'contract') {
@@ -30,7 +29,6 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                 clinicId: id,
             }
             dispatch(getContractAction({ key: encryptMessage(payload) }))
-            // dispatch(getContractFormatAction());
         }
     }, [activeTab]);
 

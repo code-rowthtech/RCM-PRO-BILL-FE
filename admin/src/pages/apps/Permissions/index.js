@@ -21,6 +21,7 @@ const Permissions = () => {
     const [skip, setSkip] = useState(1)
     const store = useSelector((state) => state);
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data;
+    console.log(store?.getPermissionsDataReducer?.data, 'store?.getPermissionsDataReducer?.data')
     const deleteSuccess = store?.deletePermissionsDataReducer?.data?.success;
     const updateSuccess = store?.updatePermissionsDataReducer?.data?.success;
     const handleClosemodal = () => {
@@ -133,7 +134,7 @@ const Permissions = () => {
                                                             <td colSpan={2}>{index + 1}</td>
                                                             <td className='fw-bold text-body text-capitalize' colSpan={2} onClick={() => setSelected(data?._id)}>
                                                                 {/* <Link to="#" className="text-body fw-bold"> */}
-                                                                {data?.name}
+                                                                {data?.permission}
                                                                 {/* </Link> */}
                                                             </td>
                                                             <td>

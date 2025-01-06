@@ -30,8 +30,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
-    const isAddPresent = userPermissions.includes('add clinic');
-    const isUpdatePresent = userPermissions.includes('update clinic');
+    const isAddPresent = userPermissions.includes('add clinic') || userPermissions.includes('ADD_A_PRACTICE');
+    const isUpdatePresent = userPermissions.includes('update clinic') || userPermissions.includes('UPDATE_A_PRACTICE');
     const {
         register,
         getValues,
@@ -137,7 +137,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                 type="text"
                                                 onChange={(e) => setName(e.target.value)}
                                                 placeholder="Search..." />
-                                            {isAddPresent ?
+                                            {/* {isAddPresent ?
                                                 <Button as={Link} to="/apps/rcm/addclinic" className="custom-buttons">
                                                     New Practice
                                                 </Button>
@@ -145,7 +145,11 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                 <Button onClick={() => ToastHandle('You dont have permission to add a practice.', 'danger')} className="custom-buttons">
                                                     New Practice
                                                 </Button>
-                                            }
+                                            } */}
+
+                                            <Button as={Link} to="/apps/rcm/addclinic" className="custom-buttons">
+                                                New Practice
+                                            </Button>
                                         </Col>
                                     </Row>
                                 </Col>
@@ -226,15 +230,15 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             />
                                                         </td>
                                                         <td>
-                                                            {isUpdatePresent ?
-                                                                <Link to={`/apps/rcm/updateclinic?updateid=${data?._id}`} className="action-icon">
-                                                                    <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
-                                                                </Link>
+                                                            <Link to={`/apps/rcm/updateclinic?updateid=${data?._id}`} className="action-icon">
+                                                                <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
+                                                            </Link>
+                                                            {/* {isUpdatePresent ?
                                                                 :
                                                                 <i
                                                                     onClick={() => ToastHandle('You are not authorized to udate a clinic.', 'danger')}
                                                                     className="mdi cursor-pointer mdi-square-edit-outline fs-4"></i>
-                                                            }
+                                                            } */}
                                                         </td>
                                                     </tr>
                                                 );

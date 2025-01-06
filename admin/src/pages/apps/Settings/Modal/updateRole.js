@@ -20,7 +20,6 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const [selectedPermissions, setSelectedPermissions] = useState([]);
     const [initialPermissions, setInitialPermissions] = useState([]);
     const updateSuccess = store?.updateRolesReducer?.data?.status;
-
     useEffect(() => {
         if (show) {
             dispatch(getPermissionAction({ search: '', limit: '', skip: '' }));
@@ -29,15 +28,16 @@ const UpdateRole = ({ show, closeModal, data }) => {
 
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
         ...item,
-        name: `${item?.name}`,
+        name: `${item?.permission}`,
     }));
 
     useEffect(() => {
         if (data) {
+            console.log(data, '===============')
             setValue('name', data.name || '');
             setValue('description', data.description || '');
             setInitialPermissions(data?.permissions || []);
-            setSelectedPermissions(data?.permissions?.map(permission => (permission)) || []);
+            setSelectedPermissions(data?.permissions?.map(permission => (permission?.permission)) || []);
         }
         if (updateSuccess === 200) {
             closeModal();

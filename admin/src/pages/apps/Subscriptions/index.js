@@ -26,8 +26,8 @@ const Subscriptions = () => {
     const subscriptionsResponse = store?.getSubscriptionsReducer?.data;
     const createSuccess = store?.createSubscriptionsReducer?.data?.status;
     const updateSuccess = store?.updateSubscriptionsReducer?.data?.status;
-    const isAddPresent = userPermissions.includes('add subscription');
-    const isUpdatePresent = userPermissions.includes('edit subscription');
+    const isAddPresent = userPermissions.includes('add subscription') || userPermissions.includes('ADD_A_SUBSCRIPTION');
+    const isUpdatePresent = userPermissions.includes('edit subscription') || userPermissions.includes('UPDATE_A_SUBSCRIPTION');
     useEffect(() => {
         dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
         if (createSuccess === 201 || updateSuccess === 200) {
@@ -51,11 +51,11 @@ const Subscriptions = () => {
     }
 
     const handleStatusUpdate = (data) => {
-        if (isUpdatePresent) {
-            dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive, type: 'toggle' }) }))
-        } else {
-            ToastHandle('You are not authoized for updating subscription plans.', 'danger')
-        }
+        dispatch(updateSubscriptionsAction({ key: encryptMessage({ id: data?._id, isActive: !data?.isActive, type: 'toggle' }) }))
+        // if (isUpdatePresent) {
+        // } else {
+        //     ToastHandle('You are not authoized for updating subscription plans.', 'danger')
+        // }
     }
 
 
@@ -96,11 +96,11 @@ const Subscriptions = () => {
                                                 }}
                                                 placeholder="Search..." />
                                             <Button onClick={() => {
-                                                if (isAddPresent) {
-                                                    setShowModal(true)
-                                                } else {
-                                                    ToastHandle('You are not authoized for adding subscription plans.', 'danger')
-                                                }
+                                                setShowModal(true)
+                                                // if (isAddPresent) {
+                                                // } else {
+                                                // ToastHandle('You are not authoized for adding subscription plans.', 'danger')
+                                                // }
                                             }} className="custom-buttons">
                                                 New Plan
                                             </Button>
@@ -178,12 +178,13 @@ const Subscriptions = () => {
                                                             </td>
                                                             <td>
                                                                 <Link to="#" className="action-icon" onClick={() => {
-                                                                    if (isUpdatePresent) {
-                                                                        setShowModal(true);
-                                                                        setDataToUpdate(data);
-                                                                    } else {
-                                                                        ToastHandle('You are not authoized for updating subscription plans.', 'danger')
-                                                                    }
+                                                                    setShowModal(true);
+                                                                    setDataToUpdate(data);
+                                                                    // if (isUpdatePresent) {
+
+                                                                    // } else {
+                                                                    //     ToastHandle('You are not authoized for updating subscription plans.', 'danger')
+                                                                    // }
                                                                 }}>
                                                                     <i className="mdi mdi-square-edit-outline"></i>
                                                                 </Link>
