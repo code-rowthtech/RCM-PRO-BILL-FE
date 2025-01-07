@@ -22,6 +22,7 @@ const Updateclinic = () => {
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    console.log(store?.getClinicByIdReducer?.data, 'clinicDataclinicData')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
@@ -42,15 +43,14 @@ const Updateclinic = () => {
     }
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingDetails = store?.createSubscriptionPlanReducer?.data?.result;
-    const contracts = store?.getContractReducer?.data?.contract;
-
+    const contracts = store?.getContractReducer?.data;
     const handleContractGeneration = () => {
         const data = {
-            id: contracts?._id,
-            adminName: contracts?.adminId?.firstName,
-            adminEmail: contracts?.adminId?.email,
-            clinicName: contracts?.clinicId?.name,
-            clinicEmail: contracts?.clinicId?.userId?.email
+            clinicId: id,
+            adminName: user?.name,
+            adminEmail: user?.email,
+            clinicName: clinicData?.name,
+            clinicEmail: clinicData?.userId?.email
         }
         dispatch(generateContractAction({ key: encryptMessage(data) }))
     }
@@ -91,7 +91,7 @@ const Updateclinic = () => {
                                     </span>
                                 </Col>
                                 <Col className='d-flex justify-content-end align-items-center'>
-                                    <Button onClick={handleContractGeneration} disabled={!store?.getContractReducer?.data?.contract?.contractTemplateId?.html} className={`custom-buttons me-2 ${contracts?.envelopeId || activeTab !== 'contract' ? 'd-none' : ''}`}>
+                                    <Button onClick={handleContractGeneration} className={`custom-buttons me-2 ${store?.getContractReducer?.data?.contract || activeTab !== 'contract' ? 'd-none' : ''}`}>
                                         {store?.generateContractReducer?.loading ?
                                             <Spinner color='white' className='spinner-border-sm' />
                                             :

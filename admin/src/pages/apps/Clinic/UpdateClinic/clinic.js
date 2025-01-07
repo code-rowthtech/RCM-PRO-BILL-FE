@@ -1083,102 +1083,6 @@ const Clinic = ({ id }) => {
                             </Col>
                         </Row>
                     </Col>
-
-                    {/* <Col sm={12}>
-                        <Row>
-                            <Col sm={12} className='mb-2'>
-                                <span className='text-black form-label fw-semibold'>Address Details</span>
-                            </Col>
-                            <Col sm={6}>
-                                <Form.Group className="mb-2">
-                                    <Form.Label className='mb-1'>Address 1</Form.Label>
-                                    <Form.Control
-                                        as={'textarea'}
-                                        rows={5}
-                                        {...register('address')}
-                                        placeholder="Address 1" />
-                                </Form.Group>
-                            </Col>
-                            <Col sm={6}>
-                                <Row>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>State</Form.Label>
-                                            <Form.Select
-                                                {...register('stateName')}
-                                                onChange={(e) => handleStateSelection(e)}
-                                            >
-                                                <option value=''>State</option>
-                                                {statesData?.states?.map((data) => (
-                                                    <option
-                                                        key={data?.state_code}
-                                                        value={JSON.stringify({
-                                                            name: data?.name,
-                                                            state_code: data?.state_code,
-                                                            id: data?.id,
-                                                            _id: data?._id,
-                                                        })}
-                                                    >
-                                                        {data?.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </Form.Group>
-
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>City</Form.Label>
-                                          
-                                            <Form.Select
-                                                {...register('city')}
-                                                onChange={(e) => handleCitySelection(e)}
-                                                defaultValue={clinicData?.userId?.address?.city}
-                                            >
-                                                <option>{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
-                                                {cities?.map((data) => (
-                                                    <option key={data?._id} value={JSON.stringify({ _id: data?._id, name: data?.name, latitude: data?.latitude, longitude: data?.longitude })}>
-                                                        {data?.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Street</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                {...register('street')}
-                                                placeholder="Street" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Zip</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                {...register('zip', {
-                                                    minLength: {
-                                                        value: 5,
-                                                        message: 'ZIP code must be at least 5 characters long',
-                                                    },
-                                                    pattern: {
-                                                        value: /^[0-9]+$/,
-                                                        message: 'ZIP code must contain numbers only',
-                                                    },
-                                                })}
-                                                onKeyPress={handleFirstSpace}
-                                                placeholder="Zip"
-                                                maxLength={5} />
-                                            {errors.zip && <span className="text-danger">{errors.zip.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </Col>
-                        </Row>
-                    </Col> */}
                     <hr />
                     <Col sm={12}>
                         <Row>
@@ -1486,10 +1390,10 @@ const Clinic = ({ id }) => {
                 </Row >
                 <Row>
                     <Col className='d-flex gap-2 justify-content-end'>
-                        <Button className='custom-buttons' onClick={() => setShowReset(true)}>
+                        {/* <Button className='custom-buttons' onClick={() => setShowReset(true)}>
                             Change Password
-                        </Button>
-                        <Button type="submit" disabled={store?.updateClinicsReducer?.loading} className="mt-3">
+                        </Button> */}
+                        <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3">
                             {store?.updateClinicsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
@@ -1519,7 +1423,7 @@ const Clinic = ({ id }) => {
                                         type="email"
                                         readOnly
                                         // defaultValue={mailId?.email}
-                                        {...register('resetEmail', { required: 'Email is required' })}
+                                        {...register('resetEmail')}
                                     />
                                     {errors.resetEmail && <span className="text-danger">{errors.resetEmail.message}</span>}
                                 </Form.Group>
