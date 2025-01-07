@@ -12,7 +12,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getContractFormatAction } from '../../../../redux/settings/actions';
 import { IoMdClose } from 'react-icons/io';
-const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId, setQuillBuffer }) => {
+const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId, setQuillBuffer, addClinicId }) => {
     const {
         register,
         handleSubmit,
@@ -30,7 +30,8 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
     const [editMode, setEditMode] = useState(false);
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
-    const contracts = store?.getContractReducer?.data?.contract;
+    const contracts = store?.getContractReducer?.data;
+    console.log(contracts, 'contracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     const billingResponse = store?.createSubscriptionPlanReducer?.data;
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
@@ -59,7 +60,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {
-                clinicId: billingResponse?.user?.clinicId?._id,
+                clinicId: addClinicId,
                 // clinicId: billingId,
             };
             dispatch(getContractAction({ key: encryptMessage(payload) }));
@@ -119,7 +120,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                     </Col>
                 </Row>
                 :
-                contracts?.adminId ?
+                contracts ?
                     <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                         <thead>
                             <tr>
@@ -138,21 +139,11 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                                             <Spinner />
                                         </td>
                                     </tr>
-                                    : contracts?.length === 0 ? (
-                                        <tr>
-                                            <td className="text-center" colSpan={5}>
-                                                No data found
-                                            </td>
-                                        </tr>
-                                    ) :
-                                        // contracts?.map((contracts, index) => (
-                                        <tr key={contracts?._id}>
-                                            <td>{contracts?.contractName}</td>
-                                            <td><span className={`${contracts?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                            <td><span className={`${contracts?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                            {/* <td>
-                                                {new Date(contracts?.sentDate).toLocaleDateString('en-GB')}
-                                            </td> */}
+                                    : contracts?.standardContract ? (
+                                        <tr key={contracts?.standardContract?._id}>
+                                            <td>Standard Contract Agreement</td>
+                                            <td><span className={`bg-secondary text-light px-1 rounded-1`}>Pending</span></td>
+                                            <td><span className={`bg-secondary text-light px-1 rounded-1`}>Pending</span></td>
                                             <td>
                                                 <i className="fs-4 me-1 uil-eye cursor-pointer"
                                                     onClick={() => {
@@ -161,6 +152,20 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                                                 <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
                                             </td>
                                         </tr>
+                                    ) :
+                                        <tr key={contracts?._id}>
+                                            <td>{contracts?.contract?.contractName}</td>
+                                            <td><span className={`${contracts?.contract?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.contract?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                            <td><span className={`${contracts?.contract?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.contract?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                            <td>
+                                                <i className="fs-4 me-1 uil-eye cursor-pointer"
+                                                    onClick={() => {
+                                                        setShow(true)
+                                                    }}></i>
+                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
+                                            </td>
+                                        </tr>
+
                                 // ))
                             }
                         </tbody>
@@ -210,8 +215,8 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                     <Row>
                         <Col sm={12}>
                             <iframe
-                                src={contracts?.contractTemplateId?.fileUrl}
-                                title={contracts?.contractTemplateId?.fileName}
+                                src={contracts?.standardContract?.fileUrl || contracts?.contract?.contractTemplateId?.fileUrl}
+                                title={contracts?.contract?.contractName}
                                 width="100%"
                                 height="620px"
                                 className="px-4"

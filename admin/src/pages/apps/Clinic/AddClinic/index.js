@@ -47,6 +47,9 @@ const Index = () => {
     const navigate = useNavigate()
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
+    // const addClinicData = store?.createClinicsReducer?.data?.data;
+    const [addClinicData, setAddClinicData] = useState(null);
+    console.log(addClinicData, 'addClinicDataaddClinicData')
     const createResponse = store?.createClinicsReducer?.data?.status;
     const createBillingResponse = store?.createSubscriptionPlanReducer?.data?.status;
 
@@ -56,7 +59,7 @@ const Index = () => {
         dispatch(getStatesByCountryAction());
         if (addClinicResponse === 200) {
             reset();
-            ToastHandle(store?.createClinicsReducer?.data?.message, 'success');
+            setAddClinicData(store?.createClinicsReducer?.data?.data)
             dispatch(stateEmptydAction());
         }
     }, [dispatch, addClinicResponse, activeTab])
@@ -79,21 +82,23 @@ const Index = () => {
 
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
+    console.log(store?.createSubscriptionPlanReducer, 'store?.createSubscriptionPlanReducer')
     const contracts = store?.getContractReducer?.data?.contract;
     const handleContractGeneration = () => {
         const data = {
-            id: contracts?._id,
-            adminName: contracts?.adminId?.firstName,
-            adminEmail: contracts?.adminId?.email,
-            clinicName: contracts?.clinicId?.name,
-            clinicEmail: contracts?.clinicId?.userId?.email
+            clinicId: addClinicData?.clinicId?._id,
+            adminName: user?.name,
+            adminEmail: user?.email,
+            clinicName: addClinicData?.clinicId?.name,
+            clinicEmail: addClinicData?.email
         }
+        console.log(data, 'data')
         dispatch(generateContractAction({ key: encryptMessage(data) }));
     }
     useEffect(() => {
         if (store?.generateContractReducer?.data?.status === 200) {
             const payload = {
-                clinicId: billingResponse?._id,
+                clinicId: addClinicData?.clinicId?._id,
                 // clinicId: billingId,
             };
             dispatch(getContractAction({ key: encryptMessage(payload) }));
@@ -132,22 +137,22 @@ const Index = () => {
                                     </span>
                                     <span
                                         onClick={() => {
-                                            if (createResponse === 200) {
-                                                handleActiveTab('billing')
-                                            } else {
-                                                ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
-                                            }
+                                            handleActiveTab('billing')
+                                            // if (createResponse === 200) {
+                                            // } else {
+                                            //     ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
+                                            // }
                                         }}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Billing and Subscription Information
                                     </span>
                                     <span
                                         onClick={() => {
-                                            if (createBillingResponse === 200) {
-                                                handleActiveTab('contract')
-                                            } else {
-                                                ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
-                                            }
+                                            handleActiveTab('contract')
+                                            // if (createBillingResponse === 200) {
+                                            // } else {
+                                            //     ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
+                                            // }
                                         }}
                                         className={`fw-semibold cursor-pointer ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Contract
@@ -177,7 +182,7 @@ const Index = () => {
                                     <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
                                 </Col>
                                 <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
-                                    <Button onClick={handleContractGeneration} disabled={!store?.getContractReducer?.data?.contract?.contractTemplateId?.html} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
+                                    <Button onClick={handleContractGeneration} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
                                         {store?.generateContractReducer?.loading ?
                                             <Spinner className='spinner-border-sm' color='white' />
                                             :
@@ -205,7 +210,7 @@ const Index = () => {
                                                 setQuillBuffer={setQuillBuffer}
                                                 setClinicId={setClinicId} setBillingId={setBillingId}
                                                 setActiveTab={setActiveTab} activeTab={activeTab}
-                                                clinicId={clinicId} billingId={billingId} contractId={contractId} />
+                                                clinicId={clinicId} addClinicId={addClinicData?.clinicId?._id} billingId={billingId} contractId={contractId} />
                                     }
                                 </Col>
                             </Row>

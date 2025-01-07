@@ -21,7 +21,8 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
     const [quillValue, setQuillValue] = useState('');
     const [editMode, setEditMode] = useState(false);
     const store = useSelector((state) => state);
-    const contracts = store?.getContractReducer?.data?.contract;
+    const contracts = store?.getContractReducer?.data;
+    console.log(store?.getContractReducer?.data, 'contracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     useEffect(() => {
         if (activeTab === 'contract') {
@@ -112,21 +113,25 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                                             <Spinner />
                                         </td>
                                     </tr>
-                                    : contracts?.length === 0 ? (
-                                        <tr>
-                                            <td className="text-center" colSpan={5}>
-                                                No data found
+                                    : contracts?.standardContract ? (
+                                        <tr key={contracts?.standardContract?._id}>
+                                            <td>Standard Contract Agreement</td>
+                                            <td><span className={`bg-secondary text-light px-1 rounded-1`}>Pending</span></td>
+                                            <td><span className={`bg-secondary text-light px-1 rounded-1`}>Pending</span></td>
+                                            <td>
+                                                <i className="fs-4 me-1 uil-eye cursor-pointer"
+                                                    onClick={() => {
+                                                        setShow(true)
+                                                    }}></i>
+                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
                                             </td>
                                         </tr>
                                     ) :
                                         // contracts?.map((contracts, index) => (
                                         <tr key={contracts?._id}>
-                                            <td>{contracts?.contractName}</td>
-                                            <td><span className={`${contracts?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                            <td><span className={`${contracts?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
-                                            {/* <td>
-                                                {new Date(contracts?.sentDate).toLocaleDateString('en-GB')}
-                                            </td> */}
+                                            <td>{contracts?.contract?.contractName}</td>
+                                            <td><span className={`${contracts?.contract?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.contract?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                            <td><span className={`${contracts?.contract?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.contract?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
                                             <td>
                                                 <i className="fs-4 me-1 uil-eye cursor-pointer"
                                                     onClick={() => {
@@ -184,8 +189,8 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                     <Row>
                         <Col sm={12}>
                             <iframe
-                                src={contracts?.documentFileUrl ? contracts?.documentFileUrl : contracts?.contractTemplateId?.fileUrl}
-                                title={contracts?.documentFileName ? contracts?.documentFileName : contracts?.contractTemplateId?.fileName}
+                                src={contracts?.standardContract?.fileUrl || contracts?.contract?.contractTemplateId?.fileUrl}
+                                title={contracts?.contract?.contractName}
                                 width="100%"
                                 height="620px"
                                 className="px-4"
