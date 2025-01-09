@@ -29,6 +29,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
             const payload = {
                 clinicId: id,
             }
+            console.log({ payload })
             dispatch(getContractAction({ key: encryptMessage(payload) }))
         }
     }, [activeTab]);
