@@ -85,9 +85,12 @@ function* forgotPassword({ payload }) {
         const encryptedPayload = {
             key: encryptMessage(payload)
         }
-        const response = yield call(forgotPasswordApi, encryptedPayload);
+        const response = yield call(forgotPasswordApi, payload);
+        const decryptedResponse = JSON.parse(decryptMessage(response?.data?.data));
+        ToastHandle(decryptedResponse?.message, 'success')
         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD, decryptMessage(response?.data?.data)));
     } catch (error) {
+        ToastHandle(error, 'danger')
         yield put(authApiResponseError(AuthActionTypes.FORGOT_PASSWORD, error));
     }
 }

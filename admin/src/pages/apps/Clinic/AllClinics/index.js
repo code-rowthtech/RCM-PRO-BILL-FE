@@ -27,6 +27,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
+    console.log({ clinicsData })
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;

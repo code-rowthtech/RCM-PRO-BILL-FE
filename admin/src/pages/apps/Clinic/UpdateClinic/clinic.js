@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import us from '../../../../assets/images/flags/us.jpg'
 import ToastHandle from '../../../../helpers/ToastMessage';
-import { getCities2Action, getCitiesAction, updateClinicAction } from '../../../../redux/actions';
+import { forgotPassword, getCities2Action, getCitiesAction, updateClinicAction } from '../../../../redux/actions';
 import Spinner from '../../../../constants/Spinner';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
@@ -482,7 +482,10 @@ const Clinic = ({ id }) => {
         setShowReset(false);
     }
     const sendResetMail = (data) => {
-        alert('asdfg')
+        const payload = {
+            email: data?.resetEmail
+        }
+        dispatch(forgotPassword({ key: encryptMessage(payload) }))
     }
     return (
         <>
@@ -1389,10 +1392,17 @@ const Clinic = ({ id }) => {
                     </Col>
                 </Row >
                 <Row>
-                    <Col className='d-flex gap-2 justify-content-end'>
-                        {/* <Button className='custom-buttons' onClick={() => setShowReset(true)}>
-                            Change Password
-                        </Button> */}
+                    <Col className='d-flex gap-2 justify-content-end align-items-end'>
+                        <Button className='custom-buttons' onClick={() => {
+                            setShowReset(true)
+                            setValue('resetEmail', clinicData?.userId?.email)
+                        }}>
+                            {store?.Auth?.loading ?
+                                <Spinner color='white' className='spinner-border-sm' />
+                                :
+                                'Change Password'
+                            }
+                        </Button>
                         <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3">
                             {store?.updateClinicsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />
