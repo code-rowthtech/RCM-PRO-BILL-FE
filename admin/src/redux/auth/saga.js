@@ -80,14 +80,13 @@ function* signup({ payload: { fullname, email, password } }) {
 }
 
 function* forgotPassword({ payload }) {
-    // console.log(payload, 'dhsfnvdhfsdhfbvhd')
     try {
         const encryptedPayload = {
             key: encryptMessage(payload)
         }
         const response = yield call(forgotPasswordApi, payload);
         const decryptedResponse = JSON.parse(decryptMessage(response?.data?.data));
-        ToastHandle(decryptedResponse?.message, 'success')
+        ToastHandle(decryptedResponse?.massage || decryptedResponse?.message, 'success')
         yield put(authApiResponseSuccess(AuthActionTypes.FORGOT_PASSWORD, decryptMessage(response?.data?.data)));
     } catch (error) {
         ToastHandle(error, 'danger')

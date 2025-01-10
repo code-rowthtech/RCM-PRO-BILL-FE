@@ -49,7 +49,6 @@ const Index = () => {
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
     // const addClinicData = store?.createClinicsReducer?.data?.data;
     const [addClinicData, setAddClinicData] = useState(null);
-    console.log(addClinicData, 'addClinicDataaddClinicData')
     const createResponse = store?.createClinicsReducer?.data?.status;
     const createBillingResponse = store?.createSubscriptionPlanReducer?.data?.status;
 
@@ -82,7 +81,6 @@ const Index = () => {
 
     const user = JSON.parse(sessionStorage.getItem('hyper_user'));
     const billingResponse = store?.createSubscriptionPlanReducer?.data?.result;
-    console.log(store?.createSubscriptionPlanReducer, 'store?.createSubscriptionPlanReducer')
     const contracts = store?.getContractReducer?.data?.contract;
     const handleContractGeneration = () => {
         const data = {
@@ -92,7 +90,6 @@ const Index = () => {
             clinicName: addClinicData?.clinicId?.name,
             clinicEmail: addClinicData?.email
         }
-        console.log(data, 'data')
         dispatch(generateContractAction({ key: encryptMessage(data) }));
     }
     useEffect(() => {
