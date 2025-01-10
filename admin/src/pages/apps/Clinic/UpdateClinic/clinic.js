@@ -256,7 +256,6 @@ const Clinic = ({ id }) => {
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
-        console.log(newPayload, 'newPayload')
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 

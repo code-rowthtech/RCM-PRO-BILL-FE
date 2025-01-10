@@ -22,7 +22,6 @@ const Updateclinic = () => {
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log(store?.getClinicByIdReducer?.data, 'clinicDataclinicData')
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));

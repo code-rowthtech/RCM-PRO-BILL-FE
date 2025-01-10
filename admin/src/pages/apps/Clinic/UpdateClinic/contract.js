@@ -22,14 +22,12 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
     const [editMode, setEditMode] = useState(false);
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data;
-    console.log(store?.getContractReducer?.data, 'contracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     useEffect(() => {
         if (activeTab === 'contract') {
             const payload = {
                 clinicId: id,
             }
-            console.log({ payload })
             dispatch(getContractAction({ key: encryptMessage(payload) }))
         }
     }, [activeTab]);
@@ -190,8 +188,8 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                     <Row>
                         <Col sm={12}>
                             <iframe
-                                src={contracts?.standardContract?.fileUrl || contracts?.contract?.contractTemplateId?.fileUrl}
-                                title={contracts?.contract?.contractName}
+                                src={contracts?.contract?.contractSignStatus === true ? contracts?.contract?.documentFileUrl : contracts?.contract?.contractTemplateId?.fileUrl || contracts?.standardContract?.fileUrl}
+                                title={contracts?.contract?.contractSignStatus === true ? contracts?.contract?.documentFileName : contracts?.contract?.contractName}
                                 width="100%"
                                 height="620px"
                                 className="px-4"
