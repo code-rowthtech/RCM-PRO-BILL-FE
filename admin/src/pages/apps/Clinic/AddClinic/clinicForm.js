@@ -565,10 +565,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 }
 
                 const data = await response.json();
-                return data; // Return the geocoding data
+                return data;
             } catch (error) {
                 console.error("Failed to fetch geocode data:", error);
-                return null; // Return null in case of error
+                return null;
             }
         }
         fetchGeocodeData(addressToSearch)

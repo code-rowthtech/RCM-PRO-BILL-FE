@@ -27,7 +27,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log({ clinicsData })
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -84,14 +83,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
         setDeleteModal(false);
     }
     const handleOpenDeleteModal = (data) => {
-        // if (isUpdatePresent) {
-
-        // } else {
-        //     ToastHandle("You are not authorized to update a clinic.", 'danger')
-        // }
         setDeleteModal(true);
         setDeleteData(data);
-
     }
 
     const handleClinicTypeChange = (event) => {

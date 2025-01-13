@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { generateContractAction, getClinicById, getContractAction, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
+import { generateContractAction, getClinicById, getClinicByParentAction, getContractAction, getRolesAction, getStatesByCountryAction } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import Contract from '../AddClinic/contract';
@@ -24,19 +24,27 @@ const Updateclinic = () => {
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
     useEffect(() => {
         dispatch(getClinicById({ key: encryptMessage({ id }) }));
+        const data = {
+            parentClinicId: id,
+        };
+        dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
         dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
         dispatch(getStatesByCountryAction());
 
     }, [dispatch, activeTab, id]);
     const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
+    const updateSuccess = store?.updateClinicsReducer?.data?.status;
 
     useEffect(() => {
-        if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200) {
+        if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200 || updateSuccess === 200) {
             dispatch(getClinicById({ key: encryptMessage({ id }) }));
-
+            const data = {
+                parentClinicId: id,
+            };
+            dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
         }
-    }, [store?.updateClinicsReducer?.data?.status, billingAddResponse])
+    }, [store?.updateClinicsReducer?.data?.status, billingAddResponse, updateSuccess])
     const handleActiveTab = (data) => {
         setActiveTab(data)
     }
