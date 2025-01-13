@@ -1,18 +1,21 @@
 // src/components/Clinic.js
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Col, Form, Row, Button, InputGroup, Modal } from 'react-bootstrap';
+import { Col, Form, Row, Button, InputGroup, Modal, Table } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { FiDownloadCloud } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import us from '../../../../assets/images/flags/us.jpg'
 import ToastHandle from '../../../../helpers/ToastMessage';
-import { forgotPassword, getCities2Action, getCitiesAction, updateClinicAction } from '../../../../redux/actions';
+import { forgotPassword, getCities2Action, getCitiesAction, stateEmptydAction, updateClinicAction } from '../../../../redux/actions';
 import Spinner from '../../../../constants/Spinner';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked, MdVerified } from 'react-icons/md';
+import { GoAlert } from 'react-icons/go';
+import { IoMdClose } from 'react-icons/io';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Clinic = ({ id }) => {
     const {
@@ -21,6 +24,7 @@ const Clinic = ({ id }) => {
         setValue, watch, getValues,
         formState: { errors }, clearErrors
     } = useForm();
+    const navigate = useNavigate();
     const dispatch = useDispatch()
     const stateGeoLocation = watch('stateName');
     const logoFileInputRef = useRef(null);
@@ -30,6 +34,7 @@ const Clinic = ({ id }) => {
     const [selectedCity, setSelectedCity] = useState(null);
     const [focused, setFocused] = useState(false);
     const [mailingFocused, setMailingFocused] = useState(false);
+    const [showOtpModal, setShowOtpModal] = useState(false);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [mailingLatitude, setMailingLatitude] = useState(null);
@@ -38,6 +43,8 @@ const Clinic = ({ id }) => {
     const [stateToSelect, setStateToSelect] = useState(null);
     const [showReset, setShowReset] = useState(false);
     const [sameAsPrimary, setSameAsPrimary] = useState(false);
+    const [statusModal, setStatusModal] = useState(false);
+    const [statusData, setStatusData] = useState(null);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -45,6 +52,8 @@ const Clinic = ({ id }) => {
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const cities = store?.getCitiesReducer?.data?.cities;
+    const subClinics = store?.getClinicsByParentReducer?.data?.data;
+
     const [formDetails, setFormDetails] = useState({
         accreditationDetails: [{ name: '', number: '', url: null, fileName: '' }],
         stateDetails: [{ name: '', number: '', url: null, fileName: '' }],
@@ -118,7 +127,9 @@ const Clinic = ({ id }) => {
             logoFileInputRef.current.click();
         }
     };
-
+    const closeOtpModal = () => {
+        setShowOtpModal(false)
+    }
     const [logoUploading, setLogoUploading] = useState(false)
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
@@ -462,8 +473,6 @@ const Clinic = ({ id }) => {
         }
     };
     const handleRemoveTaxonomy = (index) => {
-        // const updatedCodes = taxonomyCodes.filter((_, i) => i !== index);
-        // setTaxonomyCodes(updatedCodes);
         setTaxonomyCodes((prev) => {
             const updatedCodes = prev.filter((_, i) => i !== index);
             return updatedCodes.length > 0 ? updatedCodes : ['']; // Ensure at least one field remains
@@ -486,6 +495,31 @@ const Clinic = ({ id }) => {
         }
         dispatch(forgotPassword({ key: encryptMessage(payload) }))
     }
+
+    const handleOpenStatusModal = (data) => {
+        setStatusModal(true);
+        setStatusData(data);
+    }
+    const closeStatusModal = () => {
+        setStatusModal(false);
+    }
+    const handleStatusUpdate = () => {
+        const payload = {
+            userId: statusData?.userId?._id,
+            clinicId: statusData?._id,
+            id: statusData?._id,
+            status: !statusData?.status
+        }
+        dispatch(updateClinicAction({ key: encryptMessage(payload) }));
+    }
+    const updateSuccess = store?.updateClinicsReducer?.data?.status;
+
+    useEffect(() => {
+        if (updateSuccess === 200) {
+            dispatch(stateEmptydAction())
+            closeStatusModal();
+        }
+    }, [updateSuccess])
     return (
         <>
             <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -527,7 +561,7 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2 position-relative">
-                            <Form.Label className='mb-1'>Email ID <span className='text-danger'>*</span></Form.Label>
+                            <Form.Label className='mb-1'>Email ID <i onClick={() => setShowOtpModal(true)} className="mdi mdi-square-edit-outline cursor-pointer"></i></Form.Label>
                             <Form.Control
                                 readOnly
                                 type="text"
@@ -1402,6 +1436,21 @@ const Clinic = ({ id }) => {
                                 'Change Password'
                             }
                         </Button>
+                        <Button className='custom-buttons' onClick={() => {
+                            navigate(`/apps/rcm/addclinic?clincid=${clinicData?._id}&userId=${clinicData?.userId?._id}`)
+                        }}>
+                            Add Multiple
+                        </Button>
+                        <Button className='custom-buttons' onClick={() => {
+                            setShowReset(true)
+                            setValue('resetEmail', clinicData?.userId?.email)
+                        }}>
+                            {store?.Auth?.loading ?
+                                <Spinner color='white' className='spinner-border-sm' />
+                                :
+                                'Change Password'
+                            }
+                        </Button>
                         <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3">
                             {store?.updateClinicsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />
@@ -1412,6 +1461,64 @@ const Clinic = ({ id }) => {
                     </Col>
                 </Row>
             </Form >
+            <Row className={`mt-2`}>
+                <Col sm={12}>
+                    <Table responsive className="table-centered table-responsive table-nowrap mb-0">
+                        <thead className="text-white">
+                            <tr>
+                                <th className="text-white">S.No.</th>
+                                <th className="text-white">PRACTICE NAME</th>
+                                <th className="text-white">LOCATION</th>
+                                <th className="text-white">PRACTICE TYPE</th>
+                                <th className="text-white">SPECIALITY</th>
+                                <th className="text-white">STATUS</th>
+                                <th className="text-white">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {store?.getClinicsByParentReducer?.loading ?
+                                <tr>
+                                    <td colSpan={7} className='text-center'>
+                                        <Spinner />
+                                    </td>
+                                </tr>
+                                :
+                                subClinics?.length === 0 ?
+                                    <tr>
+                                        <td colSpan={7} className='text-center'>
+                                            <h4> No Data Found</h4>
+                                        </td>
+                                    </tr>
+                                    :
+                                    subClinics?.map((data, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{data?.name}</td>
+                                            <td>
+                                                {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')}
+                                            </td>
+                                            <td>{data?.clinicType}</td>
+                                            <td>{data?.practiceSpecialty || 'N/A'}</td>
+                                            <td>
+                                                <Form.Switch
+                                                    onClick={() => handleOpenStatusModal(data)}
+                                                    checked={data?.status === true}
+                                                />
+                                            </td>
+                                            <td>
+                                                <Link to={`/apps/rcm/updateclinic?updateid=${data?._id}`} className="action-icon">
+                                                    <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))
+                            }
+
+
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row>
             <Modal centered size='md' show={showReset} onHide={closeResetModal}>
                 <Modal.Body>
                     <Row className=" mb-2 pb-2 d-flex align-items-center">
@@ -1447,6 +1554,53 @@ const Clinic = ({ id }) => {
                             </Col>
                         </Row>
                     </Form>
+                </Modal.Body>
+            </Modal>
+            <Modal show={statusModal} centered size='md' >
+                <Modal.Body>
+                    <div>
+                        <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                            <Col sm={1}></Col>
+                            <Col sm={10}>
+                                <h4 className="mb-0  d-flex align-items-center justify-content-center"><span className='text-danger'><GoAlert />&nbsp;</span>{statusData?.status === true ? 'Deactivate' : "Activate"} Clinic</h4>
+                            </Col>
+                            <Col sm={1}>
+                                <IoMdClose className="fs-4 cursor-pointer" onClick={closeStatusModal} />
+                            </Col>
+                        </Row>
+                        <Row className=''>
+                            {statusData?.status === true ?
+                                <Col sm={12}>
+                                    <p className='mb-0'>
+                                        Once this change is applied, please be aware that <strong>{statusData?.name}</strong> will:
+                                    </p>
+                                    <ul>
+                                        <li>Lose access to
+                                            their account and will not be able to log in.</li>
+                                        <li>All plans associated with their account will be deactivated or canceled.</li>
+                                        <li>Any services linked to the
+                                            account will be suspended and they will not be able to make any changes to account settings or details.</li>
+                                    </ul>
+                                </Col>
+                                :
+                                <Col>
+                                    After this {statusData?.name} will have full access to their account, plans, and services.
+                                </Col>
+                            }
+                            <Modal.Footer className='d-flex justify-content-end gap-2'>
+                                <Button className='custom-buttons' onClick={closeStatusModal}>
+                                    Cancel
+                                </Button>
+                                <Button className='custom-buttons' disabled={store?.updateClinicsReducer?.loading} onClick={() => handleStatusUpdate()}>
+                                    {store?.updateClinicsReducer?.loading ?
+                                        <Spinner color='light' className='spinner-border-sm' />
+                                        :
+                                        statusData?.status === true ? 'Deactivate' : "Activate"
+                                    }
+                                </Button>
+                            </Modal.Footer>
+                        </Row>
+                    </div>
                 </Modal.Body>
             </Modal>
         </>

@@ -36,10 +36,8 @@ function* login({ payload }) {
             permissions: user?.data?.role?.permissions?.map(permission => permission?.permission) || [],
             _id: user?.data?._id
         }
-        // NOTE - You can change this according to response format from your api
         api.setLoggedInUser(userData);
-        // setAuthorization(user['token']);
-        setAuthorization(userData?.token); // Corrected to use userData.token
+        setAuthorization(userData?.token);
 
         yield put(authApiResponseSuccess(AuthActionTypes.LOGIN_USER, userData));
     } catch (error) {
