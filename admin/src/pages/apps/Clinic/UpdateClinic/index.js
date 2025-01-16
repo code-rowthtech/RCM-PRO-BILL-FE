@@ -32,7 +32,7 @@ const Updateclinic = () => {
         dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
         dispatch(getStatesByCountryAction());
 
-    }, [dispatch, activeTab, id]);
+    }, [dispatch, activeTab, id,]);
     const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
 
@@ -43,6 +43,9 @@ const Updateclinic = () => {
                 parentClinicId: id,
             };
             dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
+            dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
+            dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
+            dispatch(getStatesByCountryAction());
         }
     }, [store?.updateClinicsReducer?.data?.status, billingAddResponse, updateSuccess])
     const handleActiveTab = (data) => {

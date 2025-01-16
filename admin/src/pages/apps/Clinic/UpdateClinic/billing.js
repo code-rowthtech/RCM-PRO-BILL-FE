@@ -50,7 +50,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
             subscription: data?.subscription,
             userId: id,
             billingContactName: data?.name,
-            billingContactPhone: '+1' + data?.contact,
+            billingContactPhone: '+1' + data?.contact?.replace(/\D/g, ''),
             billingContactemail: data?.email.toLowerCase(),
             adminId: createdBy,
         }
@@ -135,7 +135,6 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                 <Spinner />
                             </Col>
                         </Row>
-
                         :
                         <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
                             <Row>
@@ -164,7 +163,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                 </Col>
                                 <Col sm={6}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Amount&nbsp;
+                                        <Form.Label className='mb-1'>Amount (in $)&nbsp;
                                             <span className=' uil-info-circle mb-0 cursor-pointer'
                                                 data-toggle="tooltip"
                                                 data-placement="top"
@@ -357,22 +356,40 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                                     {...register('contact', {
                                                                         required: 'This field is required',
                                                                         pattern: {
-                                                                            value: /^[0-9]*$/,
-                                                                            message: 'Contact must be a number'
+                                                                            value: /^\(\d{3}\)\d{3}-\d{4}$/, // Matches (XXX)XXX-XXXX format
+                                                                            message: 'Contact must be in the format (XXX)XXX-XXXX',
                                                                         },
                                                                         maxLength: {
-                                                                            value: 10,
-                                                                            message: 'Contact must not exceed 10 digits'
+                                                                            value: 13, // Includes characters for (XXX)XXX-XXXX
+                                                                            message: 'Contact must not exceed 13 characters'
                                                                         },
                                                                         minLength: {
-                                                                            value: 10,
-                                                                            message: 'Contact must not be less than 10 digits'
+                                                                            value: 13,
+                                                                            message: 'Contact must not be less than 13 characters'
                                                                         }
                                                                     })}
-
-                                                                    placeholder="1234-234-234"
-                                                                    maxLength={10}
-                                                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                                                    onChange={(e) => {
+                                                                        let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
+                                                                        if (rawValue.length > 10) rawValue = rawValue.slice(0, 10); // Limit to 10 digits
+                                                                        const formattedValue = rawValue.replace(
+                                                                            /(\d{1,3})(\d{0,3})(\d{0,4})/,
+                                                                            (match, p1, p2, p3) => {
+                                                                                if (p3) return `(${p1})${p2}-${p3}`;
+                                                                                if (p2) return `(${p1})${p2}`;
+                                                                                return `(${p1}`;
+                                                                            }
+                                                                        ); // Format dynamically as (XXX)XXX-XXXX
+                                                                        e.target.value = formattedValue; // Update input value
+                                                                        clearErrors('contact'); // Clear validation errors
+                                                                    }}
+                                                                    placeholder="(123)456-7890"
+                                                                    maxLength={14}
+                                                                    onKeyPress={(event) => {
+                                                                        // Only allow numeric characters (0-9)
+                                                                        if (!/[0-9]/.test(event.key)) {
+                                                                            event.preventDefault();
+                                                                        }
+                                                                    }}
                                                                 />
                                                             </InputGroup>
                                                         </Form.Group>

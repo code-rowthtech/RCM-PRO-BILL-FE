@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import us from '../../../../assets/images/flags/us.jpg'
 import ToastHandle from '../../../../helpers/ToastMessage';
-import { forgotPassword, getCities2Action, getCitiesAction, stateEmptydAction, updateClinicAction } from '../../../../redux/actions';
+import { forgotPassword, generateOtpAction, getCities2Action, getCitiesAction, stateEmptydAction, updateClinicAction, verifyOtpAction } from '../../../../redux/actions';
 import Spinner from '../../../../constants/Spinner';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
@@ -16,6 +16,8 @@ import { MdOutlineRadioButtonChecked, MdOutlineRadioButtonUnchecked, MdVerified 
 import { GoAlert } from 'react-icons/go';
 import { IoMdClose } from 'react-icons/io';
 import { Link, useNavigate } from 'react-router-dom';
+import { otpVerification } from '../../../../helpers/api/apiEndpoints';
+import EmailChangeModal from './emailChangeModal';
 
 const Clinic = ({ id }) => {
     const {
@@ -77,17 +79,29 @@ const Clinic = ({ id }) => {
     const setField = (key, value) => value && setValue(key, value);
     useEffect(() => {
         setField('clinicType', clinicData?.clinicType);
-        setField('contact', clinicData?.userId?.phone?.startsWith("+1")
-            ? clinicData.userId.phone.substring(2)
-            : clinicData?.userId?.phone);
+        // setField('contact', clinicData?.userId?.phone?.startsWith("+1")
+        //     ? clinicData.userId.phone.substring(2)
+        //     : clinicData?.userId?.phone);
+        setField(
+            'contact',
+            clinicData?.userId?.phone
+                ? clinicData.userId.phone
+                    .replace(/^\+1/, '') // Remove the "+1" prefix
+                    .replace(/\D/g, '') // Remove all non-numeric characters
+                    .replace(/(\d{3})(\d{3})(\d{0,4})/, (match, p1, p2, p3) =>
+                        p3 ? `(${p1})${p2}-${p3}` : `(${p1})${p2}` // Format dynamically as (XXX)XXX-XXXX
+                    )
+                : ''
+        );
         setField('name', clinicData?.name);
-        setField('taxId', clinicData?.taxIdOrEIN?.replace(/-/g, ''));
+        setField('taxId', `${clinicData?.taxIdOrEIN?.slice(0, 2)}-${clinicData?.taxIdOrEIN?.slice(2, 9)}`);
         setField('speciality', clinicData?.practiceSpecialty)
         setField('npi', clinicData?.npiNumber);
         setField('email', clinicData?.userId?.email);
         setField('address', clinicData?.userId?.primaryAddress?.address);
         setField('mailingAddress', clinicData?.userId?.mailingAddress?.address);
-        setField('street', clinicData?.userId?.address?.street);
+        console.log(clinicData, 'clinicData')
+        setField('street', clinicData?.userId?.primaryAddress?.street);
         setField('zip', clinicData?.userId?.primaryAddress?.zip);
         setSameAsPrimary(clinicData?.userId?.isPrimaryAndMailingAddressSame);
         setField('stateName', clinicData?.userId?.primaryAddress?.state?._id)
@@ -214,18 +228,17 @@ const Clinic = ({ id }) => {
         const newPayload = {
             userId: clinicData?.userId?._id,
             clinicId: clinicData?._id,
-            name: data?.name || clinicData?.name, // Clinic name
+            ...(data?.name ? { name: data?.name } : ''),
+            // name: data?.name || clinicData?.name, // Clinic name
             ...(data?.email.toLowerCase() !== clinicData?.userId?.email.toLowerCase() && {
                 email: data?.email.toLowerCase() || clinicData?.userId?.email.toLowerCase(),
             }),
-            phone: '+1' + data?.contact || '+1' + clinicData?.userId?.phone, // Phone number
+            phone: '+1' + data?.contact?.replace(/\D/g, '') || '+1' + clinicData?.userId?.phone, // Phone number
             clinicType: data?.clinicType || clinicData?.clinicType, // Clinic Type
-            taxIdOrEIN: data?.taxId?.replace(/^(\d{2})(\d*)/, '$1-$2') || clinicData?.taxIdOrEIN?.replace(/^(\d{2})(\d*)/, '$1-$2'), // Tax ID/EIN
-            npiNumber: data?.npi || clinicData?.npiNumber, // NPI number
-            // medicalLicenses: formDetails.medicalDetails || clinicData?.medicalLicenses, // Medical Licenses
+            taxIdOrEIN: data?.taxId?.replace(/\D/g, '') || clinicData?.taxIdOrEIN?.replace(/\D/g, ''), // Tax ID/EIN
+            npiNumber: data?.npi || clinicData?.npiNumber,
             stateOfLicensing: formDetails.stateDetails || clinicData?.stateOfLicensing, // State Licensing
             accreditationDetails: formDetails.accreditationDetails || clinicData?.accreditationDetails,
-            // taxonomyCodes: taxonomyCodes,
             taxonomyCodes: taxonomyCodes.filter(code => code), // Filter out empty taxonomy codes
             ...(data?.medicaid ? { medicaidNumber: data?.medicaid } : {}),
             ...(data?.medicare ? { medicareNumber: data?.medicare } : {}),
@@ -267,6 +280,7 @@ const Clinic = ({ id }) => {
             practiceSpecialty: data?.speciality,
             pos: posDetails,
         };
+        // console.log(newPayload, 'payllll')
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -489,12 +503,15 @@ const Clinic = ({ id }) => {
     const closeResetModal = () => {
         setShowReset(false);
     }
+
+
     const sendResetMail = (data) => {
         const payload = {
             email: data?.resetEmail
         }
         dispatch(forgotPassword({ key: encryptMessage(payload) }))
     }
+
 
     const handleOpenStatusModal = (data) => {
         setStatusModal(true);
@@ -519,7 +536,9 @@ const Clinic = ({ id }) => {
             dispatch(stateEmptydAction())
             closeStatusModal();
         }
-    }, [updateSuccess])
+    }, [updateSuccess]);
+
+
     return (
         <>
             <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
@@ -561,7 +580,9 @@ const Clinic = ({ id }) => {
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-2 position-relative">
-                            <Form.Label className='mb-1'>Email ID <i onClick={() => setShowOtpModal(true)} className="mdi mdi-square-edit-outline cursor-pointer"></i></Form.Label>
+                            <Form.Label className='mb-1'>Email ID <i onClick={() => {
+                                setShowOtpModal(true);
+                            }} className="mdi mdi-square-edit-outline plusicon cursor-pointer"></i></Form.Label>
                             <Form.Control
                                 readOnly
                                 type="text"
@@ -587,18 +608,36 @@ const Clinic = ({ id }) => {
                             <Form.Control
                                 type="text"
                                 {...register('taxId', {
-                                    minLength: {
-                                        value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long', // Error message
-                                    },
                                     pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'Tax ID / EIN must contain numbers only', // Error message
+                                        value: /^\d{2}-\d{7}$/, // Accepts only the hyphenated format XX-XXXXXXX
+                                        message: 'Tax ID / EIN must be in the format XX-XXXXXXX',
+                                    },
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Tax ID / EIN must be exactly 10 characters long',
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'Tax ID / EIN must be exactly 10 characters long',
                                     },
                                 })}
                                 // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                maxLength={9}
+                                onKeyPress={(event) => {
+                                    if (!/[0-9]/.test(event.key) && event.key !== '-') {
+                                        event.preventDefault(); // Allow only numbers and the hyphen
+                                    }
+                                }}
+                                onChange={(e) => {
+                                    let rawValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                                    let formattedValue = '';
+                                    if (rawValue.length > 2) {
+                                        formattedValue = `${rawValue.slice(0, 2)}-${rawValue.slice(2, 9)}`;
+                                    } else {
+                                        formattedValue = rawValue;
+                                    }
+                                    e.target.value = formattedValue;
+                                }}
+                                maxLength={10}
                                 placeholder="Tax ID / EIN" />
                             {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
@@ -607,31 +646,49 @@ const Clinic = ({ id }) => {
                         <Form.Group className="mb-0 position-relative">
                             <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
                             <InputGroup>
-                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
+                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text>
                                 <Form.Control
                                     type="tel"
                                     {...register('contact', {
                                         required: 'This field is required',
                                         pattern: {
-                                            value: /^[0-9]*$/,
-                                            message: 'Contact must be a number'
+                                            value: /^\(\d{3}\)\d{3}-\d{4}$/, // Matches (XXX)XXX-XXXX format
+                                            message: 'Contact must be in the format (XXX)XXX-XXXX',
                                         },
                                         maxLength: {
-                                            value: 10,
-                                            message: 'Contact must not exceed 10 digits'
+                                            value: 13, // Includes characters for (XXX)XXX-XXXX
+                                            message: 'Contact must not exceed 13 characters.'
                                         },
                                         minLength: {
-                                            value: 9,
-                                            message: 'Contact must not be less than 9 digits'
+                                            value: 13,
+                                            message: 'Contact must not be less than 13 characters.'
                                         }
                                     })}
-                                    // onChange={(e) => {
-                                    //     setResetEmail({ ...resetEmail, phone: '+1' + e.target.value });
-                                    // }}
-                                    placeholder="1234-234-234"
-                                    maxLength={10}
-                                    onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                    onChange={(e) => {
+                                        let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
+                                        if (rawValue.length > 10) rawValue = rawValue.slice(0, 10); // Limit to 10 digits
+                                        const formattedValue = rawValue.replace(
+                                            /(\d{1,3})(\d{0,3})(\d{0,4})/,
+                                            (match, p1, p2, p3) => {
+                                                if (p3) return `(${p1})${p2}-${p3}`;
+                                                if (p2) return `(${p1})${p2}`;
+                                                return `(${p1}`;
+                                            }
+                                        ); // Format dynamically as (XXX)XXX-XXXX
+                                        e.target.value = formattedValue; // Update input value
+                                        clearErrors('contact'); // Clear validation errors
+                                    }}
+                                    placeholder="(123)456-7890"
+                                    maxLength={14}
+                                    onKeyPress={(event) => {
+                                        // Only allow numeric characters (0-9)
+                                        if (!/[0-9]/.test(event.key)) {
+                                            event.preventDefault();
+                                        }
+                                    }}
                                 />
+
+
                             </InputGroup>
                             <div
                                 className='position-absolute' style={{ top: '52%', left: '1%' }}
@@ -1236,7 +1293,7 @@ const Clinic = ({ id }) => {
                                 <Row>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1' >State <span className='text-danger'>*</span></Form.Label>
+                                            <Form.Label className='mb-1' >State</Form.Label>
                                             <Form.Select
                                                 {...register('mailingStateName')}
                                                 onChange={(e) => handleMailingStateSelection(e)}
@@ -1441,16 +1498,6 @@ const Clinic = ({ id }) => {
                         }}>
                             Add Multiple
                         </Button>
-                        <Button className='custom-buttons' onClick={() => {
-                            setShowReset(true)
-                            setValue('resetEmail', clinicData?.userId?.email)
-                        }}>
-                            {store?.Auth?.loading ?
-                                <Spinner color='white' className='spinner-border-sm' />
-                                :
-                                'Change Password'
-                            }
-                        </Button>
                         <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3">
                             {store?.updateClinicsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />
@@ -1556,6 +1603,7 @@ const Clinic = ({ id }) => {
                     </Form>
                 </Modal.Body>
             </Modal>
+            <EmailChangeModal show={showOtpModal} onClose={closeOtpModal} email={clinicData?.userId?.email} />
             <Modal show={statusModal} centered size='md' >
                 <Modal.Body>
                     <div>
