@@ -44,3 +44,8 @@ export const updateMastersData = '/api/v1/admin/masterdata/edit';
 export const addNewUserRole = '/api/v1/admin/sub-users/create'
 export const updateNewUserRole = '/api/v1/admin/sub-users/edit'
 export const getNewUserRole = '/api/v1/admin/sub-users'
+
+// Email changing
+export const otpGeneration = 'api/v1/admin/users/requestOtpForEmailVerification';
+export const otpVerification = 'api/v1/admin/users/verifyOtpForEmailChange';
+export const enterNewEmail = 'api/v1/admin/users/changeEmail';

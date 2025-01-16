@@ -499,7 +499,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 email: data?.email,
                 phone: '+1' + data?.contact?.replace(/\D/g, ''),
                 clinicType: data?.clinicType,
-                ...(data?.taxId ? { taxIdOrEIN: data.taxId.replace(/^(\d{2})(\d*)/, '$1-$2') } : ''),
+                ...(data?.taxId ? { taxIdOrEIN: data.taxId?.replace(/\D/g, '') } : ''),
                 ...(data?.npi ? { npiNumber: data?.npi } : ''),
                 stateOfLicensing: stateDetails,
                 accreditationDetails: accreditationDetails,
@@ -542,6 +542,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 },
                 practiceSpecialty: data?.speciality,
             };
+            // console.log(newPayload, 'payload')
             dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
         }
     };
@@ -563,7 +564,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                 if (!response.ok) {
                     throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
                 }
-
                 const data = await response.json();
                 return data;
             } catch (error) {
@@ -777,29 +777,46 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Control
                                 type="text"
                                 {...register('taxId', {
-                                    minLength: {
-                                        value: 9,
-                                        message: 'Tax ID / EIN must be at least 9 characters long',
-                                    },
                                     pattern: {
-                                        value: /^[0-9]+$/,
-                                        message: 'Tax ID / EIN must contain numbers only',
+                                        value: /^\d{2}-\d{7}$/, // Accepts only the hyphenated format XX-XXXXXXX
+                                        message: 'Tax ID / EIN must be in the format XX-XXXXXXX',
+                                    },
+                                    required: {
+                                        value: true,
+                                        message: 'Tax ID / EIN is required',
+                                    },
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Tax ID / EIN must be exactly 10 characters long',
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'Tax ID / EIN must be exactly 10 characters long',
                                     },
                                 })}
                                 onKeyPress={(event) => {
-                                    if (!/[0-9]/.test(event.key)) {
-                                        event.preventDefault();
-                                        clearErrors('clinicname');
+                                    if (!/[0-9]/.test(event.key) && event.key !== '-') {
+                                        event.preventDefault(); // Allow only numbers and the hyphen
                                     }
                                 }}
-                                maxLength={9}
+                                maxLength={10} // Enforce maximum length of 10 characters
                                 onChange={(e) => {
-                                    setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value })
+                                    let rawValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                                    let formattedValue = '';
+                                    if (rawValue.length > 2) {
+                                        formattedValue = `${rawValue.slice(0, 2)}-${rawValue.slice(2, 9)}`;
+                                    } else {
+                                        formattedValue = rawValue;
+                                    }
+                                    e.target.value = formattedValue;
+                                    setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value?.replace(/\D/g, '') });
                                     clearErrors('taxId');
                                 }}
-                                placeholder="Tax ID / EIN" />
+                                placeholder="XX-XXXXXXX"
+                            />
                             {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
                         </Form.Group>
+
                     </Col>
                     <Col sm={6}>
                         <Form.Group className="mb-0 position-relative">
@@ -809,35 +826,38 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                     <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
                                     <Form.Control
                                         type="tel"
-                                        // value={formattedPhone}
                                         {...register('contact', {
                                             required: 'This field is required',
                                             pattern: {
-                                                value: /^(\d{3}-\d{3}-\d{4}|\d{9,10})$/, // Accepts either the hyphenated format (XXX-XXX-XXXX) or 9–10 digits without hyphens
-                                                message: 'Contact must be in the format XXX-XXX-XXXX or contain only 9–10 digits',
+                                                value: /^\(\d{3}\)\d{3}-\d{4}$/, // Matches (XXX)XXX-XXXX format
+                                                message: 'Contact must be in the format (XXX)XXX-XXXX',
                                             },
                                             maxLength: {
-                                                value: 12,
-                                                message: 'Contact must not exceed 10 digits'
+                                                value: 13, // Includes characters for (XXX)XXX-XXXX
+                                                message: 'Contact must not exceed 13 characters'
                                             },
                                             minLength: {
-                                                value: 11,
-                                                message: 'Contact must not be less than 9 digits'
+                                                value: 13,
+                                                message: 'Contact must not be less than 13 characters'
                                             }
                                         })}
                                         onChange={(e) => {
-                                            const rawValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
-                                            const formattedValue = rawValue.replace(/(\d{3})(\d{3})(\d{0,4})/, (match, p1, p2, p3) =>
-                                                p3 ? `${p1}-${p2}-${p3}` : `${p1}-${p2}`
-                                            ); // Format dynamically
+                                            let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
+                                            if (rawValue.length > 10) rawValue = rawValue.slice(0, 10); // Limit to 10 digits
+                                            const formattedValue = rawValue.replace(
+                                                /(\d{1,3})(\d{0,3})(\d{0,4})/,
+                                                (match, p1, p2, p3) => {
+                                                    if (p3) return `(${p1})${p2}-${p3}`;
+                                                    if (p2) return `(${p1})${p2}`;
+                                                    return `(${p1}`;
+                                                }
+                                            ); // Format dynamically as (XXX)XXX-XXXX
                                             e.target.value = formattedValue; // Update input value
-                                            setResetEmail({ ...resetEmail, phone: rawValue });
-                                            clearErrors('contact');
+                                            setResetEmail({ ...resetEmail, phone: rawValue }); // Store raw numeric value if needed
+                                            clearErrors('contact'); // Clear validation errors
                                         }}
-                                        defaultValue={updatePage ? clinicDataToUpdate?.phone : ''}
-                                        placeholder="1234-234-234"
-                                        maxLength={12}
-                                        // onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                        placeholder="(123)456-7890"
+                                        maxLength={14}
                                         onKeyPress={(event) => {
                                             // Only allow numeric characters (0-9)
                                             if (!/[0-9]/.test(event.key)) {
@@ -1754,6 +1774,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                             message: 'Contact must not be less than 9 digits',
                                                         },
                                                     })}
+
                                                     onChange={(e) => handlePOSInputChange(e, 'contact', index)}
                                                     onKeyPress={handleFirstSpace}
                                                     placeholder="Phone Number"
@@ -1820,9 +1841,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
                         <thead>
                             <tr>
-                                <th>Clinic Name</th>
+                                <th>Sr. no.</th>
+                                <th>Practice Name</th>
                                 <th>Location</th>
-                                <th>Clinic Type</th>
+                                <th>Practice Type</th>
                                 <th>Email</th>
                                 <th>Contact</th>
                                 <th>Action</th>
@@ -1830,6 +1852,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         </thead>
                         <tbody className={`${!parentClincId ? 'd-none' : ''}`}>
                             <tr>
+                                <td className='text-capitalize'>1</td>
                                 <td className='text-capitalize'>{clinicData?.name}</td>
                                 <td>{(clinicData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (clinicData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
                                 <td>{clinicData?.clinicType}</td>
@@ -1850,6 +1873,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
                                 clinicsList?.map((multipleData, index) => (
                                     <tr key={multipleData?._id}>
+                                        <td className='text-capitalize'>{index + 2}</td>
                                         <td className='text-capitalize'>{multipleData?.name}</td>
                                         <td>{(multipleData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
                                         <td>{multipleData?.clinicType}</td>

@@ -22,6 +22,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
     const [editMode, setEditMode] = useState(false);
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data;
+    console.log(contracts, 'contracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     useEffect(() => {
         if (activeTab === 'contract') {
@@ -101,6 +102,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                                 <th>Contract Name</th>
                                 <th>Practice Sign</th>
                                 <th>Probill Sign</th>
+                                <th className={`${contracts?.contract?.contractSignStatus === true ? '' : 'd-none'}`}>Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -131,6 +133,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                                             <td>{contracts?.contract?.contractName}</td>
                                             <td><span className={`${contracts?.contract?.clinicSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.contract?.clinicSignStatus ? 'Signed' : 'Pending'}</span></td>
                                             <td><span className={`${contracts?.contract?.adminSignStatus ? 'bg-success' : 'bg-secondary'} text-light px-1 rounded-1`}>{contracts?.contract?.adminSignStatus ? 'Signed' : 'Pending'}</span></td>
+                                            <td className={`${contracts?.contract?.contractSignStatus === true ? '' : 'd-none'}`}>{new Date(contracts?.contract?.clinicSignedDateTime).toLocaleDateString('en-GB')}</td>
                                             <td>
                                                 <i className="fs-4 me-1 uil-eye cursor-pointer"
                                                     onClick={() => {

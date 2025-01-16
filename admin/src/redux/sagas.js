@@ -12,9 +12,10 @@ import dashboardSaga from './dashboard/saga';
 import subscriptionsSaga from './subscriptions/saga';
 import settingsSaga from './settings/saga';
 import roleManagementSaga from './rolemanagement/saga';
+import emailChangeSaga from './emailChange/saga';
 
 
 export default function* rootSaga(): any {
     yield all([authSaga(), layoutSaga(), permissionsSaga(), rolesSaga(), clinicsSaga(), doctorsSaga(),
-    patientsSaga(), dashboardSaga(), subscriptionsSaga(), settingsSaga(), roleManagementSaga()]);
+    patientsSaga(), dashboardSaga(), subscriptionsSaga(), settingsSaga(), roleManagementSaga(), emailChangeSaga()]);
 }

@@ -18,6 +18,8 @@ const Designation = () => {
     const dispatch = useDispatch();
     const nameValue = watch("name");
     const [addDesignationModal, setAddDesignationModal] = useState(false);
+    const [updateDesignationModal, setUpdateDesignationModal] = useState(false);
+    const [updateDate, setUpdateData] = useState(null);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(true);
     const [skip, setSkip] = useState(1);
@@ -157,8 +159,13 @@ const Designation = () => {
                                                         </td>
                                                         <td>
                                                             {/* <Link to="#" className="action-icon"> */}
-                                                            <i className="mdi mdi-square-edit-outline"></i>
+                                                            {/* <i className="mdi mdi-square-edit-outline"></i> */}
                                                             {/* </Link> */}
+                                                            <i className="mdi fs-4 mdi-square-edit-outline cursor-pointer"
+                                                                onClick={() => {
+                                                                    setUpdateData(data)
+                                                                    setUpdateDesignationModal(true);
+                                                                }} />
                                                         </td>
                                                     </tr>
                                                 ))

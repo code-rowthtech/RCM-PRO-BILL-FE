@@ -32,19 +32,22 @@ const Updateclinic = () => {
         dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
         dispatch(getStatesByCountryAction());
 
-    }, [dispatch, activeTab, id]);
+    }, [dispatch, activeTab, id,]);
     const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
 
     useEffect(() => {
-        if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200 || updateSuccess === 200) {
+        if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200 || updateSuccess === 200 || store?.newEmailReducer?.data?.status === 200) {
             dispatch(getClinicById({ key: encryptMessage({ id }) }));
             const data = {
                 parentClinicId: id,
             };
             dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
+            dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
+            dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
+            dispatch(getStatesByCountryAction());
         }
-    }, [store?.updateClinicsReducer?.data?.status, billingAddResponse, updateSuccess])
+    }, [store?.updateClinicsReducer?.data?.status, billingAddResponse, updateSuccess, store?.newEmailReducer?.data?.status])
     const handleActiveTab = (data) => {
         setActiveTab(data)
     }

@@ -148,7 +148,7 @@ const Subscriptions = () => {
                                                             <td className='text-capitalize'>
                                                                 {data?.name}
                                                             </td>
-                                                            <td className='text-capitalize'>${data?.totalAmount}</td>
+                                                            <td className='text-capitalize'>$ {data?.totalAmount?.toLocaleString('en-US')}</td>
                                                             <td className='text-capitalize'>{new Date(data?.implimentFrom)?.toLocaleDateString('en-GB')}</td>
                                                             <td className='text-capitalize'>
                                                                 {data?.billingFrequency}

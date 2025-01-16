@@ -115,19 +115,6 @@ const Patients = () => {
                                                                 {data?.amount || '----'}
                                                             </td>
                                                             <td>
-                                                                {/* <span
-                                                                    data-bs-toggle="tooltip"
-                                                                    title={
-                                                                        data?.address
-                                                                            ? `${data?.address?.street}, ${data?.address?.city}, ${data?.address?.state} (${data?.address?.zipCode})`
-                                                                            : ''
-                                                                    }
-                                                                    className="d-inline-block text-truncate cursor-pointer"
-                                                                >
-                                                                    {data?.address
-                                                                        ? `${data?.address?.street}, ${data?.address?.city}, ${data?.address?.state} (${data?.address?.zipCode})`.substring(0, 12) + '...'
-                                                                        : ''}
-                                                                </span> */}
                                                                 {formatDate(data?.appointments[0]?.date)}
                                                             </td>
                                                             <td>

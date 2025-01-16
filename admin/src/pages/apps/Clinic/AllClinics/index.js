@@ -142,7 +142,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                 </Button>
                                             } */}
 
-                                            <Button as={Link} to="/apps/rcm/addclinic" className="custom-buttons">
+                                            <Button as={Link} to="/apps/rcm/addclinic" className="custom-buttons lh-0">
                                                 New Practice
                                             </Button>
                                         </Col>

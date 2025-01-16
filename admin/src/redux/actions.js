@@ -8,3 +8,4 @@ export * from './doctors/actions';
 export * from './patients/actions';
 export * from './subscriptions/actions';
 export * from './rolemanagement/actions';
+export * from './emailChange/actions';
