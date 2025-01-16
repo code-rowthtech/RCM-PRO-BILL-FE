@@ -49,6 +49,7 @@ const Clinic = ({ id }) => {
     const [statusData, setStatusData] = useState(null);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
+    console.log(clinicData)
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
@@ -1603,7 +1604,7 @@ const Clinic = ({ id }) => {
                     </Form>
                 </Modal.Body>
             </Modal>
-            <EmailChangeModal show={showOtpModal} onClose={closeOtpModal} email={clinicData?.userId?.email} />
+            <EmailChangeModal show={showOtpModal} onClose={closeOtpModal} email={clinicData?.userId?.email} userId={clinicData?.userId?._id} />
             <Modal show={statusModal} centered size='md' >
                 <Modal.Body>
                     <div>

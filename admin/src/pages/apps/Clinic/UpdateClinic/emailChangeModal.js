@@ -5,18 +5,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { generateOtpAction, newEmailAction, stateEmptydAction, verifyOtpAction } from '../../../../redux/actions';
 import Spinner from '../../../../constants/Spinner';
+import ToastHandle from '../../../../helpers/ToastMessage';
 
-const EmailChangeModal = ({ show, onClose, email }) => {
+const EmailChangeModal = ({ show, onClose, email, userId }) => {
     const { register, getValues, formState: { errors } } = useForm();
+
     const dispatch = useDispatch();
     const store = useSelector(state => state);
 
+    const [updateId, setUpdateId] = useState(userId);
     const [otp, setOtp] = useState(Array(6).fill(''));
     const [otpGenerated, setOtpGenerated] = useState(false);
     const [otpVerified, setOtpVerified] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [newEmail, setNewEmail] = useState(null);
     const otpGenerationResponse = store?.generateOtpReducer?.data;
     const otpVerificationResponse = store?.verifyOtpReducer?.data;
+    useEffect(() => {
+        if (userId) {
+            setUpdateId(userId)
+        }
+    }, [userId])
     useEffect(() => {
         if (store?.generateOtpReducer?.loading || store?.verifyOtpReducer?.loading || store?.newEmailReducer?.loading) {
             setLoading(true);
@@ -32,17 +41,26 @@ const EmailChangeModal = ({ show, onClose, email }) => {
 
     // Handle OTP verification
     const handleOtpVerification = () => {
-        const payload = { email: getValues('otpResetEmail'), otp: otp.join('') };
+        const payload = { otp: otp.join(''), userId: updateId };
+        console.log(payload, 'paylooad')
         dispatch(verifyOtpAction({ key: encryptMessage(payload) }));
     };
 
     // Handle adding new email
     const handleAddNewMail = () => {
-        const payload = { email: 'ajay7ass77as@yopmail.com' };
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex to validate email format
+
+        if (!emailRegex.test(newEmail)) {
+            ToastHandle("Enter a valid email", "danger");
+            return; // Exit early if email is invalid
+        }
+
+        const payload = { newEmail: newEmail, userId: updateId };
         dispatch(newEmailAction({ key: encryptMessage(payload) }));
         setOtpGenerated(false);
         setOtpVerified(false);
     };
+
 
     // Handle state updates based on Redux responses
     useEffect(() => {
@@ -75,7 +93,16 @@ const EmailChangeModal = ({ show, onClose, email }) => {
             document.getElementById(`otp-${index - 1}`).focus();
         }
     };
-
+    const newEmailResponse = store?.newEmailReducer?.data?.status
+    useEffect(() => {
+        if (newEmailResponse === 200) {
+            onClose();
+            setNewEmail(false);
+            setLoading(false);
+            setOtpVerified(false);
+            setOtpGenerated(false);
+        }
+    }, [newEmailResponse])
     return (
         <Modal centered size="md" show={show} onHide={onClose}>
             <Modal.Body>
@@ -123,7 +150,7 @@ const EmailChangeModal = ({ show, onClose, email }) => {
                         {otpVerified && (
                             <Col sm={12} className="mt-3">
                                 <Form.Label>New Email Address</Form.Label>
-                                <Form.Control type="email" placeholder="Enter new email address" />
+                                <Form.Control type="email" onChange={(e) => setNewEmail(e.target.value)} placeholder="Enter new email address" />
                             </Col>
                         )}
 
