@@ -87,18 +87,23 @@ const Updateclinic = () => {
                                         className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Practice Information
                                     </span>
-                                    <span
-                                        onClick={() => handleActiveTab('billing')}
-                                        className={`fw-semibold cursor-pointer
+                                    {clinicData?.isParent && (
+                                        <>
+                                            <span
+                                                onClick={() => handleActiveTab('billing')}
+                                                className={`fw-semibold cursor-pointer
                                          ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
-                                        Billing and Subscription Information
-                                    </span>
-                                    <span
-                                        onClick={() => handleActiveTab('contract')}
-                                        className={`fw-semibold cursor-pointer 
+                                                Billing and Subscription Information
+                                            </span>
+                                            <span
+                                                onClick={() => handleActiveTab('contract')}
+                                                className={`fw-semibold cursor-pointer 
                                         ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
-                                        Contract
-                                    </span>
+                                                Contract
+                                            </span>
+                                        </>
+                                    )}
+
                                 </Col>
                                 <Col className='d-flex justify-content-end align-items-center'>
                                     <Button onClick={handleContractGeneration} className={`custom-buttons me-2 ${store?.getContractReducer?.data?.contract || activeTab !== 'contract' ? 'd-none' : ''}`}>

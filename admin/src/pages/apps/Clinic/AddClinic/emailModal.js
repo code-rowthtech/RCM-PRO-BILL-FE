@@ -39,7 +39,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
                 <Row className=" mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
                     <Col sm={10}>
-                        <h4 className="mb-0 text-center">Email to clinic</h4>
+                        <h4 className="mb-0 text-center">Email to practice</h4>
                     </Col>
                     <Col sm={1}>
                     </Col>
@@ -60,7 +60,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
                             </Form.Group>
                         </Col>
                         <Col sm={12} className='text-center'>
-                            The clinic will receive a onboarding mail email at {mailId?.email}.
+                            The practice will receive a onboarding mail email at {mailId?.email}.
                         </Col>
                         <Col sm={12} className='text-center mt-2' >
                             <Button type='submit' className='custom-buttons' disabled={store?.createClinicsReducer?.loading}>

@@ -49,7 +49,6 @@ const Clinic = ({ id }) => {
     const [statusData, setStatusData] = useState(null);
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log(clinicData)
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
@@ -101,7 +100,6 @@ const Clinic = ({ id }) => {
         setField('email', clinicData?.userId?.email);
         setField('address', clinicData?.userId?.primaryAddress?.address);
         setField('mailingAddress', clinicData?.userId?.mailingAddress?.address);
-        console.log(clinicData, 'clinicData')
         setField('street', clinicData?.userId?.primaryAddress?.street);
         setField('zip', clinicData?.userId?.primaryAddress?.zip);
         setSameAsPrimary(clinicData?.userId?.isPrimaryAndMailingAddressSame);
@@ -162,9 +160,10 @@ const Clinic = ({ id }) => {
 
     const handleInputChange = (e, field, type, index) => {
         const value = e.target.value;
-        if (type === 'accreditationDetails' && /\s/.test(value)) {
-            return;
-        }
+        // if (type === 'accreditationDetails' && /\s/.test(value)
+        // ) {
+        //     return;
+        // }
         setFormDetails((prevDetails) => {
             const updatedDetails = { ...prevDetails };
             updatedDetails[type][index] = {
@@ -788,12 +787,12 @@ const Clinic = ({ id }) => {
                                 type="text"
                                 {...register('medicare', {
                                     minLength: {
-                                        value: 10,
-                                        message: 'Medicare number must be at least 10 characters long', // Error message
+                                        value: 6,
+                                        message: 'Medicare number must be at least 6 characters long', // Error message
                                     },
                                 })}
                                 placeholder="Medicare Number"
-                                maxLength={10}
+                                maxLength={12}
                                 // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
                                 onKeyPress={(event) => handleFirstSpace(event, 0)}
                             />
@@ -1446,7 +1445,7 @@ const Clinic = ({ id }) => {
                                         <Form.Group className="mb-2 position-relative">
                                             <Form.Label className="mb-1">Phone Number</Form.Label>
                                             <InputGroup>
-                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">+1</InputGroup.Text>
+                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">&nbsp;&nbsp;+1</InputGroup.Text>
                                                 <Form.Control
                                                     type="tel"
                                                     value={data.contact || ''} // Ensure it defaults to an empty string
@@ -1494,10 +1493,10 @@ const Clinic = ({ id }) => {
                                 'Change Password'
                             }
                         </Button>
-                        <Button className='custom-buttons' onClick={() => {
+                        <Button className={`custom-buttons ${clinicData?.isParent === false ? 'd-none' : ''}`} onClick={() => {
                             navigate(`/apps/rcm/addclinic?clincid=${clinicData?._id}&userId=${clinicData?.userId?._id}`)
                         }}>
-                            Add Multiple
+                            Add Multiple Practice
                         </Button>
                         <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3">
                             {store?.updateClinicsReducer?.loading ?
@@ -1509,7 +1508,7 @@ const Clinic = ({ id }) => {
                     </Col>
                 </Row>
             </Form >
-            <Row className={`mt-2`}>
+            <Row className={`mt-2 ${clinicData?.isParent === false ? 'd-none' : ''}`}>
                 <Col sm={12}>
                     <Table responsive className="table-centered table-responsive table-nowrap mb-0">
                         <thead className="text-white">
@@ -1561,8 +1560,6 @@ const Clinic = ({ id }) => {
                                         </tr>
                                     ))
                             }
-
-
                         </tbody>
                     </Table>
                 </Col>
@@ -1572,7 +1569,7 @@ const Clinic = ({ id }) => {
                     <Row className=" mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
                         <Col sm={10}>
-                            <h4 className="mb-0 text-center">Email to clinic</h4>
+                            <h4 className="mb-0 text-center">Change password</h4>
                         </Col>
                         <Col sm={1}>
                         </Col>
@@ -1593,7 +1590,7 @@ const Clinic = ({ id }) => {
                                 </Form.Group>
                             </Col>
                             <Col sm={12} className='text-center'>
-                                The clinic will receive a reset password email at {'asdvc'}.
+                                The practice will receive a reset password email at {clinicData?.userId?.email}.
                             </Col>
                             <Col sm={12} className='text-center mt-2' >
                                 <Button type='submit' className='custom-buttons' >

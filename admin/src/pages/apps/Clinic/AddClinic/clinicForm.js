@@ -5,9 +5,7 @@ import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import us from '../../../../assets/images/flags/us.jpg'
 import {
-    createClinicAction, deleteClinicAction, getCities2Action, getCitiesAction, getClinicById,
-    getClinicByParentAction, getStatesByCountryAction,
-    stateEmptydAction, updateClinicAction
+    createClinicAction, deleteClinicAction, getCities2Action, getCitiesAction, getClinicById, getClinicByParentAction,
 } from '../../../../redux/clinics/actions';
 import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
@@ -40,7 +38,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const mailingStateGeoLocation = watch('mailingStateName');
     const isFormValid = clinicname && email && contact && clinicType;
     const [searchParams] = useSearchParams();
-    const parentClincId = searchParams.get('clincid');
+    const parentClinicId = searchParams.get('clincid');
     const parentUserId = searchParams.get('userId');
     const [updatePage, setUpdatePage] = useState(false);
     const [counter, setCounter] = useState(0);
@@ -111,24 +109,24 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const parentData = store?.getClinicByIdReducer?.data?.clinic;
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
-        if (parentClincId && parentData) {
+        if (parentClinicId && parentData) {
             setClinicData(parentData);
         }
-    }, [parentClincId, parentData]);
+    }, [parentClinicId, parentData]);
 
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
-        if (parentClincId) {
+        if (parentClinicId) {
             const payload = {
-                id: parentClincId
+                id: parentClinicId
             }
             dispatch(getClinicById({ key: encryptMessage(payload) }))
             const data = {
-                parentClinicId: parentClincId,
+                parentClinicId: parentClinicId,
             };
             dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
         }
-    }, [parentClincId]);
+    }, [parentClinicId]);
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         const validateDetails = (details, keys) =>
@@ -187,24 +185,24 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
             setMailingLongitude(null);
             setTaxonomyCodes(['']);
             setSameAsPrimary(false);
-            if (!parentClincId && counter === 0 && !isModalRequest) {
+            if (!parentClinicId && counter === 0 && !isModalRequest) {
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
                 setActiveTab('billing');
             }
         }
-        if (createResponse === 200 && parentClincId) {
+        if (createResponse === 200 && parentClinicId) {
             const payload = {
-                parentClinicId: parentClincId,
+                parentClinicId: parentClinicId,
             };
             dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
         }
-    }, [createResponse, clinicsList, parentClincId, counter]);
+    }, [createResponse, clinicsList, parentClinicId, counter]);
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
-        if (deleteResponse === 200 && parentClincId) {
+        if (deleteResponse === 200 && parentClinicId) {
             const payload = {
-                parentClinicId: parentClincId,
+                parentClinicId: parentClinicId,
             };
             dispatch(getClinicByParentAction({ key: encryptMessage(payload) }));
         }
@@ -489,11 +487,11 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         if (!isDuplicate) {
             setIsModalRequest(false);
             const newPayload = {
-                ...(parentClincId ? {
+                ...(parentClinicId ? {
                     parentUserId: parentUserId,
-                    parentClinicId: parentClincId,
+                    parentClinicId: parentClinicId,
                 } : {}),
-                flag: parentClincId ? "subClinic" : "Clinic",
+                flag: parentClinicId ? "subClinic" : "Clinic",
                 name: data?.clinicname,
                 isPrimaryAndMailingAddressSame: sameAsPrimary,
                 email: data?.email,
@@ -969,12 +967,12 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 type="text"
                                 {...register('medicare', {
                                     minLength: {
-                                        value: 10,
-                                        message: 'Medicare number must be at least 10 characters long', // Error message
+                                        value: 6,
+                                        message: 'Medicare number must be at least 6 characters long', // Error message
                                     },
                                 })}
                                 placeholder="Medicare Number"
-                                maxLength={10}
+                                maxLength={12}
                                 onChange={(e) => {
                                     setResetEmail({ ...resetEmail, medicareNumber: e.target.value })
                                     clearErrors('medicare')
@@ -1519,8 +1517,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                         border: '1px solid #ced4da',
                                                         borderTop: 'none',
                                                     }}
-                                                    className={`scroll-container hover-bg-change ${searchedMailingLocations?.length === 0 || !mailingFocused ? 'd-none' : ''}`}
-                                                >
+                                                    className={`scroll-container hover-bg-change 
+                                                    ${searchedMailingLocations?.length === 0 || !mailingFocused ? 'd-none' : ''}`}>
                                                     {searchedMailingLocations?.map((data, index) => (
                                                         <p
                                                             key={index}
@@ -1606,7 +1604,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             }
                                             {errors.mailingStateName && <span className="text-danger">{errors.mailingStateName.message}</span>}
                                         </Form.Group>
-
                                     </Col>
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
@@ -1636,7 +1633,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             {errors.mailingCity && <span className="text-danger">{errors.mailingCity.message}</span>}
                                         </Form.Group>
                                     </Col>
-
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
                                             <Form.Label className='mb-1'>Street</Form.Label>
@@ -1696,7 +1692,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer fs-5 fw-bold text-danger`}
                                         />
                                     </Col>
-
                                     <Col sm={6}>
                                         <Form.Group className="mb-2">
                                             <Form.Label className="mb-1">
@@ -1800,43 +1795,45 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
                         <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid || store?.createClinicsReducer?.loading}
                             onClick={() => {
-                                if (!parentClincId) {
+                                if (!parentClinicId) {
                                     setCounter(1)
                                 } else {
                                     setCounter(2)
                                 }
                             }}
                         >
-                            {store?.createClinicsReducer?.loading && parentClincId ?
+                            {store?.createClinicsReducer?.loading && parentClinicId ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
                                 'Add Multiple Practices'
                             }
                         </Button>
-                        <Button
-                            variant="primary"
-                            type={!parentClincId ? 'submit' : 'button'}
-                            className='custom-buttons'
-                            disabled={!formValid || store?.createClinicsReducer?.loading}
-                            onClick={() => {
-                                if (parentClincId && !isModalRequest) {
-                                    setMultiple(counter)
-                                    setActiveTab('billing');
-                                    // setSingleOrMultiple(false);
-                                    // setCounter(0);
+                        {!parentUserId && !parentClinicId && (
+                            <Button
+                                variant="primary"
+                                type={!parentClinicId ? 'submit' : 'button'}
+                                className='custom-buttons'
+                                disabled={!formValid || store?.createClinicsReducer?.loading}
+                                onClick={() => {
+                                    if (parentClinicId && !isModalRequest) {
+                                        setMultiple(counter)
+                                        setActiveTab('billing');
+                                        // setSingleOrMultiple(false);
+                                        // setCounter(0);
+                                    }
+                                }}
+                            >
+                                {store?.createClinicsReducer?.loading && !parentClinicId ?
+                                    <Spinner color='white' className='spinner-border-sm' />
+                                    :
+                                    'Next'
                                 }
-                            }}
-                        >
-                            {store?.createClinicsReducer?.loading && !parentClincId ?
-                                <Spinner color='white' className='spinner-border-sm' />
-                                :
-                                'Next'
-                            }
-                        </Button>
+                            </Button>
+                        )}
                     </Col>
                 </Row >
             </Form >
-            <Row className={`${clinicsList?.length > 0 || clinicData && parentClincId ? '' : 'd-none'}`}>
+            <Row className={`${clinicsList?.length > 0 || clinicData && parentClinicId ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
                         <thead>
@@ -1850,7 +1847,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody className={`${!parentClincId ? 'd-none' : ''}`}>
+                        <tbody className={`${!parentClinicId ? 'd-none' : ''}`}>
                             <tr>
                                 <td className='text-capitalize'>1</td>
                                 <td className='text-capitalize'>{clinicData?.name}</td>
@@ -1904,5 +1901,4 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         </>
     );
 }
-
 export default ClinicForm;
