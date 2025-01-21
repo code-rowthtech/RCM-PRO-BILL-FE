@@ -40,14 +40,14 @@ const Index = () => {
         name: null, email: null, phone: null, clinicType: null, flag: 'Clinic'
     });
     const [searchParams] = useSearchParams();
-    const parentClincId = searchParams.get('clincid');
+    const parentClinicId = searchParams.get('clincid');
+    const parentUserId = searchParams.get('userId');
     const [isModalRequest, setIsModalRequest] = useState(false); // Track whether the API was triggered by the modal
     const [resetEmailError, setResetEmailError] = useState(null);
     const store = useSelector((state) => state);
     const navigate = useNavigate()
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
-    // const addClinicData = store?.createClinicsReducer?.data?.data;
     const [addClinicData, setAddClinicData] = useState(null);
     const createResponse = store?.createClinicsReducer?.data?.status;
     const createBillingResponse = store?.createSubscriptionPlanReducer?.data?.status;
@@ -106,15 +106,6 @@ const Index = () => {
         { key: "email", message: "Email is required." },
         { key: "phone", message: "Phone number is required." },
         { key: "clinicType", message: "Clinic Type is required." },
-        // { key: "taxIdOrEIN", message: "Tax ID is required." },
-        // { key: "npiNumber", message: "NPI number is required." },
-        // { key: "npiNumber", message: "NPI number is required." },
-        // { key: "practiceSpecialty", message: "Practice specialty description is required." },
-        // { key: "CLIA_Number", message: "Practice specialty description is required." },
-        // { key: "medicareNumber", message: "Practice specialty description is required." },
-        // { key: "medicaidNumber", message: "Practice specialty description is required." },
-        // { key: "taxonomyCodes", message: "Practice specialty description is required." },
-        // { key: "primaryAddress", message: "Practice specialty description is required." },
     ];
 
     // Check for missing fields
@@ -132,32 +123,37 @@ const Index = () => {
                                         className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
                                         Practice Information
                                     </span>
-                                    <span
-                                        onClick={() => {
-                                            handleActiveTab('billing')
-                                            // if (createResponse === 200) {
-                                            // } else {
-                                            //     ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
-                                            // }
-                                        }}
-                                        className={`fw-semibold cursor-pointer ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
-                                        Billing and Subscription Information
-                                    </span>
-                                    <span
-                                        onClick={() => {
-                                            handleActiveTab('contract')
-                                            // if (createBillingResponse === 200) {
-                                            // } else {
-                                            //     ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
-                                            // }
-                                        }}
-                                        className={`fw-semibold cursor-pointer ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
-                                        Contract
-                                    </span>
+                                    {!parentClinicId && !parentUserId && (
+                                        <>
+                                            <span
+                                                onClick={() => {
+                                                    handleActiveTab('billing')
+                                                    // if (createResponse === 200) {
+                                                    // } else {
+                                                    //     ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
+                                                    // }
+                                                }}
+                                                className={`fw-semibold cursor-pointer ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                                Billing and Subscription Information
+                                            </span>
+                                            <span
+                                                onClick={() => {
+                                                    handleActiveTab('contract')
+                                                    // if (createBillingResponse === 200) {
+                                                    // } else {
+                                                    //     ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
+                                                    // }
+                                                }}
+                                                className={`fw-semibold cursor-pointer ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                                Contract
+                                            </span>
+                                        </>
+                                    )}
+
                                 </Col>
                                 <Col className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
                                     <Button
-                                        className={`custom-buttons ${parentClincId ? 'd-none' : ''}`}
+                                        className={`custom-buttons ${parentClinicId ? 'd-none' : ''}`}
                                         disabled={missingField}
                                         onClick={() => {
                                             if (missingField) {

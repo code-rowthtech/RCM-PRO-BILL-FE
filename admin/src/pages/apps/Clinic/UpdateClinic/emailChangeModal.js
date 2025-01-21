@@ -42,13 +42,12 @@ const EmailChangeModal = ({ show, onClose, email, userId }) => {
     // Handle OTP verification
     const handleOtpVerification = () => {
         const payload = { otp: otp.join(''), userId: updateId };
-        console.log(payload, 'paylooad')
         dispatch(verifyOtpAction({ key: encryptMessage(payload) }));
     };
 
     // Handle adding new email
     const handleAddNewMail = () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex to validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(newEmail)) {
             ToastHandle("Enter a valid email", "danger");
@@ -66,18 +65,18 @@ const EmailChangeModal = ({ show, onClose, email, userId }) => {
     useEffect(() => {
         if (otpGenerationResponse?.status === 200 && !otpGenerated) {
             setOtpGenerated(true);
-            dispatch(stateEmptydAction()); // Reset state after action
+            dispatch(stateEmptydAction());
         }
 
         if (otpVerificationResponse?.status === 200 && !otpVerified) {
             setOtpVerified(true);
-            dispatch(stateEmptydAction()); // Reset state after action
+            dispatch(stateEmptydAction());
         }
     }, [otpGenerationResponse, otpVerificationResponse, otpGenerated, otpVerified, dispatch]);
 
     // Handle OTP input changes
     const handleOtpChange = (value, index) => {
-        if (!/^[0-9]$/.test(value) && value !== '') return; // Allow only digits
+        if (!/^[0-9]$/.test(value) && value !== '') return;
         const newOtp = [...otp];
         newOtp[index] = value;
         setOtp(newOtp);
@@ -87,7 +86,6 @@ const EmailChangeModal = ({ show, onClose, email, userId }) => {
         }
     };
 
-    // Handle key navigation (Backspace)
     const handleOtpInput = (e, index) => {
         if (e.key === 'Backspace' && !otp[index] && index > 0) {
             document.getElementById(`otp-${index - 1}`).focus();
@@ -129,7 +127,7 @@ const EmailChangeModal = ({ show, onClose, email, userId }) => {
                             <Col sm={12} className="mt-3">
                                 <Form.Label>Enter OTP sent to your registered email</Form.Label>
                                 <Row className="justify-content-center">
-                                    {otp.map((digit, index) => (
+                                    {otp && otp.map((digit, index) => (
                                         <input
                                             key={index}
                                             id={`otp-${index}`}
