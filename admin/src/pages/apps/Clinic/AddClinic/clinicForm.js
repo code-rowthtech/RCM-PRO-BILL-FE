@@ -1855,10 +1855,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <td>{clinicData?.clinicType}</td>
                                 <td>{clinicData?.userId?.email}</td>
                                 <td>{clinicData?.userId?.phone}</td>
-                                <td style={{ cursor: 'not-allowed !important' }}> <i
-                                    className="mdi mdi-delete cursor-pointer"
-                                    style={{ cursor: 'not-allowed' }}
-                                ></i></td>
+                                <td> <i
+                                    onClick={() => navigate(`/apps/rcm/updateclinic?updateid=${clinicData?._id}`)}
+                                    className=" mdi mdi-square-edit-outline"></i></td>
                             </tr>
                             {store?.getClinicsByParentReducer?.loading ?
                                 <tr>
@@ -1880,7 +1879,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             <Link to={`/apps/rcm/updateclinic?updateid=${multipleData?._id}`} className="action-icon">
                                                 <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
                                             </Link>
-                                            <i
+                                            {/* <i
                                                 className="mdi mdi-delete cursor-pointer"
                                                 style={{ cursor: store?.deleteClinicOnboardingReducer?.loading ? "not-allowed" : 'pointer' }}
                                                 onClick={() => {
@@ -1889,7 +1888,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     };
                                                     dispatch(deleteClinicAction({ key: encryptMessage(payload) }));
                                                 }}
-                                            ></i>
+                                            ></i> */}
                                         </td>
                                     </tr>
                                 )
