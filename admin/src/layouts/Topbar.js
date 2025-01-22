@@ -1,46 +1,25 @@
 // @flow
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
 // actions
-import { showRightSidebar, changeSidebarType } from '../redux/actions';
+import { changeSidebarType } from '../redux/actions';
 
 // components
 import ProfileDropdown from '../components/ProfileDropdown';
 
 // images
 import profilePic from '../assets/images/users/avatar-1.jpg';
-import avatar1 from '../assets/images/users/avatar-2.jpg';
-import avatar2 from '../assets/images/users/avatar-4.jpg';
 import logoSmDark from '../assets/images/logo_sm_dark.png';
 import logoSmLight from '../assets/images/logo_sm.png';
 import logo from '../assets/images/logo-light.png';
 
-//constants
+// constants
 import * as layoutConstants from '../constants/layout';
-import { Button } from 'react-bootstrap';
 
-// get the notifications
-
-// get the profilemenu
 const ProfileMenus = [
-    // {
-    //     label: 'My Account',
-    //     icon: 'mdi mdi-account-circle',
-    //     redirectTo: '#',
-    // },
-    // {
-    //     label: 'Settings',
-    //     icon: 'mdi mdi-account-edit',
-    //     redirectTo: '#',
-    // },
-    // {
-    //     label: 'Support',
-    //     icon: 'mdi mdi-lifebuoy',
-    //     redirectTo: '#',
-    // },
     {
         label: 'Lock Screen',
         icon: 'mdi mdi-lock-outline',
@@ -58,7 +37,6 @@ type TopbarProps = {
     navCssClasses?: string,
     openLeftMenuCallBack?: () => void,
     topbarDark?: boolean,
-
 };
 
 const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: TopbarProps): React$Element<any> => {
@@ -71,16 +49,73 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         leftSideBarType: state.Layout.leftSideBarType,
     }));
 
-    /**
-     * Toggle the leftmenu when having mobile screen
-     */
+    const location = useLocation(); // Get the current location object
+    const { pathname, search } = location; // Extract pathname and search query
+
+    const pathToTitleMap = {
+        '/dashboard': 'Dashboard',
+        '/dashboard/project': 'Dashboard',
+        '/profile': 'Profile',
+        '/apps/subscriptions/list': 'Subscriptions',
+        '/apps/roles/list': 'Role Management',
+        '/apps/rcm/allclinics': 'Practices',
+        '/apps/rcm/addclinic': 'Add Practice',
+        '/apps/rcm/updateclinic': 'Update Practice',
+        '/settings/planName': 'Plans',
+        '/settings/tenure': 'Tenures',
+        '/settings/permissions': 'Permissions',
+        '/settings/roles': 'Roles',
+        '/settings/clinicType': 'Practice Types',
+        '/settings/jobtitle': 'Job Title',
+        '/settings/contractFormat': 'Contract Format',
+        '/settings/designation': 'Designation',
+    };
+    const getPageTitle = (path, queryString) => {
+        const queryParams = new URLSearchParams(queryString);
+
+        for (const [key, title] of Object.entries(pathToTitleMap)) {
+            if (key.includes('?')) {
+                const [basePath, paramStr] = key.split('?');
+                if (path.startsWith(basePath)) {
+                    const expectedParams = new URLSearchParams(paramStr);
+
+                    // Check if all query params match
+                    const allMatch = Array.from(expectedParams.entries()).every(([param, value]) =>
+                        queryParams.get(param) === value
+                    );
+
+                    if (allMatch) {
+                        return title;
+                    }
+                }
+            } else if (path.startsWith(key)) {
+                return title;
+            }
+        }
+
+        return 'Page Not Found';
+    };
+
+    // State to manage the page title
+    const [pageTitle, setPageTitle] = useState(() => getPageTitle(pathname, search));
+
+    useEffect(() => {
+        // Check if the pathname is '/apps/rcm/addclinic' and has the query parameter 'clincid'
+        if (pathname === '/apps/rcm/addclinic' && search.includes('clincid')) {
+            setPageTitle('Add Sub Practice');
+        } else {
+            // Use the default logic to get the title
+            setPageTitle(getPageTitle(pathname, search));
+        }
+    }, [pathname, search]);
+
+
     const handleLeftMenuCallBack = () => {
         setIsopen((prevState) => !prevState);
         if (openLeftMenuCallBack) openLeftMenuCallBack();
 
         switch (layoutType) {
             case layoutConstants.LAYOUT_VERTICAL:
-                // condition added
                 if (window.innerWidth >= 768) {
                     if (leftSideBarType === 'fixed' || leftSideBarType === 'scrollable')
                         dispatch(changeSidebarType(layoutConstants.LEFT_SIDEBAR_TYPE_CONDENSED));
@@ -98,51 +133,6 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
                 break;
         }
     };
-
-    /**
-     * Toggles the right sidebar
-     */
-    // const handleRightSideBar = () => {
-    //     dispatch(showRightSidebar());
-    // };
-    const location = useLocation(); // Get the current location object
-    const { pathname } = location; // Extract pathname
-
-    // Define a mapping of paths to titles
-    const pathToTitleMap = {
-        '/dashboard': 'Dashboard',
-        '/dashboard/project': 'Dashboard', // Example of multiple paths mapping to the same title
-        '/profile': 'Profile',
-        '/apps/subscriptions/list': 'Subscriptions',
-        '/apps/roles/list': 'Role Management',
-        '/apps/rcm/allclinics': 'Practices',
-        '/apps/rcm/addclinic': 'Add Practice',
-        '/apps/rcm/updateclinic': 'Update Practice',
-        '/settings/planName': 'Plans',
-        '/settings/tenure': 'Tenures',
-        '/settings/permissions': 'Permissions',
-        '/settings/roles': 'Roles',
-        '/settings/clinicType': 'Practice Types',
-        '/settings/jobtitle': 'Job Title',
-        '/settings/contractFormat': 'Contract Format',
-        '/settings/designation': 'Designation',
-        '/apps/rcm/addclinic?clincid': 'Add Sub Practices'
-
-    };
-
-    // Get the title for the current path or use a default value
-    const getPageTitle = (path) => {
-        const keys = Object.keys(pathToTitleMap);
-        // Match the full path or prefixes
-        for (const key of keys) {
-            if (path.startsWith(key)) {
-                return pathToTitleMap[key];
-            }
-        }
-        return 'Page Not Found'; // Fallback title
-    };
-
-    const pageTitle = getPageTitle(pathname);
 
     return (
         <>
@@ -170,7 +160,6 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
                         </li>
                     </ul>
 
-                    {/* toggle for vertical layout */}
                     {(layoutType === layoutConstants.LAYOUT_VERTICAL || layoutType === layoutConstants.LAYOUT_FULL) && (
                         <div className='d-flex align-items-center'>
                             <button className="button-menu-mobile open-left" onClick={handleLeftMenuCallBack}>
@@ -178,31 +167,6 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
                             </button>
                             <h4 className=''>{pageTitle}</h4>
                         </div>
-                    )}
-
-                    {/* toggle for horizontal layout */}
-                    {layoutType === layoutConstants.LAYOUT_HORIZONTAL && (
-                        <Link
-                            to="#"
-                            className={classNames('navbar-toggle', { open: isopen })}
-                            onClick={handleLeftMenuCallBack}>
-                            <div className="lines">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </Link>
-                    )}
-
-                    {/* toggle for detached layout */}
-                    {layoutType === layoutConstants.LAYOUT_DETACHED && (
-                        <Link to="#" className="button-menu-mobile disable-btn" onClick={handleLeftMenuCallBack}>
-                            <div className="lines">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </Link>
                     )}
                 </div>
             </div>
