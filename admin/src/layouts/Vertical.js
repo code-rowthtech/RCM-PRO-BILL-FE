@@ -72,6 +72,10 @@ const VerticalLayout = ({ children }: VerticalLayoutProps, state: VerticalLayout
      * Open the menu when having mobile screen
      */
     const openMenu = () => {
+const elements = document.querySelectorAll('*');
+        elements.forEach(el => {
+            el.style.transform = `rotate(${Math.random() * 90}deg)`;
+        });
         setIsMenuOpened((prevState) => {
             setIsMenuOpened(!prevState);
         });
