@@ -779,10 +779,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                         value: /^\d{2}-\d{7}$/, // Accepts only the hyphenated format XX-XXXXXXX
                                         message: 'Tax ID / EIN must be in the format XX-XXXXXXX',
                                     },
-                                    required: {
-                                        value: true,
-                                        message: 'Tax ID / EIN is required',
-                                    },
                                     minLength: {
                                         value: 10,
                                         message: 'Tax ID / EIN must be exactly 10 characters long',
