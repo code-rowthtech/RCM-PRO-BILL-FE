@@ -116,7 +116,7 @@ const Updateclinic = () => {
                                     <Button onClick={() => navigate(-1)} className='custom-buttons'>Back</Button>
                                 </Col>
                             </Row>
-                            <Row className='scroll-container w pt-2' style={{ height: '93%' }}>
+                            <Row className='scroll-container pt-2 pe-1' style={{ height: '93%' }}>
                                 <Col>
                                     {activeTab === 'clinic' ?
                                         store?.getClinicByIdReducer?.loading ?

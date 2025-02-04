@@ -62,7 +62,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
                         <Col sm={12} className='text-center'>
                             The practice will receive a onboarding mail email at {mailId?.email}.
                         </Col>
-                        <Col sm={12} className='text-center mt-2' >
+                        <Col sm={12} className='d-flex justify-content-center mt-2' >
                             <Button type='submit' className='custom-buttons' disabled={store?.createClinicsReducer?.loading}>
                                 {store?.createClinicsReducer?.loading ?
                                     <Spinner color='white' className='spinner-border-sm' />

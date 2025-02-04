@@ -12,11 +12,31 @@
 .form-control {
     color: black !important;
     font-weight: 550 !important;
+    padding: 6px !important;
+    font-size: 12px;
+    background-color: #e8f0fe !important;
+    border: 0px !important;
 }
-
+.form-select {
+    color: #0908084f !important;
+    font-weight: 550 !important;
+    padding: 6px !important;
+    font-size: 12px;
+    background-color: #e8f0fe !important;
+    border: 0px !important;
+}
+.form-control:focus,
+.form-select:focus {
+    color: black !important;
+}
+.form-control[data-has-value='true'],
+.form-select[data-has-value='true'] {
+    color: black !important;
+}
 .custom-form-fields,
 .form-control::placeholder {
-    color: #a9a9a982 !important;
+    color: #0908084f !important;
+    font-size: 12px;
 }
 
 .plusicon {
@@ -25,11 +45,31 @@
 .custom-buttons {
     background-color: #6169d0 !important;
     border: none !important;
-    color: white !important;
+    color: white;
+    border-radius: 10px;
+    line-height: 10px;
+    font-size: 13px;
+    height: 30px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-inactive-buttons {
+    background-color: white !important;
+    border: 1px solid #6169d0 !important;
+    border-radius: 10px;
+    line-height: 10px;
+    font-size: 13px;
+    height: 30px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .custom-buttons:hover {
     background-color: #525cdf !important;
     /* font-weight: 700; */
+    color: white;
     transition-duration: 0.4s;
 }
 
@@ -74,10 +114,11 @@ table {
 .custom-file-upload {
     display: flex;
     align-items: center;
-    border: 1px solid rgba(15, 13, 13, 0.473) !important;
     border-radius: 4px;
     padding: 8px 12px;
     width: 100%;
+    height: 1.85rem;
+    background: #e8f0fe;
 }
 
 .file-upload-label {
@@ -229,4 +270,14 @@ table {
 }
 .selectedField {
     color: black !important;
+}
+.table > :not(caption) > * > * {
+    padding: 0.35rem 0.55rem !important;
+    font-size: 14px !important;
+}
+table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
 }

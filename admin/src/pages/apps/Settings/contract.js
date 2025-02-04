@@ -281,7 +281,7 @@ text-align: center;
           <Card>
             <Card.Body className="scroll-container" style={{ height: '88vh' }}>
               <Row>
-                <Col sm={12} className="text-end">
+                <Col sm={12} className="d-flex justify-content-end">
                   {editMode ? (
                     <Button className="custom-buttons" onClick={() => setEditMode(false)}>
                       Close Editor
@@ -314,7 +314,7 @@ text-align: center;
                   />
                 </Col>
                 <Col className={`${editMode ? ' mt-2 text-end' : 'd-none'}`}>
-                  <Button onClick={handleUpdateContract}>
+                  <Button className='custom-buttons' onClick={handleUpdateContract}>
                     Save
                   </Button>
                 </Col>
