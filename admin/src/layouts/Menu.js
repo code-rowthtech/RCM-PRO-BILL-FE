@@ -137,8 +137,8 @@ const MenuItemLink = ({ item, className }) => {
                     <div className="p-4" style={{ maxWidth: '500px', width: '100%' }}>
                         <div className="card-body text-center">
                             <h4 className="card-title">Are you sure you want to logout!</h4>
-                            <div className="d-flex justify-content-center gap-3">
-                                <Button type="button" className="btn btn-secondary" onClick={() => {
+                            <div className="d-flex justify-content-center">
+                                <Button type="button" className="btn btn-secondary custom-buttons" onClick={() => {
                                     window.location.reload()
                                 }}>
                                     Cancel
