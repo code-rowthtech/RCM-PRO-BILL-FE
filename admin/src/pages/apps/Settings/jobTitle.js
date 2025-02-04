@@ -93,17 +93,17 @@ const JobTitle = () => {
                 <Card>
                     <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                         <Row className="mb-2">
-                            <Col sm={6}>
+                            <Col sm={6} className='d-flex align-items-center'>
                                 <Button variant={status === false ? 'outlined' : ''}
                                     onClick={() => handleStatusChange(true)}
-                                    className={`${status === true ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    className={`${status === true ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
                                 >
                                     Active
                                 </Button>
 
                                 <Button variant={status === true ? 'outlined' : ''}
                                     onClick={() => handleStatusChange(false)}
-                                    className={`${status === false ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    className={`${status === false ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
                                 >
                                     Inactive
                                 </Button>

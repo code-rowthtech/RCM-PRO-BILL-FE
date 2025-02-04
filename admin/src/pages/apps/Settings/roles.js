@@ -64,22 +64,16 @@ const Roles = () => {
 
     return (
         <div>
-            {/* <PageTitle
-                breadCrumbItems={[
-                    { label: 'Roles', path:'/apps/Roles/list', active: true },
-                ]}
-                title={'Roles'}
-            /> */}
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
                         <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                             <Row className="mb-2 d-flex justify-content-between">
-                                <Col sm={6}>
+                                <Col sm={6} className='d-flex align-items-center'>
                                     <Button
                                         variant={status === true ? 'outlined' : ''}
                                         onClick={() => handleStatusChange(true)}
-                                        className={`${status === true ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                        className={`${status === true ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
                                     >
                                         Active
                                     </Button>
@@ -87,7 +81,7 @@ const Roles = () => {
                                     <Button
                                         variant={status === false ? 'outlined' : ''}
                                         onClick={() => handleStatusChange(false)}
-                                        className={`${status === false ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                        className={`${status === false ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
                                     >
                                         Inactive
                                     </Button>

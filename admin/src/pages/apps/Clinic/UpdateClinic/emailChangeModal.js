@@ -106,7 +106,7 @@ const EmailChangeModal = ({ show, onClose, email, userId }) => {
             <Modal.Body>
                 <Row className="mb-2 pb-2 d-flex align-items-center">
                     <Col sm={12}>
-                        <h4 className="text-center">Change Clinic Email</h4>
+                        <h4 className="text-center">Change Practice Email</h4>
                     </Col>
                 </Row>
                 <Form className="px-3">

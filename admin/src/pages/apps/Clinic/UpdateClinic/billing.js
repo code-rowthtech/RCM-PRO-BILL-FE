@@ -149,6 +149,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                 const selectedId = e.target.value;
                                                 const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
                                                 setAmount(selectedSubscription || 0);
+                                                clearErrors('subscription')
                                             }}
                                         >
                                             <option value="">Select plan type</option>
@@ -250,7 +251,10 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                             {...register('method', {
                                                                 required: 'This field is required'
                                                             })}
-                                                            onChange={(e) => setPaymentType(e.target.value)}>
+                                                            onChange={(e) => {
+                                                                setPaymentType(e.target.value)
+                                                                clearErrors('method')
+                                                            }}>
                                                             <option value=''>Select payment method</option>
                                                             <option value='card'>Card</option>
                                                             <option value='online'>Online banking</option>
@@ -439,8 +443,8 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                 </Col>
                             </Row>
                             <Row className='mt-2'>
-                                <Col sm={12} className='text-end'>
-                                    <Button type='submit' className='custom-button' disabled={store?.createSubscriptionPlanReducer?.loading}>
+                                <Col sm={12} className='d-flex justify-content-end'>
+                                    <Button type='submit' className='custom-buttons' disabled={store?.createSubscriptionPlanReducer?.loading}>
                                         {store?.createSubscriptionPlanReducer?.loading ?
                                             <Spinner className='spinner-border-sm' color='white' />
                                             :

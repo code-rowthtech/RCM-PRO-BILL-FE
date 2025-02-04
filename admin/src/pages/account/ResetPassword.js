@@ -76,7 +76,7 @@ const ResetPassword = (): React$Element<any> => {
      * handle form submission
      */
     const onSubmit = (formData) => {
-        // console.log(formData['password'])
+        console.log(formData['password'])
         dispatch(forgotPasswordChange({ token: token, newPassword: formData['password'] }));
     };
     const navigate = useNavigate();

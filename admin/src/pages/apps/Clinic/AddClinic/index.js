@@ -115,7 +115,7 @@ const Index = () => {
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
-                        <Card.Body className='scroll-container' style={{ height: '88vh' }}>
+                        <Card.Body className='scroll-container' style={{ height: '88vh', }}>
                             <Row className='mb-1' style={{ height: '7%' }}>
                                 <Col className='d-flex align-items-center gap-3'>
                                     <span
@@ -162,6 +162,12 @@ const Index = () => {
                                                 ToastHandle("Please enter a valid email address.", 'danger');
                                             } else if (!/^\d{9,10}$/.test(resetEmail?.phone)) {
                                                 ToastHandle("Please enter a valid phone number with 9 or 10 digits.", 'danger');
+                                            } else if (resetEmail?.CLIA_Number && !/^[A-Z0-9]{2}D[0-9]{7}$/.test(resetEmail?.CLIA_Number)) {
+                                                ToastHandle("CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits.", 'danger');
+                                            } else if (resetEmail?.medicareNumber && resetEmail?.medicareNumber?.length < 6) {
+                                                ToastHandle("Medicare number must be at least 6 characters long.", 'danger');
+                                            } else if (resetEmail?.medicaidNumber && resetEmail?.medicaidNumber?.length < 10) {
+                                                ToastHandle("Medicaid number must be at least 10 characters long.", 'danger');
                                             }
                                             else {
                                                 setResetEmailError(null); // Clear the error when all inputs are valid
@@ -185,7 +191,7 @@ const Index = () => {
                                     <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
                                 </Col>
                             </Row>
-                            <Row className='scroll-container pt-2' style={{ height: '93%' }}>
+                            <Row className='scroll-container pt-2 pe-1' style={{ height: '93%', }}>
                                 <Col>
                                     {activeTab === 'clinic' ?
                                         <ClinicForm
