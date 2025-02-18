@@ -405,8 +405,8 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                 </Col>
             </Row>
             <Row className='mt-2'>
-                <Col sm={12} className='text-end'>
-                    <Button type='submit' className='custom-button' disabled={store?.createSubscriptionPlanReducer?.loading}>
+                <Col sm={12} className='d-flex justify-content-end'>
+                    <Button type='submit' className='custom-buttons' disabled={store?.createSubscriptionPlanReducer?.loading}>
                         {store?.createSubscriptionPlanReducer?.loading ?
                             <Spinner className='spinner-border-sm' color='white' />
                             :

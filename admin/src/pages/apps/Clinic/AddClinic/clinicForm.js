@@ -340,9 +340,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         // ) {
         //     return;
         // }
-        if (/\s/.test(value)) {
-            return;
-        }
+        // if (/\s/.test(value)) {
+        //     return;
+        // }
 
         setAccreditationDetails((prevDetails) => {
             const updatedDetails = [...prevDetails];
@@ -735,6 +735,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             <Form.Label className='mb-1'>Practice type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
                                 {...register('clinicType', { required: 'This field is required' })}
+                                // data-has-value={!!watch('clinicType')}
                                 className={` ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}
                             >
@@ -1051,8 +1052,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             id='logo-file-input'
                             className="rounded-circle"
                             style={{ display: 'none' }}
-                            // {...register('logoimage', { required: 'This field is required' })}
-                            // ref={logoFileInputRef}
                             accept=".png, .jpg, .jpeg, .svg" // Allow only specific file types
                             onChange={handleFileChange}
                         />
@@ -1110,11 +1109,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                             : 'Upload Document'}
 
                                     <p className='mb-0'><FiDownloadCloud /></p>
-                                    {/* <p
-                                        onClick={() => handleRemoveAccreditation(index)}
-                                        style={{ right: '-2%', top: '20%' }}
-                                        className={`${accreditationDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fw-bold text-danger`}>
-                                    </p> */}
                                 </div>
                                 {/* <img className={`${accreditation ? "" : "d-none"}`} src={accreditation?.url} alt='...' /> */}
                                 <Form.Control
@@ -1127,8 +1121,9 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 />
                                 <span
                                     onClick={() => handleRemoveAccreditation(index)}
-                                    style={{ right: '-0.4%', top: '20%' }}
-                                    className={`${accreditationDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
+                                    style={{ right: '-1%', top: '15%', zIndex: 111 }}
+                                    className={`${accreditationDetails.length <= 1 ? 'd-none' : ''}
+                                     uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
                                 </span>
                             </Col>
 
@@ -1404,8 +1399,8 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                                     setResetEmail((prevState) => ({
                                                         ...prevState,
                                                         primaryAddress: {
-                                                            ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
-                                                            street: e.target.value,     // Update only the address field
+                                                            ...prevState.primaryAddress,
+                                                            street: e.target.value,
                                                         }
                                                     }));
                                                 }}
@@ -1844,7 +1839,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             </tr>
                         </thead>
                         <tbody className={`${!parentClinicId ? 'd-none' : ''}`}>
-                            <tr>
+                            {/* <tr >
                                 <td className='text-capitalize'>1</td>
                                 <td className='text-capitalize'>{clinicData?.name}</td>
                                 <td>{(clinicData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (clinicData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
@@ -1854,10 +1849,10 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                                 <td> <i
                                     onClick={() => navigate(`/apps/rcm/updateclinic?updateid=${clinicData?._id}`)}
                                     className=" mdi mdi-square-edit-outline"></i></td>
-                            </tr>
+                            </tr> */}
                             {store?.getClinicsByParentReducer?.loading ?
                                 <tr>
-                                    <td colSpan={5} className='text-center'>
+                                    <td colSpan={7} className='text-center'>
                                         <Spinner />
                                     </td>
                                 </tr>
@@ -1865,7 +1860,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
 
                                 clinicsList?.map((multipleData, index) => (
                                     <tr key={multipleData?._id}>
-                                        <td className='text-capitalize'>{index + 2}</td>
+                                        <td className='text-capitalize'>{index + 1}</td>
                                         <td className='text-capitalize'>{multipleData?.name}</td>
                                         <td>{(multipleData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
                                         <td>{multipleData?.clinicType}</td>

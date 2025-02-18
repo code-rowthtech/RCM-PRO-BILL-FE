@@ -76,7 +76,7 @@ const ResetPassword = (): React$Element<any> => {
      * handle form submission
      */
     const onSubmit = (formData) => {
-        // console.log(formData['password'])
+        console.log(formData['password'])
         dispatch(forgotPasswordChange({ token: token, newPassword: formData['password'] }));
     };
     const navigate = useNavigate();
@@ -122,7 +122,7 @@ const ResetPassword = (): React$Element<any> => {
                             containerClass={'mb-3'}
                         />
 
-                        <div className="mb-3 mb-0 text-center">
+                        <div className="mb-3 mb-0 d-flex justify-content-center">
                             <Button variant="primary" className='custom-buttons' type="submit" disabled={loading}>
                                 {t('Submit')}
                             </Button>

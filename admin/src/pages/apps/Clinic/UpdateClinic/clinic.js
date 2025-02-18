@@ -55,6 +55,7 @@ const Clinic = ({ id }) => {
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const cities = store?.getCitiesReducer?.data?.cities;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
+    console.log(store?.Auth?.loading)
 
     const [formDetails, setFormDetails] = useState({
         accreditationDetails: [{ name: '', number: '', url: null, fileName: '' }],
@@ -100,6 +101,8 @@ const Clinic = ({ id }) => {
         setField('email', clinicData?.userId?.email);
         setField('address', clinicData?.userId?.primaryAddress?.address);
         setField('mailingAddress', clinicData?.userId?.mailingAddress?.address);
+        setField('mailingZip', clinicData?.userId?.mailingAddress?.zip);
+        setField('mailingStreet', clinicData?.userId?.mailingAddress?.street);
         setField('street', clinicData?.userId?.primaryAddress?.street);
         setField('zip', clinicData?.userId?.primaryAddress?.zip);
         setSameAsPrimary(clinicData?.userId?.isPrimaryAndMailingAddressSame);
@@ -989,7 +992,7 @@ const Clinic = ({ id }) => {
                                         <span
                                             onClick={() => handleRemoveField(type, index)}
                                             className={`${formDetails[type].length > 1 ? '' : 'd-none'} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}
-                                            style={{ right: '-0.5%', top: '20%', zIndex: '111' }}
+                                            style={{ right: '-1%', top: '15%', zIndex: 111 }}
                                         >
                                             {/* Remove Icon */}
                                         </span>
@@ -1483,22 +1486,23 @@ const Clinic = ({ id }) => {
                 </Row >
                 <Row>
                     <Col className='d-flex gap-2 justify-content-end align-items-end'>
-                        <Button className='custom-buttons' onClick={() => {
-                            setShowReset(true)
-                            setValue('resetEmail', clinicData?.userId?.email)
-                        }}>
-                            {store?.Auth?.loading ?
-                                <Spinner color='white' className='spinner-border-sm' />
-                                :
-                                'Change Password'
-                            }
+                        <Button className='custom-buttons'
+                            disabled={!clinicData?.userId?.verified_email}
+                            onClick={() => {
+                                setShowReset(true)
+                                setValue('resetEmail', clinicData?.userId?.email)
+
+                            }}>
+
+                            Change Password
+
                         </Button>
                         <Button className={`custom-buttons ${clinicData?.isParent === false ? 'd-none' : ''}`} onClick={() => {
                             navigate(`/apps/rcm/addclinic?clincid=${clinicData?._id}&userId=${clinicData?.userId?._id}`)
                         }}>
                             Add Multiple Practice
                         </Button>
-                        <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3">
+                        <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3 custom-buttons">
                             {store?.updateClinicsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />
                                 :
@@ -1593,8 +1597,12 @@ const Clinic = ({ id }) => {
                                 The practice will receive a reset password email at {clinicData?.userId?.email}.
                             </Col>
                             <Col sm={12} className='text-center mt-2' >
-                                <Button type='submit' className='custom-buttons' >
-                                    Send
+                                <Button type='submit' disabled={store?.Auth?.loading} className='custom-buttons' >
+                                    {store?.Auth?.loading ?
+                                        <Spinner color='white' className='spinner-border-sm' />
+                                        :
+                                        'Send'
+                                    }
                                 </Button>
                             </Col>
                         </Row>

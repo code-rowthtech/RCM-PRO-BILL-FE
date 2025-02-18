@@ -14,18 +14,25 @@ import { createdBy } from './userId'
 
 const Designation = () => {
     const store = useSelector((state) => state);
-    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, watch, reset, formState: { errors }, setValue } = useForm();
     const dispatch = useDispatch();
     const nameValue = watch("name");
     const [addDesignationModal, setAddDesignationModal] = useState(false);
     const [updateDesignationModal, setUpdateDesignationModal] = useState(false);
-    const [updateDate, setUpdateData] = useState(null);
+    const [updateData, setUpdateData] = useState(null);
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState(true);
     const [skip, setSkip] = useState(1);
     const closeAddModal = () => {
         setAddDesignationModal(false);
     }
+
+    useEffect(() => {
+        if (updateData) {
+            setValue('name', updateData?.name)
+            setValue('description', updateData?.description)
+        }
+    }, [updateData])
     const addDesignation = (data) => {
         const payload = {
             name: data?.name,
@@ -34,6 +41,20 @@ const Designation = () => {
             createdBy: createdBy,
         }
         dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
+    };
+    const closeUpdateModal = () => {
+        setUpdateDesignationModal(false);
+        setUpdateData(null);
+        reset();
+    }
+    const updateDesignation = (data) => {
+        const payload = {
+            name: data?.name,
+            id: updateData?._id,
+            description: data?.description,
+            category: 'designation',
+        }
+        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
     };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -47,6 +68,7 @@ const Designation = () => {
         }
         if (updateResponse === 200) {
             dispatch(getMastersDataAction({ status: status, category: 'designation', search: search, limit: 10, skip: skip }));
+            closeUpdateModal()
             dispatch(stateEmptydAction());
         }
     }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip, updateResponse]);
@@ -71,17 +93,17 @@ const Designation = () => {
                 <Card>
                     <Card.Body className='scroll-container' style={{ height: '88vh' }}>
                         <Row className="mb-2">
-                            <Col sm={6}>
+                            <Col sm={6} className='d-flex align-items-center'>
                                 <Button variant={status === false ? 'outlined' : ''}
                                     onClick={() => handleStatusChange(true)}
-                                    className={`${status === true ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    className={`${status === true ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
                                 >
                                     Active
                                 </Button>
 
                                 <Button variant={status === true ? 'outlined' : ''}
                                     onClick={() => handleStatusChange(false)}
-                                    className={`${status === false ? 'custom-buttons' : 'bg-none border-primary'} me-2`}
+                                    className={`${status === false ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
                                 >
                                     Inactive
                                 </Button>
@@ -188,11 +210,7 @@ const Designation = () => {
                 </Card>
             </Col>
             <Modal centered show={addDesignationModal} onHide={closeAddModal}>
-                {/* <Modal.Header
-                    onHide={closeAddModal}
-                    closeButton
-                    className={'modal-colored-header pb-0 border-0 text-center'}>
-                </Modal.Header> */}
+
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -243,6 +261,63 @@ const Designation = () => {
                                     < Spinner color='white' className='spinner-border-sm' />
                                     :
                                     'Submit'
+                                }
+                            </Button>
+                        </Modal.Footer>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+            <Modal centered show={updateDesignationModal} >
+                <Modal.Body>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Edit Practice Type</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={closeUpdateModal} />
+                        </Col>
+                    </Row>
+                    {/* <h4 className="mt-0 text-center">New Clinic Type</h4> */}
+                    <Form onSubmit={handleSubmit(updateDesignation)}>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Designation Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter designation name"
+                                        {...register("name", { required: "Designation name is required" })}
+                                    />
+                                    {errors.name && <p className="text-danger">{errors.name.message}</p>}
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label>Re-Enter Designation Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Re-enter Designation Name"
+                                        {...register("reEnterName", {
+                                            required: "Please re-enter designation name",
+                                            validate: value => value === nameValue || "Designation names do not match"
+                                        })}
+                                    />
+                                    {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Modal.Footer>
+                            <Button onClick={closeUpdateModal} className='custom-buttons'>
+                                Close
+                            </Button>
+                            <Button type='submit' className='custom-buttons' disabled={store?.updateMastersDataReducer?.loading}>
+                                {store?.updateMastersDataReducer?.loading
+                                    ?
+                                    < Spinner color='white' className='spinner-border-sm' />
+                                    :
+                                    'Update'
                                 }
                             </Button>
                         </Modal.Footer>
