@@ -703,11 +703,43 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
     const clinicTypeSelected = watch('clinicType');
     const watchAllFields = watch(['address', 'zip', 'stateName', 'city', 'street']);
 
+    // const [constantIdentifiers, setConstantIdentifiers] = useState([
+    // ]);
+    // const [identifierTypes, SetIdentifierTypes] = useState(['NPI', 'TIN', 'EIN', 'Medicare', 'Medicaid', 'State License', 'Accreditation', 'CLIA', 'DUNS', 'Facility ID']);
+
+    const defaultIdentifiers = ["NPI", "CLIA", "EIN"];
+    const identifierOptions = ["NPI", "TIN", "EIN", "Medicare", "Medicaid", "State License", "Accreditation", "CLIA", "DUNS", "Facility ID"];
+    const [constantIdentifiers, setConstantIdentifiers] = useState([]);
+
+    useEffect(() => {
+        // Ensure default identifiers are always present
+        setConstantIdentifiers(defaultIdentifiers.map(type => ({
+            type,
+            number: "",
+            file: null,
+            expiry: ""
+        })));
+    }, []);
+    const addIdentifier = () => {
+        setConstantIdentifiers([...constantIdentifiers, { type: "", number: "", file: null, expiry: "" }]);
+    };
+
+    const removeIdentifier = (index) => {
+        if (index < defaultIdentifiers.length) return; // Prevent removal of default identifiers
+        setConstantIdentifiers(constantIdentifiers.filter((_, i) => i !== index));
+    };
+
+    const handleChange = (index, field, value) => {
+        const updatedIdentifiers = [...constantIdentifiers];
+        updatedIdentifiers[index][field] = value;
+        setConstantIdentifiers(updatedIdentifiers);
+    };
+
     return (
         <>
-            <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+            <Form autoComplete='off'>
                 <Row>
-                    <Col sm={6}>
+                    <Col sm={4}>
                         <Form.Group className="mb-2">
                             <Form.Label className='mb-1'>Practice Name <span className='text-danger'>*</span></Form.Label>
                             <Form.Control
@@ -730,7 +762,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
                         </Form.Group>
                     </Col>
-                    <Col sm={6}>
+                    <Col sm={4}>
                         <Form.Group className="mb-2">
                             <Form.Label className='mb-1'>Practice type <span className='text-danger'>*</span></Form.Label>
                             <Form.Select
@@ -747,299 +779,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             {errors.clinicType && <span className="text-danger">{errors.clinicType.message}</span>}
                         </Form.Group>
                     </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Email ID<span className='text-danger'>*</span></Form.Label>
-                            <Form.Control
-                                type="text"
-                                // defaultValue={updatePage ? clinicDataToUpdate?.email : ''}
-                                {...register('email', {
-                                    required: 'This field is required',
-                                    pattern: {
-                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
-                                        message: 'Please enter a valid email address'
-                                    }
-                                })}
-                                onChange={(e) => {
-                                    setResetEmail({ ...resetEmail, email: e.target.value })
-                                    clearErrors('email')
-                                }}
-                                placeholder="Email ID"
-                            />
-
-                            {errors.email && <span className="text-danger">{errors.email.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('taxId', {
-                                    pattern: {
-                                        value: /^\d{2}-\d{7}$/, // Accepts only the hyphenated format XX-XXXXXXX
-                                        message: 'Tax ID / EIN must be in the format XX-XXXXXXX',
-                                    },
-                                    minLength: {
-                                        value: 10,
-                                        message: 'Tax ID / EIN must be exactly 10 characters long',
-                                    },
-                                    maxLength: {
-                                        value: 10,
-                                        message: 'Tax ID / EIN must be exactly 10 characters long',
-                                    },
-                                })}
-                                onKeyPress={(event) => {
-                                    if (!/[0-9]/.test(event.key) && event.key !== '-') {
-                                        event.preventDefault(); // Allow only numbers and the hyphen
-                                    }
-                                }}
-                                maxLength={10} // Enforce maximum length of 10 characters
-                                onChange={(e) => {
-                                    let rawValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
-                                    let formattedValue = '';
-                                    if (rawValue.length > 2) {
-                                        formattedValue = `${rawValue.slice(0, 2)}-${rawValue.slice(2, 9)}`;
-                                    } else {
-                                        formattedValue = rawValue;
-                                    }
-                                    e.target.value = formattedValue;
-                                    setResetEmail({ ...resetEmail, taxIdOrEIN: e.target.value?.replace(/\D/g, '') });
-                                    clearErrors('taxId');
-                                }}
-                                placeholder="XX-XXXXXXX"
-                            />
-                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
-                        </Form.Group>
-
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-0 position-relative">
-                            <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
-                            <Form.Group>
-                                <InputGroup>
-                                    <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
-                                    <Form.Control
-                                        type="tel"
-                                        {...register('contact', {
-                                            required: 'This field is required',
-                                            pattern: {
-                                                value: /^\(\d{3}\)\d{3}-\d{4}$/, // Matches (XXX)XXX-XXXX format
-                                                message: 'Contact must be in the format (XXX)XXX-XXXX',
-                                            },
-                                            maxLength: {
-                                                value: 13, // Includes characters for (XXX)XXX-XXXX
-                                                message: 'Contact must not exceed 13 characters'
-                                            },
-                                            minLength: {
-                                                value: 13,
-                                                message: 'Contact must not be less than 13 characters'
-                                            }
-                                        })}
-                                        onChange={(e) => {
-                                            let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
-                                            if (rawValue.length > 10) rawValue = rawValue.slice(0, 10); // Limit to 10 digits
-                                            const formattedValue = rawValue.replace(
-                                                /(\d{1,3})(\d{0,3})(\d{0,4})/,
-                                                (match, p1, p2, p3) => {
-                                                    if (p3) return `(${p1})${p2}-${p3}`;
-                                                    if (p2) return `(${p1})${p2}`;
-                                                    return `(${p1}`;
-                                                }
-                                            ); // Format dynamically as (XXX)XXX-XXXX
-                                            e.target.value = formattedValue; // Update input value
-                                            setResetEmail({ ...resetEmail, phone: rawValue }); // Store raw numeric value if needed
-                                            clearErrors('contact'); // Clear validation errors
-                                        }}
-                                        placeholder="(123)456-7890"
-                                        maxLength={14}
-                                        onKeyPress={(event) => {
-                                            // Only allow numeric characters (0-9)
-                                            if (!/[0-9]/.test(event.key)) {
-                                                event.preventDefault();
-                                            }
-                                        }}
-                                    />
-                                </InputGroup>
-                            </Form.Group>
-
-                            <div
-                                className='position-absolute ' style={{ top: '52%', left: '1%' }}
-                            >
-                                <img
-                                    src={us}
-                                    alt="country code flag"
-                                    width={20} />
-                            </div>
-                        </Form.Group>
-                        {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>NPI Type 2  Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('npi', {
-                                    minLength: {
-                                        value: 10,
-                                        message: 'NPI must be at least 10 characters long', // Error message
-                                    },
-                                    maxLength: {
-                                        value: 10,
-                                        message: 'NPI cannot exceed 10 characters', // Error message
-                                    },
-                                    pattern: {
-                                        value: /^[0-9]+$/, // Pattern for numbers only
-                                        message: 'NPI must contain numbers only', // Error message
-                                    },
-                                })}
-                                defaultValue={updatePage ? clinicDataToUpdate?.npiNumber : ''}
-                                placeholder="NPI Number"
-                                maxLength={10}
-                                onChange={(e) => {
-                                    setResetEmail({ ...resetEmail, npiNumber: e.target.value })
-                                    clearErrors('npi');
-                                }}
-                                // onKeyPress={(event) => handleFirstSpace(event, 0)} 
-                                onKeyPress={(event) => {
-                                    // Only allow numeric characters (0-9)
-                                    if (!/[0-9]/.test(event.key)) {
-                                        event.preventDefault();
-                                    }
-                                }}
-                            />
-                            {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Practice Speciality Description</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('speciality', {
-                                    validate: (value) =>
-                                        !value.startsWith(' ') || 'First character cannot be a space',
-                                })}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    if (value.startsWith(' ')) {
-                                        e.target.value = value.trimStart(); // Prevent spaces at the start
-                                    }
-                                    setResetEmail({ ...resetEmail, practiceSpecialty: value });
-                                    clearErrors('speciality');
-                                }}
-                                placeholder="Practice speciality"
-                                onKeyPress={handleFirstSpace}
-                            />
-                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>CLIA  Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('clia', {
-                                    // required: "This field is required",
-                                    pattern: {
-                                        value: /^[A-Z0-9]{2}D[0-9]{7}$/, // Ensures the CLIA number matches the specific format
-                                        message: 'CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits',
-                                    },
-                                })}
-                                placeholder="CLIA Number"
-                                maxLength={10}
-                                onChange={(e) => {
-                                    setResetEmail({ ...resetEmail, CLIA_Number: e.target.value });
-                                    clearErrors('clia');
-                                }}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                            />
-                            {errors.clia && <span className="text-danger">{errors.clia.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Medicare Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('medicare', {
-                                    minLength: {
-                                        value: 6,
-                                        message: 'Medicare number must be at least 6 characters long', // Error message
-                                    },
-                                })}
-                                placeholder="Medicare Number"
-                                maxLength={12}
-                                onChange={(e) => {
-                                    setResetEmail({ ...resetEmail, medicareNumber: e.target.value })
-                                    clearErrors('medicare')
-                                }}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                            />
-                            {errors.medicare && <span className="text-danger">{errors.medicare.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    <Col sm={6}>
-                        <Form.Group className="mb-2">
-                            <Form.Label className='mb-1'>Medicaid Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('medicaid', {
-                                    minLength: {
-                                        value: 10,
-                                        message: 'Medicaid number must be at least 10 characters long', // Error message
-                                    },
-                                })}
-                                placeholder="Medicaid Number"
-                                maxLength={10}
-                                onChange={(e) => {
-                                    clearErrors('medicaid')
-                                    setResetEmail({ ...resetEmail, medicaidNumber: e.target.value })
-                                }}
-                                onKeyPress={(event) => handleFirstSpace(event, 0)}
-                            />
-                            {errors.medicaid && <span className="text-danger">{errors.medicaid.message}</span>}
-                        </Form.Group>
-                    </Col>
-                    {taxonomyCodes.map((code, index) => (
-                        <Col sm={6} key={index}>
-                            <Form.Group className="mb-2 position-relative">
-                                <Form.Label className="mb-1">
-                                    Taxonomy Code(s)
-                                    {index === taxonomyCodes.length - 1 && (
-                                        <span
-                                            className="fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer"
-                                            onClick={handleAddTaxonomy}
-                                        >
-                                        </span>
-                                    )}
-                                    {/* <span className="text-danger">*</span> */}
-                                </Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    {...register(`taxonomyCode[${index}]`, {
-                                        //  required: 'This field is required'
-                                    })}
-                                    value={code}
-                                    placeholder="Taxonomy Code"
-                                    maxLength={10}
-                                    onKeyPress={(event) => handleFirstSpace(event, index)}
-                                    onChange={(e) => {
-                                        clearErrors(`taxonomyCode[${index}]`)
-                                        handleTaxonomyChange(index, e.target.value)
-                                    }}
-                                />
-                                <span
-                                    style={{ top: '55%', right: '1%' }}
-                                    onClick={() => handleRemoveTaxonomy(index)} className={`${taxonomyCodes?.length === 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}></span>
-
-                                {errors.taxonomyCode?.[index] && (
-                                    <span className="text-danger">{errors.taxonomyCode[index].message}</span>
-                                )}
-                            </Form.Group>
-                        </Col>
-                    ))}
-                    <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
+                    <Col sm={4}>
                         <Form.Label>Upload Logo</Form.Label>
                         <div
                             onClick={() => document.getElementById(`logo-file-input`).click()}
@@ -1052,842 +792,76 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                             id='logo-file-input'
                             className="rounded-circle"
                             style={{ display: 'none' }}
-                            accept=".png, .jpg, .jpeg, .svg" // Allow only specific file types
+                            accept=".png, .jpg, .jpeg, .svg"
                             onChange={handleFileChange}
                         />
-                        {/* {errors.logoimage && <span className="text-danger">{errors.logoimage.message}</span>} */}
                     </Col>
-                    <hr />
+                </Row>
+                <hr />
+                <Row>
                     <Col sm={12}>
-                        <Form.Label>
-                            Accreditation Details&nbsp;
-                            <span
-                                onClick={handleAddAccreditation}
-                                className=' fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer'>
-                            </span>
-                        </Form.Label>
-                    </Col>
-                    {accreditationDetails.map((accreditation, index) => (
-                        <React.Fragment key={index}>
-                            <Col sm={4}>
-                                <Form.Control
-                                    type="text"
-                                    value={accreditation?.name}
-                                    placeholder="Name"
-                                    onChange={(e) => handleAccreditationInputChange(e, 'name', index)}
-                                // onKeyPress={han  dleFirstSpace}
-                                />
+                        <Row className="mb-3">
+                            <Col sm={9}>
+                                <h5>Identifiers</h5>
                             </Col>
-                            <Col sm={4}>
-                                <Form.Control
-                                    type="text"
-                                    value={accreditation?.number || ''}
-                                    placeholder="Document Number"
-                                    onChange={(e) => handleAccreditationInputChange(e, 'number', index)}
-                                // onKeyPress={(event) => handleFirstSpace(event, 0)}
-                                />
-                                {errors?.accDocno && index === 0 && (
-                                    <span className="text-danger">{errors.accDocno.message}</span>
-                                )}
+                            <Col sm={3} className="text-end">
+                                <Button variant="success" onClick={addIdentifier}>+</Button>
                             </Col>
-                            <Col sm={4} className="mb-2 position-relative">
-                                <div
-                                    onClick={() => document.getElementById(`fileInput-accreditation=${index}`).click()}
-                                    //  onClick={() => accreditationFileInputRef.current.click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${accreditation.fileName || accUploading ? 'form-control' : 'custom-form-fields'}`}>
-                                    {/* {accreditation.fileName ? accreditation?.fileName?.length > 30 ? accreditation?.fileName?.slice(0, 25) + '...' : accreditation?.fileName : 'Upload Document'} */}
-                                    {accUploading
-                                        ? accreditation?.fileName
-                                            ? `${accreditation.fileName.length > 30
-                                                ? accreditation.fileName.slice(0, 25) + '...'
-                                                : accreditation.fileName} - Uploading...`
-                                            : 'Uploading...'
-                                        : accreditation?.fileName
-                                            ? accreditation.fileName.length > 30
-                                                ? accreditation.fileName.slice(0, 25) + '...'
-                                                : accreditation.fileName
-                                            : 'Upload Document'}
+                        </Row>
 
-                                    <p className='mb-0'><FiDownloadCloud /></p>
-                                </div>
-                                {/* <img className={`${accreditation ? "" : "d-none"}`} src={accreditation?.url} alt='...' /> */}
-                                <Form.Control
-                                    type="file"
-                                    id={`fileInput-accreditation=${index}`}
-                                    className="rounded-circle "
-                                    style={{ display: 'none' }}
-                                    // ref={accreditationFileInputRef}
-                                    onChange={(e) => handleAccreditationChange(e, index)}
-                                />
-                                <span
-                                    onClick={() => handleRemoveAccreditation(index)}
-                                    style={{ right: '-1%', top: '15%', zIndex: 111 }}
-                                    className={`${accreditationDetails.length <= 1 ? 'd-none' : ''}
-                                     uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}>
-                                </span>
-                            </Col>
+                        <Row>
+                            <Col sm={3}><Form.Label>Identifier Type</Form.Label></Col>
+                            <Col sm={3}><Form.Label>Identifier Number</Form.Label></Col>
+                            <Col sm={3}><Form.Label>Identifier Document</Form.Label></Col>
+                            <Col sm={2}><Form.Label>Identifier Expiry</Form.Label></Col>
+                            <Col sm={1}><Form.Label>Action</Form.Label></Col>
+                        </Row>
 
-                        </React.Fragment>
-                    ))}
-
-                    <hr />
-
-                    <Col sm={12} className="position-relative">
-                        <Form.Label ref={containerRef}>
-                            State of Licensure&nbsp;
-                            <span
-                                onClick={() => setStatesMenu(!statesMenu)}
-                                className={`plusicon ms-1 fs-5 ${statesMenu ? 'uil-angle-down' : 'uil-angle-up'} fw-bold cursor-pointer`}
-                            ></span>
-                            <div
-                                // ref={menuRef}
-                                className={`scroll-container ${statesMenu ? '' : 'd-none'} bg-white border border-secondary position-absolute ps-1 py-1`}
-                                style={{ height: '14rem', width: '12em', zIndex: '111' }}
-                            >
-                                {/* <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}> */}
-                                {statesData?.states?.map((data, index) => (
-                                    <div className='d-flex align-items-center px-1' key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }} onClick={() => handleCheckboxChange(data?.name)}
+                        {constantIdentifiers.map((item, index) => (
+                            <Row key={index} className="mb-2">
+                                <Col sm={3}>
+                                    <Form.Select
+                                        value={item.type}
+                                        onChange={(e) => handleChange(index, "type", e.target.value)}
+                                        disabled={defaultIdentifiers.includes(item.type)}
                                     >
-                                        {selectedStates.includes(data?.name) ?
-                                            <MdOutlineRadioButtonChecked />
-                                            :
-                                            <MdOutlineRadioButtonUnchecked />
-                                        }
-                                        <span className='ps-1'>
-                                            {data?.name}
-                                        </span>
-                                    </div>
-                                ))}
-                                {/* </ul> */}
-                            </div>
-                        </Form.Label>
+                                        <option value='' disabled>Select Identifier Type</option>
+                                        {identifierOptions.map((option) => (
+                                            <option key={option} value={option}>{option}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+                                <Col sm={3}>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder='Document Number'
+                                        value={item.number}
+                                        onChange={(e) => handleChange(index, "number", e.target.value)}
+                                    />
+                                </Col>
+                                <Col sm={3}>
+                                    <Form.Control
+                                        type="file"
+                                        onChange={(e) => handleChange(index, "file", e.target.files[0])}
+                                    />
+                                </Col>
+                                <Col sm={2}>
+                                    <Form.Control
+                                        type='date'
+                                        value={item.expiry}
+                                        onChange={(e) => handleChange(index, "expiry", e.target.value)}
+                                    />
+                                </Col>
+                                <Col sm={1} className="text-center">
+                                    {index >= defaultIdentifiers.length && (
+                                        <Button variant="danger" onClick={() => removeIdentifier(index)}>-</Button>
+                                    )}
+                                </Col>
+                            </Row>
+                        ))}
                     </Col>
-                    {stateDetails.map((data, index) => (
-                        <React.Fragment key={index}>
-                            <Col sm={4}>
-                                <Form.Control
-                                    type="text"
-                                    value={data.name}
-                                    readOnly // Display selected state name
-                                    placeholder="State"
-                                />
-                            </Col>
-                            <Col sm={4}>
-                                <Form.Control
-                                    type="text"
-                                    value={data.number}
-                                    placeholder="Document Number"
-                                    onChange={(e) => handleStateInputChange(e, 'number', index)}
-                                />
-                            </Col>
-                            <Col sm={4} className="mb-2 position-relative">
-                                <div
-                                    onClick={() => document.getElementById(`fileInput-state=${index}`).click()}
-                                    className={`custom-file-upload justify-content-between cursor-pointer ${data.fileName || stateUploading ? 'form-control' : 'custom-form-fields'
-                                        }`}
-                                >
-                                    {stateUploading
-                                        ? data?.fileName
-                                            ? `${data.fileName.length > 30
-                                                ? data.fileName.slice(0, 25) + '...'
-                                                : data.fileName} - Uploading...`
-                                            : 'Uploading...'
-                                        : data?.fileName
-                                            ? data.fileName.length > 30
-                                                ? data.fileName.slice(0, 25) + '...'
-                                                : data.fileName
-                                            : 'Upload Document'}
-
-                                    <p className="mb-0">
-                                        <FiDownloadCloud />
-                                    </p>
-                                </div>
-                                <Form.Control
-                                    type="file"
-                                    id={`fileInput-state=${index}`}
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => handleStateChange(e, index)}
-                                />
-                                <span
-                                    onClick={() => handleRemoveState(index)}
-                                    className={`${stateDetails.length <= 1 ? 'd-none' : ''
-                                        } uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}
-                                    style={{ right: '-0.4%', top: '22%' }}
-                                ></span>
-                            </Col>
-                        </React.Fragment>
-                    ))}
-                    <hr />
-                    <Col sm={12}>
-                        <Row>
-                            <Col sm={12} className='mb-2'>
-                                <span className='text-black fw-semibold form-label'>Address Details</span>
-                            </Col>
-                            <Col sm={6}>
-                                <Row className='position-relative'>
-                                    <Col sm={12}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Address</Form.Label>
-                                            <div style={{ position: 'relative' }}>
-                                                <Form.Control
-                                                    type="text"
-                                                    {...register('address', {
-                                                    })}
-                                                    onChange={(e) => {
-                                                        getGeolocation(e);
-                                                        setFocused(true);
-                                                        clearErrors('address');
-                                                        setResetEmail((prevState) => ({
-                                                            ...prevState,
-                                                            primaryAddress: {
-                                                                ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
-                                                                address: e.target.value,     // Update only the address field
-                                                            }
-                                                        }));
-                                                    }}
-
-                                                    onFocus={() => setFocused(true)}
-                                                    onBlur={() => {
-                                                        setTimeout(() => setFocused(false), 200);
-                                                    }}
-                                                    placeholder="Search for address"
-                                                    autoComplete="off"
-                                                />
-                                                <div
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: '100%',
-                                                        left: 0,
-                                                        width: '100%',
-                                                        maxHeight: '150px',
-                                                        zIndex: 111,
-                                                        backgroundColor: '#fff',
-                                                        border: '1px solid #ced4da',
-                                                        borderTop: 'none',
-                                                    }}
-                                                    className={`scroll-container hover-bg-change ${searchedLocations?.length === 0 || !focused ? 'd-none' : ''}`}
-                                                >
-                                                    {searchedLocations?.map((data, index) => (
-                                                        <p
-                                                            key={index}
-                                                            onClick={() => {
-                                                                setValue('zip', data?.components?.postcode)
-                                                                setValue('stateName', data?.components?.state_code)
-                                                                setLatitude(data?.bounds?.southwest?.lat);
-                                                                setLongitude(data?.bounds?.southwest?.lng);
-                                                                setCitySearch(data?.components?.county)
-                                                                setValue('address', data?.formatted)
-                                                                setFocused(false);
-                                                                setResetEmail((prevState) => ({
-                                                                    ...prevState,
-                                                                    primaryAddress: {
-                                                                        ...prevState.primaryAddress, // Preserve other fields inside primaryAddress
-                                                                        ...(data?.formatted ? { address: data?.formatted } : {}),     // Update only the address field
-                                                                        ...(data?.components?.postcode ? { zip: data?.components?.postcode } : {}),     // Update only the address field
-                                                                        ...(data?.bounds?.southwest?.lat ? { latitude: data?.bounds?.southwest?.lat } : {}),     // Update only the address field
-                                                                        ...(data?.bounds?.southwest?.lng ? { longitude: data?.bounds?.southwest?.lng } : {}),     // Update only the address field
-                                                                        // latitude: data?.bounds?.southwest?.lat,
-                                                                        // longitude: data?.bounds?.southwest?.lng,
-                                                                        // zip: data?.components?.postcode,
-                                                                    }
-                                                                }));
-                                                            }}
-                                                            style={{
-                                                                margin: 0,
-                                                                padding: '8px 12px',
-                                                                cursor: 'pointer',
-                                                            }}
-                                                            className="hover-bg-change text-black"
-                                                        >
-                                                            {data?.formatted}
-                                                        </p>
-                                                    ))}
-                                                    {searchedLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
-                                                </div>
-                                            </div>
-                                            {errors.address && <span className="text-danger">{errors.address.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Latitude</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                defaultValue={latitude}
-                                                placeholder="Latitude"
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Longitude</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                defaultValue={longitude}
-                                                placeholder="Longitude" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </Col>
-                            <Col sm={6}>
-                                <Row>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1' >State</Form.Label>
-                                            <Form.Select
-                                                {...register('stateName')}
-                                                data-has-value={!!getValues('stateName')}
-                                                onBlur={(e) => {
-                                                    e.target.setAttribute('data-has-value', !!e.target.value);
-                                                }}
-                                                onChange={(e) => {
-                                                    handleStateSelection(e, 'primary');
-                                                    clearErrors('stateName')
-                                                }}
-                                            >
-                                                <option value=''>State</option>
-                                                {statesData?.states?.map((data) => (
-                                                    <option
-                                                        key={data?.name}
-                                                        data-key={data?.id}
-                                                        value={data?.state_code}
-                                                    >
-                                                        {data?.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                            {errors.stateName && <span className="text-danger">{errors.stateName.message}</span>}
-                                        </Form.Group>
-
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>City</Form.Label>
-                                            <Form.Select
-                                                disabled={store?.getCitiesReducer?.loading}
-                                                {...register('city')}
-                                                data-has-value={!!getValues('city')}
-                                                onBlur={(e) => {
-                                                    e.target.setAttribute('data-has-value', !!e.target.value);
-                                                }}
-                                                onChange={(e) => {
-                                                    handleCitySelection(e);
-                                                    clearErrors('city');
-                                                }}
-                                            >
-                                                <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
-                                                {cities1?.map((data) => (
-                                                    <option key={data?.name} value={data?._id}>
-                                                        {data?.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                            {errors.city && <span className="text-danger">{errors.city.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Street</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                {...register('street')}
-                                                onKeyPress={handleFirstSpace}
-                                                onChange={(e) => {
-                                                    clearErrors('street');
-                                                    setResetEmail((prevState) => ({
-                                                        ...prevState,
-                                                        primaryAddress: {
-                                                            ...prevState.primaryAddress,
-                                                            street: e.target.value,
-                                                        }
-                                                    }));
-                                                }}
-                                                placeholder="Street" />
-                                            {errors.street && <span className="text-danger">{errors.street.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Zip</Form.Label>
-                                            <Form.Control
-                                                defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
-                                                type="text"
-                                                {...register('zip', {
-                                                    minLength: {
-                                                        value: 5,
-                                                        message: 'ZIP code must be at least 5 characters long',
-                                                    },
-                                                    pattern: {
-                                                        value: /^[0-9]+$/,
-                                                        message: 'ZIP code must contain numbers only',
-                                                    },
-                                                })}
-                                                onKeyPress={handleFirstSpace}
-                                                placeholder="Zip"
-                                                maxLength={5}
-                                            />
-                                            {errors.zip && <span className="text-danger">{errors.zip.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </Col>
-                        </Row>
-                    </Col>
-                    <hr />
-                    <Col sm={12}>
-                        <Row>
-                            <Col sm={12} className='mb-2'>
-                                <span className='text-black fw-semibold form-label'>Mailing Address</span>
-                                <Form.Check
-                                    type="checkbox"
-                                    label="Same as Primary Address"
-                                    disabled={
-                                        !(
-                                            resetEmail?.primaryAddress?.address &&
-                                            resetEmail?.primaryAddress?.zip &&
-                                            resetEmail?.primaryAddress?.street &&
-                                            resetEmail?.primaryAddress?.state &&
-                                            resetEmail?.primaryAddress?.city
-                                        )
-                                    }
-
-                                    // style={{ cursor: getValues('zip') === '' ? 'not-allowed' : '' }}
-                                    onChange={(e) => {
-
-                                        if (e.target.checked) {
-                                            setSameAsPrimary(true);
-                                            setValue('mailingAddress', getValues('address'));
-                                            setValue('mailingZip', getValues('zip'));
-                                            setValue('mailingStreet', getValues('street'));
-                                            setMailingLatitude(latitude);
-                                            setMailingLongitude(longitude);
-                                        } else {
-                                            setSameAsPrimary(false)
-                                            setValue('mailingAddress', '');
-                                            setValue('mailingZip', '');
-                                            setValue('mailingStreet', '');
-                                            setMailingLatitude(null);
-                                            setMailingLongitude(null);
-                                        }
-                                    }}
-                                />
-                            </Col>
-                            <Col sm={6}>
-                                <Row className='position-relative'>
-                                    <Col sm={12}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Address</Form.Label>
-                                            <div style={{ position: 'relative' }}>
-                                                <Form.Control
-                                                    type="text"
-                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
-                                                    {...register('mailingAddress')}
-                                                    onChange={(e) => {
-                                                        getMailingGeolocation(e);
-                                                        setMailingFocused(true);
-                                                        clearErrors('mailingAddress')
-                                                    }}
-                                                    onFocus={() => setMailingFocused(true)}
-                                                    onBlur={() => {
-                                                        setTimeout(() => setMailingFocused(false), 200);
-                                                    }}
-                                                    placeholder="Search for address"
-                                                    autoComplete="off"
-                                                />
-                                                <div
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: '100%',
-                                                        left: 0,
-                                                        width: '100%',
-                                                        maxHeight: '150px',
-                                                        zIndex: 111,
-                                                        backgroundColor: '#fff',
-                                                        border: '1px solid #ced4da',
-                                                        borderTop: 'none',
-                                                    }}
-                                                    className={`scroll-container hover-bg-change 
-                                                    ${searchedMailingLocations?.length === 0 || !mailingFocused ? 'd-none' : ''}`}>
-                                                    {searchedMailingLocations?.map((data, index) => (
-                                                        <p
-                                                            key={index}
-                                                            onClick={() => {
-                                                                setValue('mailingZip', data?.components?.postcode)
-                                                                setValue('mailingStateName', data?.components?.state_code)
-                                                                setMailingLatitude(data?.bounds?.southwest?.lat);
-                                                                setMailingLongitude(data?.bounds?.southwest?.lng);
-                                                                setMailingCitySearch(data?.components?.county)
-                                                                setValue('mailingAddress', data?.formatted)
-                                                                setMailingFocused(false);
-                                                            }}
-                                                            style={{
-                                                                margin: 0,
-                                                                padding: '8px 12px',
-                                                                cursor: 'pointer',
-                                                            }}
-                                                            className="hover-bg-change text-black"
-                                                        >
-                                                            {data?.formatted}
-                                                        </p>
-                                                    ))}
-                                                    {searchedMailingLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
-                                                </div>
-                                            </div>
-                                            {errors.mailingAddress && <span className="text-danger">{errors.mailingAddress.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Latitude</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                defaultValue={mailingLatitude}
-                                                placeholder="Latitude"
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Longitude</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                defaultValue={mailingLongitude}
-                                                placeholder="Longitude" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </Col>
-                            <Col sm={6}>
-                                <Row>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1' >State</Form.Label>
-                                            {sameAsPrimary ?
-                                                <Form.Control
-                                                    onChange={() => clearErrors('mailingStateName')}
-                                                    value={statesData?.states?.find((data) => data?.state_code === getValues('stateName'))?.name}
-                                                    readOnly />
-                                                :
-                                                <Form.Select
-                                                    {...register('mailingStateName')}
-                                                    data-has-value={!!getValues('mailingStateName')}
-                                                    onBlur={(e) => {
-                                                        e.target.setAttribute('data-has-value', !!e.target.value);
-                                                    }}
-                                                    onChange={(e) => {
-                                                        handleMailingStateSelection(e);
-                                                        clearErrors('mailingStateName')
-                                                    }}
-                                                >
-                                                    <option value=''>State</option>
-                                                    {statesData?.states?.map((data) => (
-                                                        <option
-                                                            key={data?.name}
-                                                            data-key={data?.id}
-                                                            value={data?.state_code}
-                                                        >
-                                                            {data?.name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            }
-                                            {errors.mailingStateName && <span className="text-danger">{errors.mailingStateName.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>City</Form.Label>
-                                            {sameAsPrimary ?
-                                                <Form.Control
-                                                    value={cities1?.find((data) => data?._id === getValues('city'))?.name}
-                                                    readOnly />
-                                                :
-                                                <Form.Select
-                                                    disabled={store?.getCitiesReducer?.loading}
-                                                    {...register('mailingCity')}
-                                                    data-has-value={!!getValues('mailingCity')}
-                                                    onBlur={(e) => {
-                                                        e.target.setAttribute('data-has-value', !!e.target.value);
-                                                    }}
-                                                    onChange={(e) => handleCitySelection(e)}
-                                                >
-                                                    <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
-                                                    {cities2?.map((data) => (
-                                                        <option key={data?.name} value={data?._id}>
-                                                            {data?.name}
-                                                        </option>
-                                                    ))}
-                                                </Form.Select>
-                                            }
-                                            {errors.mailingCity && <span className="text-danger">{errors.mailingCity.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Street</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                {...register('mailingStreet')}
-                                                onKeyPress={handleFirstSpace}
-                                                placeholder="Street" />
-                                            {errors.mailingStreet && <span className="text-danger">{errors.mailingStreet.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className='mb-1'>Zip</Form.Label>
-                                            <Form.Control
-                                                defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
-                                                type="text"
-                                                {...register('mailingZip', {
-                                                    minLength: {
-                                                        value: 5,
-                                                        message: 'ZIP code must be at least 5 characters long',
-                                                    },
-                                                    pattern: {
-                                                        value: /^[0-9]+$/,
-                                                        message: 'ZIP code must contain numbers only',
-                                                    },
-                                                })}
-                                                onKeyPress={handleFirstSpace}
-                                                placeholder="Zip"
-                                                maxLength={5}
-                                            />
-                                            {errors.mailingZip && <span className="text-danger">{errors.mailingZip.message}</span>}
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </Col>
-                        </Row>
-                    </Col>
-                    <hr />
-                    <Col sm={12}>
-                        <Row>
-                            <Col sm={12} className="mb-2">
-                                <span className="text-black fw-semibold form-label">
-                                    POC (Point of contact)
-                                    <span
-                                        onClick={handleAddPOS}
-                                        className="plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer">
-                                    </span>
-                                </span>
-                            </Col>
-                            {posDetails.map((data, index) => (
-                                <React.Fragment key={index}>
-                                    <Col sm={12} className="form-label">
-                                        {'POS ' + `${index + 1}`}
-                                        <span
-                                            onClick={() => handleRemovePOS(index)}
-                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer fs-5 fw-bold text-danger`}
-                                        />
-                                    </Col>
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">
-                                                Full Name
-                                            </Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                {...register(`pocFullName${index}`)}
-                                                value={data.name}
-                                                onChange={(e) => {
-                                                    clearErrors(`pocFullName${index}`);
-                                                    handlePOSInputChange(e, 'name', index);
-                                                }}
-                                                onKeyPress={handleFirstSpace}
-                                                placeholder="Full Name"
-                                            />
-                                            {errors[`pocFullName${index}`] && (
-                                                <span className="text-danger">{errors[`pocFullName${index}`]?.message}</span>
-                                            )}
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Contact Email</Form.Label>
-                                            <Form.Control
-                                                type="email"
-                                                value={data.email}
-                                                {...register(`contactemail${index}`, {
-                                                    pattern: {
-                                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                        message: 'Please enter a valid email address',
-                                                    },
-                                                })}
-                                                onChange={(e) => handlePOSInputChange(e, 'email', index)}
-                                                placeholder="Contact Email"
-                                            />
-                                            {errors[`contactemail${index}`] && (
-                                                <span className="text-danger">{errors[`contactemail${index}`]?.message}</span>
-                                            )}
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2">
-                                            <Form.Label className="mb-1">Job Title / Role</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                placeholder="Job Title / Role"
-                                                onKeyPress={handleFirstSpace}
-                                                onChange={(e) => handlePOSInputChange(e, 'role', index)}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col sm={6}>
-                                        <Form.Group className="mb-2 position-relative">
-                                            <Form.Label className="mb-1">Phone Number</Form.Label>
-                                            <InputGroup>
-                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">&nbsp;&nbsp;+1</InputGroup.Text>
-                                                <Form.Control
-                                                    type="text"
-                                                    value={data.contact}
-                                                    {...register(`pocContact${index}`, {
-                                                        pattern: {
-                                                            value: /^[0-9]*$/,
-                                                            message: 'Contact must be a number',
-                                                        },
-                                                        maxLength: {
-                                                            value: 10,
-                                                            message: 'Contact must not exceed 10 digits',
-                                                        },
-                                                        minLength: {
-                                                            value: 9,
-                                                            message: 'Contact must not be less than 9 digits',
-                                                        },
-                                                    })}
-
-                                                    onChange={(e) => handlePOSInputChange(e, 'contact', index)}
-                                                    onKeyPress={handleFirstSpace}
-                                                    placeholder="Phone Number"
-                                                    maxLength={10}
-                                                />
-                                            </InputGroup>
-                                            <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
-                                                <img src={us} alt="country code flag" width={20} />
-                                            </div>
-                                        </Form.Group>
-                                        {errors[`pocContact${index}`] && (
-                                            <span className="text-danger pt-0">{errors[`pocContact${index}`]?.message}</span>
-                                        )}
-                                    </Col>
-                                </React.Fragment>
-                            ))}
-
-                        </Row>
-
-                    </Col>
-                    <hr />
-                    <Col md={12} className='mt-2 d-flex gap-2 justify-content-end'>
-
-                        <Button variant="primary" type='submit' className='custom-buttons' disabled={!formValid || store?.createClinicsReducer?.loading}
-                            onClick={() => {
-                                if (!parentClinicId) {
-                                    setCounter(1)
-                                } else {
-                                    setCounter(2)
-                                }
-                            }}
-                        >
-                            {store?.createClinicsReducer?.loading && parentClinicId ?
-                                <Spinner color='white' className='spinner-border-sm' />
-                                :
-                                'Add Multiple Practices'
-                            }
-                        </Button>
-                        {!parentUserId && !parentClinicId && (
-                            <Button
-                                variant="primary"
-                                type={!parentClinicId ? 'submit' : 'button'}
-                                className='custom-buttons'
-                                disabled={!formValid || store?.createClinicsReducer?.loading}
-                                onClick={() => {
-                                    if (parentClinicId && !isModalRequest) {
-                                        setMultiple(counter)
-                                        setActiveTab('billing');
-                                        // setSingleOrMultiple(false);
-                                        // setCounter(0);
-                                    }
-                                }}
-                            >
-                                {store?.createClinicsReducer?.loading && !parentClinicId ?
-                                    <Spinner color='white' className='spinner-border-sm' />
-                                    :
-                                    'Next'
-                                }
-                            </Button>
-                        )}
-                    </Col>
-                </Row >
-            </Form >
-            <Row className={`${clinicsList?.length > 0 || clinicData && parentClinicId ? '' : 'd-none'}`}>
-                <Col>
-                    <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
-                        <thead>
-                            <tr>
-                                <th>Sr. no.</th>
-                                <th>Practice Name</th>
-                                <th>Location</th>
-                                <th>Practice Type</th>
-                                <th>Email</th>
-                                <th>Contact</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className={`${!parentClinicId ? 'd-none' : ''}`}>
-                            {/* <tr >
-                                <td className='text-capitalize'>1</td>
-                                <td className='text-capitalize'>{clinicData?.name}</td>
-                                <td>{(clinicData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (clinicData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
-                                <td>{clinicData?.clinicType}</td>
-                                <td>{clinicData?.userId?.email}</td>
-                                <td>{clinicData?.userId?.phone}</td>
-                                <td> <i
-                                    onClick={() => navigate(`/apps/rcm/updateclinic?updateid=${clinicData?._id}`)}
-                                    className=" mdi mdi-square-edit-outline"></i></td>
-                            </tr> */}
-                            {store?.getClinicsByParentReducer?.loading ?
-                                <tr>
-                                    <td colSpan={7} className='text-center'>
-                                        <Spinner />
-                                    </td>
-                                </tr>
-                                :
-
-                                clinicsList?.map((multipleData, index) => (
-                                    <tr key={multipleData?._id}>
-                                        <td className='text-capitalize'>{index + 1}</td>
-                                        <td className='text-capitalize'>{multipleData?.name}</td>
-                                        <td>{(multipleData?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (multipleData?.userId?.primaryAddress?.city?.name || 'N/A')}</td>
-                                        <td>{multipleData?.clinicType}</td>
-                                        <td className='text-lowercase'>{multipleData?.userId?.email}</td>
-                                        <td>{multipleData?.userId?.phone}</td>
-                                        <td className='fs-4 d-flex gap-1'>
-                                            <Link to={`/apps/rcm/updateclinic?updateid=${multipleData?._id}`} className="action-icon">
-                                                <i className="mdi mdi-square-edit-outline cursor-pointer"></i>
-                                            </Link>
-                                            {/* <i
-                                                className="mdi mdi-delete cursor-pointer"
-                                                style={{ cursor: store?.deleteClinicOnboardingReducer?.loading ? "not-allowed" : 'pointer' }}
-                                                onClick={() => {
-                                                    const payload = {
-                                                        id: multipleData?._id,
-                                                    };
-                                                    dispatch(deleteClinicAction({ key: encryptMessage(payload) }));
-                                                }}
-                                            ></i> */}
-                                        </td>
-                                    </tr>
-                                )
-                                )}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
+                </Row>
+            </Form>
         </>
     );
 }
