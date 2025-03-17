@@ -34,6 +34,11 @@ const UPDATE_MASTERS_DATA_INITIAL_STATE = {
     loading: false
 }
 
+const GET_CODES_INITIAL_STATE = {
+    data: [],
+    loading: false
+}
+
 export const createMastersDataReducer = (state = CREATE_MASTERS_DATA_INITIAL_STATE, action) => {
     switch (action.type) {
         case SettingsActionTypes.CREATE_MASTERS_DATA_LOADING:
@@ -216,3 +221,28 @@ export const updateMastersDataReducer = (state = UPDATE_MASTERS_DATA_INITIAL_STA
 }
 
 
+export const getCodesReducer = (state = GET_CODES_INITIAL_STATE, action) => {
+    switch (action.type) {
+        case SettingsActionTypes.GET_CODES_LOADING:
+            return {
+                data: state.data,
+                loading: true
+            }
+        case SettingsActionTypes.GET_CODES_SUCCESS:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.GET_CODES_ERROR:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.STATE_EMPTY_INTIAL_STATE:
+            return {
+                data: [],
+                loading: false
+            }
+        default: return state
+    }
+}

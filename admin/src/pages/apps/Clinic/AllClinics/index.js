@@ -27,6 +27,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
+    console.log('deleteData', deleteData);
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -65,8 +66,9 @@ const OrderList = (): React$Element<React$FragmentType> => {
             userId: deleteData?.userId?._id,
             clinicId: deleteData?._id,
             id: deleteData?._id,
-            status: !deleteData?.status
+            active: !deleteData?.active
         }
+        console.log(payload,'activeaaa')
         dispatch(updateClinicAction({ key: encryptMessage(payload) }));
         dispatch(stateEmptydAction());
     }
@@ -118,6 +120,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                         <Col xs="auto" className='d-flex gap-2'>
                                             <FormInput type='select'
                                                 {...register('type')}
+                                                className=''
+                                                style={{ width: '10rem' }}
                                                 data-has-value={!!getValues('type')}
                                                 onBlur={(e) => {
                                                     e.target.setAttribute('data-has-value', !!e.target.value);
@@ -154,7 +158,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                     <tr>
                                         <th>S.no</th>
                                         <th >Practice Name</th>
-                                        <th>Location</th>
+                                        <th>Address</th>
                                         <th>Practice Type</th>
                                         <th>End Date&nbsp; <span className=' uil-info-circle allclinics-info mb-0 cursor-pointer' /></th>
                                         <th>Countdown</th>
@@ -186,19 +190,20 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
-                                                            {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')}
+                                                            {/* {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')} */}
+                                                            {data?.address?.[0]?.city||'N/A'}
                                                         </td>
-                                                        <td>{data?.clinicType}</td>
+                                                        <td>{data?.orgType}</td>
                                                         <td>
-                                                            {data?.userId?.subscription?.subscriptionRenewalDate
-                                                                ? new Date(data.userId.subscription.subscriptionRenewalDate).toLocaleDateString('en-GB')
+                                                            {data?.userId?.subscriptionId?.subscriptionRenewalDate
+                                                                ? new Date(data?.userId?.subscriptionId?.subscriptionRenewalDate).toLocaleDateString('en-GB')
                                                                 : 'N/A'}
                                                         </td>
                                                         <td>
-                                                            {data?.userId?.subscription?.subscriptionRenewalDate
+                                                            {data?.userId?.subscriptionId?.subscriptionRenewalDate
                                                                 ? (() => {
                                                                     const today = new Date();
-                                                                    const renewalDate = new Date(data.userId.subscription.subscriptionRenewalDate);
+                                                                    const renewalDate = new Date(data?.userId?.subscriptionId?.subscriptionRenewalDate);
                                                                     const diffTime = renewalDate - today; // Difference in milliseconds
                                                                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
                                                                     return diffDays >= 0
@@ -221,7 +226,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         <td>
                                                             <Form.Switch
                                                                 onClick={() => handleOpenDeleteModal(data)}
-                                                                checked={data?.status === true}
+                                                                defaultChecked={data?.active}
                                                             />
                                                         </td>
                                                         <td>

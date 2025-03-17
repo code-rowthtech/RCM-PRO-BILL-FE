@@ -30,6 +30,7 @@ const RoleManagement = () => {
     const createResponse = store?.createUserRolesReducer?.data?.status;
     const updateResponse = store?.updateUserRolesReducer?.data?.status;
     const apiData = store?.getUserRolesReducer?.data?.users;
+    console.log(apiData,'apiData')
     const isAddPresent = userPermissions.includes('Create Users') || userPermissions.includes('ADD_A_USER');
     const isUpdatePresent = userPermissions.includes('Update Users') || userPermissions.includes('UPDATE_A_USER');
     useEffect(() => {
@@ -139,6 +140,7 @@ const RoleManagement = () => {
                                                 <th>Name</th>
                                                 <th>Role</th>
                                                 <th>Username</th>
+                                                <th>Phone</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -161,9 +163,10 @@ const RoleManagement = () => {
                                                     apiData?.map((data, index) => (
                                                         <tr key={index}>
                                                             <td>{index + 1}</td> {/* Displaying the index + 1 for the row number */}
-                                                            <td className="text-capitalize">{data?.firstName}</td>
-                                                            <td className="text-capitalize">{data?.role?.name}</td>
+                                                            <td className="text-capitalize">{data?.name?.text}</td>
+                                                            <td className="text-capitalize">{data?.roleId?.name}</td>
                                                             <td>{data?.email}</td>
+                                                            <td>{data?.telecom?.[0]?.value?.replace(/^\+1/, '')}</td>
                                                             <td>
                                                                 <Form.Switch
                                                                     onClick={() => {

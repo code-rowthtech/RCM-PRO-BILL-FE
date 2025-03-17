@@ -1,0 +1,968 @@
+  <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+                <Row>
+                    {/* Clinic Name Field */}
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className="mb-1">
+                                Practice Name <span className="text-danger">*</span>
+                            </Form.Label>
+                            <Form.Control
+                                placeholder="Enter clinic name"
+                                {...register('name', {
+                                    required: 'This field is required',
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                })}
+                            // onKeyPress={handleFirstSpace}
+                            />
+                            {errors.name && <span className="text-danger">{errors.name.message}</span>}
+                        </Form.Group>
+
+                    </Col>
+
+                    {/* Clinic Type Field */}
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className="mb-1">Practice Type <span className="text-danger">*</span></Form.Label>
+                            <Form.Select
+                                {...register('clinicType', { required: 'This field is required' })}
+                            >
+                                <option value="">Select clinic type</option>
+                                {clinicTypeData?.map((data) => (
+                                    <option key={data?._id} value={data?.name}>{data?.name}</option>
+                                ))}
+                            </Form.Select>
+                            {errors.clinicType && <span className="text-danger">{errors.clinicType.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2 position-relative">
+                            <Form.Label className='mb-1'>Email ID <i onClick={() => {
+                                setShowOtpModal(true);
+                            }} className="mdi mdi-square-edit-outline plusicon cursor-pointer"></i></Form.Label>
+                            <Form.Control
+                                readOnly
+                                type="text"
+                                {...register('email', {
+                                    pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
+                                        message: 'Please enter a valid email address'
+                                    }
+                                })}
+                                placeholder="Email ID"
+                            />
+                            <span
+                                style={{ right: "2%", top: '48%' }}
+                                className={`${clinicData?.userId?.verified_email ? 'text-success position-absolute fs-4' : 'd-none'}`}>
+                                <MdVerified />
+                            </span>
+                            {errors.email && <span className="text-danger">{errors.email.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Tax ID / EIN</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('taxId', {
+                                    pattern: {
+                                        value: /^\d{2}-\d{7}$/, // Accepts only the hyphenated format XX-XXXXXXX
+                                        message: 'Tax ID / EIN must be in the format XX-XXXXXXX',
+                                    },
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Tax ID / EIN must be exactly 10 characters long',
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'Tax ID / EIN must be exactly 10 characters long',
+                                    },
+                                })}
+                                // defaultValue={updatePage ? clinicDataToUpdate?.taxIdOrEIN : ''}
+                                onKeyPress={(event) => {
+                                    if (!/[0-9]/.test(event.key) && event.key !== '-') {
+                                        event.preventDefault(); // Allow only numbers and the hyphen
+                                    }
+                                }}
+                                onChange={(e) => {
+                                    let rawValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                                    let formattedValue = '';
+                                    if (rawValue.length > 2) {
+                                        formattedValue = `${rawValue.slice(0, 2)}-${rawValue.slice(2, 9)}`;
+                                    } else {
+                                        formattedValue = rawValue;
+                                    }
+                                    e.target.value = formattedValue;
+                                }}
+                                maxLength={10}
+                                placeholder="Tax ID / EIN" />
+                            {errors.taxId && <span className="text-danger">{errors.taxId.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-0 position-relative">
+                            <Form.Label className='mb-1'>Contact Person <span className='text-danger'>*</span></Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text>
+                                <Form.Control
+                                    type="tel"
+                                    {...register('contact', {
+                                        required: 'This field is required',
+                                        pattern: {
+                                            value: /^\(\d{3}\)\d{3}-\d{4}$/, // Matches (XXX)XXX-XXXX format
+                                            message: 'Contact must be in the format (XXX)XXX-XXXX',
+                                        },
+                                        maxLength: {
+                                            value: 13, // Includes characters for (XXX)XXX-XXXX
+                                            message: 'Contact must not exceed 13 characters.'
+                                        },
+                                        minLength: {
+                                            value: 13,
+                                            message: 'Contact must not be less than 13 characters.'
+                                        }
+                                    })}
+                                    onChange={(e) => {
+                                        let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
+                                        if (rawValue.length > 10) rawValue = rawValue.slice(0, 10); // Limit to 10 digits
+                                        const formattedValue = rawValue.replace(
+                                            /(\d{1,3})(\d{0,3})(\d{0,4})/,
+                                            (match, p1, p2, p3) => {
+                                                if (p3) return `(${p1})${p2}-${p3}`;
+                                                if (p2) return `(${p1})${p2}`;
+                                                return `(${p1}`;
+                                            }
+                                        ); // Format dynamically as (XXX)XXX-XXXX
+                                        e.target.value = formattedValue; // Update input value
+                                        clearErrors('contact'); // Clear validation errors
+                                    }}
+                                    placeholder="(123)456-7890"
+                                    maxLength={14}
+                                    onKeyPress={(event) => {
+                                        // Only allow numeric characters (0-9)
+                                        if (!/[0-9]/.test(event.key)) {
+                                            event.preventDefault();
+                                        }
+                                    }}
+                                />
+
+
+                            </InputGroup>
+                            <div
+                                className='position-absolute' style={{ top: '52%', left: '1%' }}
+                            >
+                                <img
+                                    src={us}
+                                    alt="country code flag"
+                                    width={20} />
+                            </div>
+
+
+                        </Form.Group>
+                        {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>NPI Type 2 Number</Form.Label>
+                            <Form.Control
+                                defaultValue={clinicData?.npiNumber}
+                                type="text"
+                                {...register('npi', {
+                                    minLength: {
+                                        value: 10,
+                                        message: 'NPI must be at least 10 characters long', // Error message
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'NPI cannot exceed 10 characters', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/, // Pattern for numbers only
+                                        message: 'NPI must contain numbers only', // Error message
+                                    },
+                                })}
+                                maxLength={10}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                                placeholder="NPI Number" />
+                            {errors.npi && <span className="text-danger">{errors.npi.message}</span>}
+                        </Form.Group>
+                    </Col>
+
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Practice Speciality Description</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('speciality', {
+                                    validate: (value) =>
+                                        !value.startsWith(' ') || 'First character cannot be a space',
+                                })}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.startsWith(' ')) {
+                                        e.target.value = value.trimStart(); // Prevent spaces at the start
+                                    }
+                                    clearErrors('speciality')
+                                }}
+                                placeholder="Practice speciality"
+                                onKeyPress={handleFirstSpace}
+                            />
+
+                            {errors.speciality && <span className="text-danger">{errors.speciality.message}</span>}
+
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>CLIA  Number</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('clia', {
+                                    minLength: {
+                                        value: 10,
+                                        message: 'CLIA number must be at least 10 characters long', // Error message
+                                    },
+                                    maxLength: {
+                                        value: 10,
+                                        message: 'CLIA number cannot exceed 10 characters', // Error message
+                                    },
+                                    pattern: {
+                                        value: /^[A-Z0-9]{2}D[0-9]{7}$/, // Ensures the CLIA number matches the specific format
+                                        message: 'CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits',
+                                    },
+                                })}
+                                placeholder="CLIA Number"
+                                maxLength={10}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.clia && <span className="text-danger">{errors.clia.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Medicare Number</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('medicare', {
+                                    minLength: {
+                                        value: 6,
+                                        message: 'Medicare number must be at least 6 characters long', // Error message
+                                    },
+                                })}
+                                placeholder="Medicare Number"
+                                maxLength={12}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.medicare && <span className="text-danger">{errors.medicare.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    <Col sm={6}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className='mb-1'>Medicaid Number</Form.Label>
+                            <Form.Control
+                                type="text"
+                                {...register('medicaid', {
+                                    minLength: {
+                                        value: 10,
+                                        message: 'Medicaid number must be at least 10 characters long',
+                                    },
+                                })}
+                                placeholder="Medicaid Number"
+                                maxLength={10}
+                                // onChange={(e) => setResetEmail({ ...resetEmail, npiNumber: e.target.value })}
+                                onKeyPress={(event) => handleFirstSpace(event, 0)}
+                            />
+                            {errors.medicaid && <span className="text-danger">{errors.medicaid.message}</span>}
+                        </Form.Group>
+                    </Col>
+                    {taxonomyCodes && taxonomyCodes.map((code, index) => (
+                        <Col sm={6} key={index}>
+                            <Form.Group className="mb-2 position-relative">
+                                <Form.Label className="mb-1">
+                                    Taxonomy Code(s)
+                                    {index === taxonomyCodes.length - 1 && (
+                                        <span
+                                            className="fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer"
+                                            onClick={handleAddTaxonomy}
+                                        >
+                                        </span>
+                                    )}
+                                    {/* <span className="text-danger">*</span> */}
+                                </Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    {...register(`taxonomyCode[${index}]`, {
+                                        // required: 'This field is required.'
+                                    })}
+                                    value={code}
+                                    placeholder="Taxonomy Code"
+                                    maxLength={10}
+                                    onKeyPress={(event) => handleFirstSpace(event, index)}
+                                    onChange={(e) => {
+                                        handleTaxonomyChange(index, e.target.value)
+                                        clearErrors(`taxonomyCode[${index}]`)
+                                    }}
+                                />
+                                <span
+                                    style={{ top: '55%', right: '1%' }}
+                                    onClick={() => handleRemoveTaxonomy(index)} className={`${taxonomyCodes?.length === 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}></span>
+                                {errors.taxonomyCode?.[index] && (
+                                    <span className="text-danger">{errors.taxonomyCode[index].message}</span>
+                                )}
+                            </Form.Group>
+                        </Col>
+                    ))}
+                    <Col sm={6} className='mb-2 d-flex flex-column position-relative'>
+                        <Form.Label>Upload Logo</Form.Label>
+                        <div onClick={handleLogoClick}
+                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName || logoUploading ? 'form-control' : 'custom-form-fields'}`}>
+                            {logoUploading
+                                ? 'Uploading...'
+                                : logoName
+                                    ? logoName
+                                    : 'Upload Logo'}
+                            <p className='mb-0'><FiDownloadCloud /></p>
+                        </div>
+                        <Form.Control
+                            type="file"
+                            className="rounded-circle"
+                            style={{ display: 'none' }}
+                            // {...register('logoimage', { required: 'This field is required' })}
+                            ref={logoFileInputRef}
+                            accept=".png, .jpg, .jpeg, .svg" // Allow only specific file types
+                            onChange={handleFileChange}
+                        />
+                        {/* {errors.logoimage && <span className="text-danger">{errors.logoimage.message}</span>} */}
+                    </Col>
+                    <hr />
+                    {/* Dynamic Fields Section */}
+                    {['accreditationDetails', 'stateDetails'].map((type) => (
+                        <React.Fragment key={type}>
+                            <Col sm={12} className={`${type === 'stateDetails' ? 'position-relative' : ''}`}>
+                                <Form.Label ref={type === 'stateDetails' ? containerRef : null}>
+                                    {type === 'accreditationDetails'
+                                        ? 'Accreditation Details'
+                                        : type === 'stateDetails'
+                                            ? 'State of Licensure'
+                                            : ''}
+                                    <span
+                                        onClick={() => {
+                                            if (type === 'accreditationDetails') {
+                                                const allFieldsFilled = formDetails[type].every(item => item.name && item.number && item.url);
+                                                if (!allFieldsFilled) {
+                                                    ToastHandle('Please fill all the fields before adding a new one', 'danger');
+                                                    return;  // Prevent adding a new field
+                                                }
+                                                handleAddField(type);  // Add new field if validation passes
+                                            } else if (type === 'stateDetails') {
+                                                setStatesMenu(!statesMenu)
+                                            }
+                                        }}
+                                        className="fs-5 uil-plus-circle plusicon ms-1 fw-bold cursor-pointer"
+                                    >
+                                        {/* Add Icon */}
+                                    </span>
+                                    {type === 'stateDetails' && (
+                                        <div
+                                            ref={menuRef}
+                                            className={`scroll-container ${statesMenu ? '' : 'd-none'} bg-white border border-secondary position-absolute ps-1 py-1`}
+                                            style={{ height: '14rem', width: '12em', zIndex: '111' }}
+                                        >
+                                            {/* <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}> */}
+                                            {statesData?.states?.map((data, index) => (
+                                                <div className='d-flex align-items-center px-1' key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }} onClick={() => handleCheckboxChange(data?.name)}
+                                                >
+                                                    {selectedStates.includes(data?.name) ?
+                                                        <MdOutlineRadioButtonChecked />
+                                                        :
+                                                        <MdOutlineRadioButtonUnchecked />
+                                                    }
+                                                    <span className='ps-1'>
+                                                        {data?.name}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                            {/* </ul> */}
+                                        </div>
+                                    )}
+
+                                </Form.Label>
+                            </Col>
+                            {formDetails[type] && formDetails[type].map((item, index) => (
+                                <React.Fragment key={index}>
+                                    {type === 'stateDetails' ? (
+                                        <Col sm={4}>
+                                            <Form.Control
+                                                type="text"
+                                                value={item?.name}
+                                                placeholder="Name"
+                                                readOnly
+                                                onChange={(e) => handleInputChange(e, 'name', type, index)}
+                                            />
+                                        </Col>
+                                    ) : (
+                                        <Col sm={4}>
+                                            <Form.Control
+                                                type="text"
+                                                value={item?.name}
+                                                placeholder="Name"
+                                                onChange={(e) => handleInputChange(e, 'name', type, index)}
+                                            />
+                                        </Col>
+                                    )}
+                                    <Col sm={4}>
+                                        <Form.Control
+                                            type="text"
+                                            value={item.number}
+                                            placeholder="Document Number"
+                                            onKeyPress={(event) => {
+                                                if (type !== 'accreditationDetails')
+                                                    handleFirstSpace(event, 0)
+                                            }}
+                                            onChange={(e) => handleInputChange(e, 'number', type, index)}
+                                        />
+                                    </Col>
+                                    <Col sm={4} className="mb-2 position-relative">
+                                        <div
+                                            onClick={() => document.getElementById(`fileInput-${type}-${index}`).click()}
+                                            className={`custom-file-upload justify-content-between cursor-pointer ${item.fileName || accreditationUploading || stateUploading ? 'form-control' : 'custom-form-fields'}`}
+                                        >
+                                            {/* {item.fileName ? item.fileName?.slice(0, 35) + '...' : 'Upload Document'} */}
+                                            {(type === 'accreditationDetails' && accreditationUploading) ||
+                                                (type === 'stateDetails' && stateUploading)
+                                                ? 'Uploading...'
+                                                : item.fileName
+                                                    ? item.fileName.slice(0, 35) + '...'
+                                                    : 'Upload Document'}
+                                            <p className="mb-0"><FiDownloadCloud /></p>
+                                        </div>
+                                        <Form.Control
+                                            id={`fileInput-${type}-${index}`}
+                                            type="file"
+                                            style={{ display: 'none' }}
+                                            onChange={(e) => handleFileUpload(e, type, index)}
+                                        />
+
+                                        <span
+                                            onClick={() => handleRemoveField(type, index)}
+                                            className={`${formDetails[type].length > 1 ? '' : 'd-none'} uil-minus-circle cursor-pointer position-absolute fs-5 fw-bold text-danger`}
+                                            style={{ right: '-1%', top: '15%', zIndex: 111 }}
+                                        >
+                                            {/* Remove Icon */}
+                                        </span>
+                                    </Col>
+                                </React.Fragment>
+                            ))}
+                            <hr />
+                        </React.Fragment>
+                    ))}
+                    <hr />
+
+                    <Col sm={12}>
+                        <Row>
+                            <Col sm={12} className='mb-2'>
+                                <span className='text-black fw-semibold form-label'>Address Details</span>
+                            </Col>
+                            <Col sm={6}>
+                                <Row className='position-relative'>
+                                    <Col sm={12}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Form.Control
+                                                    type="text"
+                                                    // defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
+                                                    {...register('address')}
+                                                    onChange={(e) => {
+                                                        getGeolocation(e);
+                                                        setFocused(true); // Open dropdown on input
+                                                    }}
+                                                    onFocus={() => setFocused(true)} // Open dropdown when the field is focused
+                                                    onBlur={() => {
+                                                        setTimeout(() => setFocused(false), 200); // Delay to allow selection before hiding dropdown
+                                                    }}
+                                                    placeholder="Search for address"
+                                                    autoComplete="off"
+                                                />
+                                                {/* Dropdown suggestions */}
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '100%',
+                                                        left: 0,
+                                                        width: '100%',
+                                                        maxHeight: '150px',
+                                                        zIndex: 111,
+                                                        backgroundColor: '#fff',
+                                                        border: '1px solid #ced4da',
+                                                        borderTop: 'none',
+                                                    }}
+                                                    className={`scroll-container hover-bg-change ${searchedLocations?.length === 0 || !focused ? 'd-none' : ''}`}
+                                                >
+                                                    {searchedLocations?.map((data, index) => (
+                                                        <p
+                                                            key={index}
+                                                            onClick={() => {
+                                                                setSelectedLocation(data);
+                                                                setFocused(false); // Close dropdown after selection
+                                                            }}
+                                                            style={{
+                                                                margin: 0,
+                                                                padding: '8px 12px',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            className="hover-bg-change text-black"
+                                                        >
+                                                            {data?.formatted}
+                                                        </p>
+                                                    ))}
+                                                    {searchedLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
+                                                </div>
+                                            </div>
+                                            {errors.address && <span className="text-danger">{errors.address.message}</span>}
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Latitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={latitude}
+                                                placeholder="Latitude"
+                                            />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Longitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                defaultValue={longitude}
+                                                placeholder="Longitude" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col sm={6}>
+                                <Row>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1' >State</Form.Label>
+                                            <Form.Select
+                                                {...register('stateName')}
+                                                onChange={(e) => handleStateSelection(e)}
+                                            >
+                                                <option value=''>State</option>
+                                                {statesData?.states?.map((data) => (
+                                                    <option
+                                                        key={data?.id} // Unique key for each option
+                                                        data-key={JSON.stringify({ id: data?.id, _id: data?._id })} // Store the key as a data attribute
+                                                        value={data?._id}
+                                                    >
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            {/* {
+                                                store?.getCitiesReducer?.loading ?
+                                                    <Row>
+                                                        <Col sm={12}>
+                                                            <Spinner className='fs-5' />
+                                                        </Col>
+                                                    </Row>
+                                                    : */}
+                                            <Form.Select
+                                                disabled={store?.getCitiesReducer?.loading}
+                                                {...register('city')}
+                                                onChange={(e) => handleCitySelection(e)}
+                                            >
+                                                <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
+                                                {cities1?.map((data) => (
+                                                    <option data-key={JSON.stringify({ _id: data?._id, latitude: data?.latitude, longitude: data?.longitude })} key={data?._id} value={data?._id}>
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                            {/* } */}
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                {...register('street')}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Street" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Zip</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                {...register('zip', {
+                                                    minLength: {
+                                                        value: 5,
+                                                        message: 'ZIP code must be at least 5 characters long',
+                                                    },
+                                                    pattern: {
+                                                        value: /^[0-9]+$/,
+                                                        message: 'ZIP code must contain numbers only',
+                                                    },
+                                                })}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Zip"
+                                                maxLength={5}
+                                            />
+                                            {errors.zip && <span className="text-danger">{errors.zip.message}</span>}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <hr />
+                    <Col sm={12}>
+                        <Row>
+                            <Col sm={12} className='mb-2'>
+                                <span className='text-black fw-semibold form-label'>Mailing Address</span>
+                                <Form.Check
+                                    type="checkbox"
+                                    label="Same as Primary Address"
+                                    checked={sameAsPrimary}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSameAsPrimary(true);
+                                            setValue('mailingAddress', getValues('address'));
+                                            setValue('mailingZip', getValues('zip'));
+                                            setValue('mailingStreet', getValues('street'));
+                                            setMailingLatitude(latitude);
+                                            setMailingLongitude(longitude);
+                                        } else {
+                                            setSameAsPrimary(false)
+                                            setValue('mailingAddress', '');
+                                            setValue('mailingZip', '');
+                                            setValue('mailingStreet', '');
+                                            setMailingLatitude(null);
+                                            setMailingLongitude(null);
+                                        }
+                                    }}
+                                />
+                            </Col>
+                            <Col sm={6}>
+                                <Row className='position-relative'>
+                                    <Col sm={12}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Address</Form.Label>
+                                            <div style={{ position: 'relative' }}>
+                                                <Form.Control
+                                                    type="text"
+                                                    // defaultValue={updatePage ? clinicDataToUpdate?.address?.address1 : ''}
+                                                    {...register('mailingAddress')}
+                                                    onChange={(e) => {
+                                                        getMailingGeolocation(e);
+                                                        setMailingFocused(true); // Open dropdown on input
+                                                    }}
+                                                    onFocus={() => setMailingFocused(true)} // Open dropdown when the field is focused
+                                                    onBlur={() => {
+                                                        setTimeout(() => setMailingFocused(false), 200); // Delay to allow selection before hiding dropdown
+                                                    }}
+                                                    placeholder="Search for address"
+                                                    autoComplete="off"
+                                                    readOnly={sameAsPrimary}
+                                                />
+                                                {/* Dropdown suggestions */}
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '100%',
+                                                        left: 0,
+                                                        width: '100%',
+                                                        maxHeight: '150px',
+                                                        zIndex: 111,
+                                                        backgroundColor: '#fff',
+                                                        border: '1px solid #ced4da',
+                                                        borderTop: 'none',
+                                                    }}
+                                                    className={`scroll-container hover-bg-change ${searchedMailingLocations?.length === 0 || !mailingFocused ? 'd-none' : ''}`}
+                                                >
+                                                    {searchedMailingLocations?.map((data, index) => (
+                                                        <p
+                                                            key={index}
+                                                            onClick={() => {
+                                                                setSelectedMailingLocation(data);
+                                                                setMailingFocused(false); // Close dropdown after selection
+                                                            }}
+                                                            style={{
+                                                                margin: 0,
+                                                                padding: '8px 12px',
+                                                                cursor: 'pointer',
+                                                            }}
+                                                            className="hover-bg-change text-black"
+                                                        >
+                                                            {data?.formatted}
+                                                        </p>
+                                                    ))}
+                                                    {searchedMailingLocations?.length === 0 && <p className="text-muted px-2 py-1">No results found</p>}
+                                                </div>
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Latitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                readOnly={sameAsPrimary}
+                                                defaultValue={mailingLatitude}
+                                                placeholder="Latitude"
+                                            />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Longitude</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                readOnly={sameAsPrimary}
+                                                defaultValue={mailingLongitude}
+                                                placeholder="Longitude" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col sm={6}>
+                                <Row>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1' >State</Form.Label>
+                                            <Form.Select
+                                                {...register('mailingStateName')}
+                                                onChange={(e) => handleMailingStateSelection(e)}
+                                                disabled={sameAsPrimary}
+                                            >
+                                                <option value=''>State</option>
+                                                {statesData?.states?.map((data) => (
+                                                    <option
+                                                        key={data?.id} // Unique key for each option
+                                                        data-key={JSON.stringify({ id: data?.id, _id: data?._id })} // Store the key as a data attribute
+                                                        value={data?._id}
+                                                    >
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>City</Form.Label>
+                                            <Form.Select
+                                                disabled={store?.getCitiesReducer?.loading || sameAsPrimary}
+                                                {...register('mailingCity')}
+                                                onChange={(e) => handleCitySelection(e)}
+                                            >
+                                                <option value='' >{store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}</option>
+                                                {cities2?.map((data) => (
+                                                    <option data-key={JSON.stringify({ _id: data?._id, latitude: data?.latitude, longitude: data?.longitude })} key={data?._id} value={data?._id}>
+                                                        {data?.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                            {/* } */}
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Street</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                readOnly={sameAsPrimary}
+                                                {...register('mailingStreet')}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Street" />
+                                            {/* {errors.street && <span className="text-danger">{errors.street.message}</span>} */}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className='mb-1'>Zip</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                readOnly={sameAsPrimary}
+                                                {...register('mailingZip', {
+                                                    minLength: {
+                                                        value: 5,
+                                                        message: 'ZIP code must be at least 5 characters long',
+                                                    },
+                                                    pattern: {
+                                                        value: /^[0-9]+$/,
+                                                        message: 'ZIP code must contain numbers only',
+                                                    },
+                                                })}
+                                                onKeyPress={handleFirstSpace}
+                                                placeholder="Zip"
+                                                maxLength={5}
+                                            />
+                                            {errors.mailingZip && <span className="text-danger">{errors.mailingZip.message}</span>}
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <hr />
+                    <Col sm={12}>
+                        <Row>
+                            <Col sm={12} className="mb-2">
+                                <span className="text-black fw-semibold form-label  ">
+                                    POC (Point of contact)
+                                    <span
+                                        onClick={handleAddPOS}
+                                        className="plusicon ms-1 fs-5 uil-plus-circle fw-bold cursor-pointer">
+                                    </span>
+                                </span>
+                            </Col>
+                            {posDetails && posDetails?.map((data, index) => (
+                                <React.Fragment key={index}>
+                                    <Col sm={12} className="form-label">
+                                        {'POS ' + `${index + 1}`}
+                                        <span
+                                            onClick={() => handleRemovePOS(index)}
+                                            className={`${posDetails.length <= 1 ? 'd-none' : ''} uil-minus-circle cursor-pointer fs-5 fw-bold text-danger`}>
+                                        </span>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Full Name</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                {...register(`contactName_${index}`)}
+                                                value={data.name || ''} // Ensure it defaults to an empty string
+                                                onChange={(e) => {
+                                                    clearErrors(`contactName_${index}`)
+                                                    handlePOSInputChange(e, 'name', index)
+                                                }}
+                                                placeholder="Full Name"
+                                            />
+                                            {errors[`contactName_${index}`] && (
+                                                <span className="text-danger">{errors[`contactName_${index}`].message}</span>
+                                            )}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Contact Email</Form.Label>
+                                            <Form.Control
+                                                type="email"
+                                                value={data.email || ''} // Ensure it defaults to an empty string
+                                                {...register(`contactemail_${index}`, {
+                                                    pattern: {
+                                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
+                                                        message: 'Please enter a valid email address'
+                                                    }
+                                                })}
+                                                onChange={(e) => handlePOSInputChange(e, 'email', index)}
+                                                placeholder="Contact Email"
+                                            />
+                                            {errors[`contactemail_${index}`] && (
+                                                <span className="text-danger">{errors[`contactemail_${index}`].message}</span>
+                                            )}
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2">
+                                            <Form.Label className="mb-1">Job Title / Role</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                value={data.role || ''} // Ensure it defaults to an empty string
+                                                placeholder="Job Title / Role"
+                                                onChange={(e) => handlePOSInputChange(e, 'role', index)}
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Form.Group className="mb-2 position-relative">
+                                            <Form.Label className="mb-1">Phone Number</Form.Label>
+                                            <InputGroup>
+                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">&nbsp;&nbsp;+1</InputGroup.Text>
+                                                <Form.Control
+                                                    type="tel"
+                                                    value={data.contact || ''} // Ensure it defaults to an empty string
+                                                    {...register(`pocContact_${index}`, {
+                                                        pattern: {
+                                                            value: /^[0-9]*$/,
+                                                            message: 'Contact must be a number'
+                                                        },
+                                                        maxLength: {
+                                                            value: 10,
+                                                            message: 'Contact must not exceed 10 digits'
+                                                        },
+                                                        minLength: {
+                                                            value: 9,
+                                                            message: 'Contact must not be less than 9 digits'
+                                                        }
+                                                    })}
+                                                    onChange={(e) => handlePOSInputChange(e, 'contact', index)}
+                                                    placeholder="Phone Number"
+                                                    maxLength={10}
+                                                />
+                                            </InputGroup>
+                                            <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
+                                                <img src={us} alt="country code flag" width={20} />
+                                            </div>
+                                        </Form.Group>
+                                        {errors[`pocContact_${index}`] && (
+                                            <span className="text-danger pt-0">{errors[`pocContact_${index}`].message}</span>
+                                        )}
+                                    </Col>
+                                </React.Fragment>
+                            ))}
+                        </Row>
+                    </Col>
+                </Row >
+                <Row>
+                    <Col className='d-flex gap-2 justify-content-end align-items-end'>
+                        <Button className='custom-buttons'
+                            disabled={!clinicData?.userId?.verified_email}
+                            onClick={() => {
+                                setShowReset(true)
+                                setValue('resetEmail', clinicData?.userId?.email)
+
+                            }}>
+
+                            Change Password
+
+                        </Button>
+                        <Button className={`custom-buttons ${clinicData?.isParent === false ? 'd-none' : ''}`} onClick={() => {
+                            navigate(`/apps/rcm/addclinic?clincid=${clinicData?._id}&userId=${clinicData?.userId?._id}`)
+                        }}>
+                            Add Multiple Practice
+                        </Button>
+                        <Button type='submit' disabled={store?.updateClinicsReducer?.loading} className="mt-3 custom-buttons">
+                            {store?.updateClinicsReducer?.loading ?
+                                <Spinner color='white' className='spinner-border-sm' />
+                                :
+                                'Update'
+                            }
+                        </Button>
+                    </Col>
+                </Row>
+            </Form >

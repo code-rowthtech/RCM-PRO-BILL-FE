@@ -86,6 +86,7 @@ const MENU_ITEMS = [
                 url: '/settings/planName',
                 parentKey: 'settings',
             },
+          
             {
                 key: 'tenure',
                 label: 'Tenure',
@@ -152,6 +153,12 @@ const MENU_ITEMS = [
             //     url: '/settings/location',
             //     parentKey: 'settings',
             // },
+            {
+                key: 'code',
+                label: 'Codes',
+                url: '/settings/code',
+                parentKey: 'settings',
+            },
         ],
 
     },

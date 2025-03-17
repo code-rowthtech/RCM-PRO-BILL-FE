@@ -10,7 +10,8 @@ import Spinner from '../../../../constants/Spinner';
 import us from '../../../../assets/images/flags/us.jpg'
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 import { useSearchParams } from 'react-router-dom';
-const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple }) => {
+const BillingForm = ({ activeTab, setActiveTab, userIdForBilling,clinicId, billingId, multiple }) => {
+    console.log(userIdForBilling,'billingIdbillingId')
     const {
         register,
         handleSubmit,
@@ -23,16 +24,18 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
     const [searchParams] = useSearchParams();
     const parentClincId = searchParams.get('clincid');
     const parentUserId = searchParams.get('userId');
+    console.log({parentUserId})
     const [paymentType, setPaymentType] = useState('');
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const [amount, setAmount] = useState((null));
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Store the selected date
-
+   
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
+const userId = localStorage.getItem('userIdForBilling')
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));
@@ -41,11 +44,17 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
             setActiveTab('contract');
         }
     }, [dispatch, activeTab]);
+
+      useEffect(() => {
+            if (createResponse === 200 ) {
+                localStorage.removeItem('userIdForBilling')
+            }
+        }, [createResponse]);
     const adminData = JSON.parse(sessionStorage.getItem('hyper_user'));
     const onSubmit = (data) => {
         const payload = {
-            subscription: data?.subscription,
-            userId: parentClincId ? parentUserId : billingId,
+            subscriptionId: data?.subscription,
+            userId: userId,
             billingContactName: data?.name,
             billingContactPhone: '+1' + data?.contact?.replace(/\D/g, ''),
             billingContactemail: data?.email,
@@ -53,6 +62,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
             clinicCount: multiple === 0 ? 1 : multiple,
         }
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
+        console.log(payload,'payloadblilling')
     };
 
     const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
@@ -102,7 +112,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                 clearErrors('subscription')
                             }}
                         >
-                            <option value="">Select plan type</option>
+                            <option value="" hidden>Select plan type</option>
                             {subscriptionsData?.map((data) => (
                                 <option value={data?._id} key={data?._id} className="text-capitalize">
                                     {data?.name} {data?.billingFrequency} {data?.price}
@@ -206,7 +216,7 @@ const BillingForm = ({ activeTab, setActiveTab, clinicId, billingId, multiple })
                                                 setPaymentType(e.target.value)
                                                 clearErrors('method')
                                             }}>
-                                            <option value=''>Select payment method</option>
+                                            <option value='' hidden>Select payment method</option>
                                             <option value='card'>Card</option>
                                             <option value='online'>Online banking</option>
                                             <option value='cheque'>Cheque</option>

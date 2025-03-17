@@ -69,6 +69,8 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/settings/jobtitle': 'Job Title',
         '/settings/contractFormat': 'Contract Format',
         '/settings/designation': 'Designation',
+        '/settings/code': 'Codes',
+
     };
     const getPageTitle = (path, queryString) => {
         const queryParams = new URLSearchParams(queryString);

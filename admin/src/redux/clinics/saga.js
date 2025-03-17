@@ -1,10 +1,17 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { ClinicsActionTypes } from './constants';
 import {
-    createClinicApi, getClinicApi, getClinicByIdApi,
-    updateClinicApi, getStateByCountry, getCityByStateApi,
-    addSubscriptionPlanApi, getClinicsByParentIdApi, deleteClinicOnboardingApi,
-    getContractApi, generateContractApi
+    createClinicApi,
+    getClinicApi,
+    getClinicByIdApi,
+    updateClinicApi,
+    getStateByCountry,
+    getCityByStateApi,
+    addSubscriptionPlanApi,
+    getClinicsByParentIdApi,
+    deleteClinicOnboardingApi,
+    getContractApi,
+    generateContractApi,
 } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
@@ -12,6 +19,7 @@ import ToastHandle from '../../helpers/ToastMessage';
  * Login the user
  * @param {*} payload - username and password
  */
+
 
 function* createClinicsFunction(data) {
     try {
@@ -22,7 +30,9 @@ function* createClinicsFunction(data) {
         const response = yield call(createClinicApi, data);
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
-            ToastHandle(decryptedData?.message, 'success')
+            ToastHandle(decryptedData?.message, 'success');
+            console.log(decryptedData.message,'new message');
+
             yield put({
                 type: ClinicsActionTypes.CREATE_CLINIC_SUCCESS,
                 payload: { ...decryptedData },
@@ -244,7 +254,6 @@ function* getCities2Function(data) {
     }
 }
 
-
 function* createSubscriptionPlanFunction(data) {
     try {
         yield put({
@@ -367,7 +376,6 @@ export function* callStateEmpty() {
         type: ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE,
         payload: {},
     });
-
 }
 
 export function* watchCreateClinics() {
@@ -391,7 +399,6 @@ export function* watchGetCities() {
 export function* watchGetCities2() {
     yield takeEvery(ClinicsActionTypes.GET_CITIES2, getCities2Function);
 }
-
 
 export function* watchGetClinicById() {
     yield takeEvery(ClinicsActionTypes.GET_CLINIC_BY_ID, getClinicByIdFunction);
@@ -423,9 +430,19 @@ export function* watchresetState() {
 
 function* clinicsSaga() {
     yield all([
-        fork(watchCreateClinics), fork(watchGetClinicById), fork(watchGetClinics), fork(watchUpdateClinics),
-        fork(watchresetState), fork(watchGetStates), fork(watchGetCities), fork(watchGetCities2), fork(watchCreateSubscriptions),
-        fork(watchGetClinicByParent), fork(watchDeleteClinicOnboarding), fork(watchGetContract), fork(watchGenerateContract)
+        fork(watchCreateClinics),
+        fork(watchGetClinicById),
+        fork(watchGetClinics),
+        fork(watchUpdateClinics),
+        fork(watchresetState),
+        fork(watchGetStates),
+        fork(watchGetCities),
+        fork(watchGetCities2),
+        fork(watchCreateSubscriptions),
+        fork(watchGetClinicByParent),
+        fork(watchDeleteClinicOnboarding),
+        fork(watchGetContract),
+        fork(watchGenerateContract),
     ]);
 }
 export default clinicsSaga;

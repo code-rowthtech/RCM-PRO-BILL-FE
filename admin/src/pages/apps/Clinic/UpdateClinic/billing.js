@@ -45,7 +45,6 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
     }, [dispatch, activeTab]);
     const adminData = JSON.parse(sessionStorage.getItem('hyper_user'));
     const onSubmit = (data) => {
-
         const payload = {
             subscription: data?.subscription,
             userId: id,
