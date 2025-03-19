@@ -292,21 +292,53 @@ const Clinic = ({ id }) => {
                 url: logo?.url?.split('?')[0] || clinicData?.orgLogo?.url || '',
                 fileName: logoName || clinicData?.orgLogo?.fileName || '',
             },
-
-            identifier: constantIdentifiers.map((item) => ({
+            identifier: constantIdentifiers
+            .filter((item) => item.number?.trim()) // Only include items with a non-empty 'number'
+            .map((item) => ({
                 identifierType: item.type || '',
-                use: item?.use || '',
-                value: item?.number || '',
-                documents: [{ url: item?.file?.url || '', fileName: item?.file?.name || '234567' }],
+                use: item.use || '',
+                value: item.number || '',
+                documents: [
+                    {
+                        url: item?.file?.url || '',
+                        fileName: item?.file?.name || '',
+                    },
+                ],
                 expirationDate:
                     item.expiry ||
                     clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
                     '',
+                issuingAuthority: item.issuingAuthority || '',
                 status: 'active',
                 system: 'urn:oid:2.16.840.1.113883.4.7',
                 sliceName: item.type || '',
-                issuingAuthority: item.issuingAuthority || '',
             })),
+
+            // identifier: constantIdentifiers.map((item) => ({
+            //     ...(item.type&&{identifierType: item.type} ),
+            //     ...(item.use&&{use: item.use}),
+            //     ...(item.number&&{number: item.number}),
+            //     ...(item.file&&{documents: item.file}),
+            //     ...(item.expiry&&{expirationDate: item.expiry}),
+            //     ...(item.issuingAuthority&&{issuingAuthority: item.issuingAuthority}),
+            //     ...(item.status&&{status: 'active'}),
+            //     ...(item.system&&{system: 'urn:oid:2.16.840.1.113883.4.7'}),
+            //     ...(item.sliceName&&{sliceName: item.sliceName}),
+
+                // identifierType: item.type || '',
+                // use: item?.use || '',
+                // value: item?.number || '',
+
+                // documents: [{ url: item?.file?.url || '', fileName: item?.file?.name || '' }],
+                // expirationDate:
+                //     item.expiry ||
+                //     clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
+                //     '',
+                // status: 'active',
+                // system: 'urn:oid:2.16.840.1.113883.4.7',
+                // sliceName: item.type || '',
+                // issuingAuthority: item.issuingAuthority || '',
+            // })),
 
             telecom: constantContact.map((contact) => ({
                 system: contact.system || '',
@@ -909,7 +941,6 @@ const Clinic = ({ id }) => {
                 })) || [{ use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]
             );
 
-            console.log(addresses, 'clinicDataIdentifier');
             // ✅ Set POCs (Point of Contacts)
             setPocs(
                 clinicData?.poc?.map((pocs) => ({
@@ -950,7 +981,6 @@ const Clinic = ({ id }) => {
     useEffect(() => {
         if (clinicData && statesData?.states?.length > 0) {
             const stateCode = statesData?.states?.find((data) => data?.name === clinicData?.address?.[0]?.state)?.id;
-            // console.log({stateCode})
             dispatch(
                 getCitiesAction({ state_code: stateCode, name: clinicData?.address?.[0]?.city, limit: '', skip: '' })
             );

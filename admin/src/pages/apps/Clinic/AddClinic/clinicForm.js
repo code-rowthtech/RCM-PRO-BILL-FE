@@ -612,18 +612,29 @@ const ClinicForm = ({
                     url: logo?.url.split('?')[0] || '',
                     fileName: logoName || '',
                 },
-                identifier: constantIdentifiers.map((item) => ({
-                    identifierType: item.type || '',
-                    use: item.use||'',
-                    value: item.number||'',
-                    // documents: item.file ? {  url: item.file.url,fileName: item.file.name || '' } : null,
-                    documents: [{url:item?.file?.url || '', fileName: item?.file?.name || '234567'}],
-                    expirationDate: item.expiry || '' ,
-                    status: 'active',
-                    system: 'urn:oid:2.16.840.1.113883.4.7',
-                    sliceName: item.type || '',
-                    issuingAuthority: item.issuingAuthority ||'',
-                })),
+             
+                identifier: constantIdentifiers
+                    .filter((item) => item.number?.trim()) // Only include items with a non-empty 'number'
+                    .map((item) => ({
+                        identifierType: item.type || '',
+                        use: item.use || '',
+                        value: item.number || '',
+                        documents: [
+                            {
+                                url: item?.file?.url || '',
+                                fileName: item?.file?.name || '',
+                            },
+                        ],
+                        expirationDate:
+                            item.expiry ||
+                            clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
+                            '',
+                        issuingAuthority: item.issuingAuthority || '',
+                        status: 'active',
+                        system: 'urn:oid:2.16.840.1.113883.4.7',
+                        sliceName: item.type || '',
+                    })),
+
                 telecom: constantContact,
                 address: addresses,
                 poc: pocs,
@@ -660,7 +671,6 @@ const ClinicForm = ({
                 return null;
             }
         }
-
 
         return fetchGeocodeData(addressToSearch);
     };
@@ -1099,9 +1109,11 @@ const ClinicForm = ({
                                 {...register('clinicType', { required: 'This field is required' })}
                                 className={` ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
                                 onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}>
-                                <option value="" hidden>Select practice type</option>
+                                <option value="" hidden>
+                                    Select practice type
+                                </option>
                                 {clinicTypeData?.map((data) => (
-                                    <option key={data?._id} value={data?.name} >
+                                    <option key={data?._id} value={data?.name}>
                                         {data?.name}
                                     </option>
                                 ))}
@@ -1302,7 +1314,7 @@ const ClinicForm = ({
                                         data-has-value={!!watch(`identifiers[${index}].issuingAuthority`)}
                                         {...register(`identifiers[${index}].issuingAuthority`)}
                                         onChange={(e) => handleChange(index, 'issuingAuthority', e.target.value)}>
-                                        <option value=""  hidden>
+                                        <option value="" hidden>
                                             Select Issuing Authority
                                         </option>
                                         {defaultIssuingAuthority.map((option) => (
@@ -1431,7 +1443,10 @@ const ClinicForm = ({
                                         data-has-value={!!watch(`constantContact[${index}].use`)}
                                         {...register(`constantContact[${index}].use`)}
                                         onChange={(e) => handleContactChange(index, 'use', e.target.value)}>
-                                        <option value="" hidden>Select Option</option> {/* Placeholder option */}
+                                        <option value="" hidden>
+                                            Select Option
+                                        </option>{' '}
+                                        {/* Placeholder option */}
                                         <option value="temp">Temp</option>
                                         <option value="home">Home</option>
                                         <option value="work">Work</option>
@@ -1473,7 +1488,9 @@ const ClinicForm = ({
                                 data-has-value={!!watch(`address[${index}].use`)}
                                 {...register(`address[${index}].use`)}
                                 onChange={(e) => handleAddressChange(index, 'use', e.target.value)}>
-                                <option value="" hidden>Select</option>
+                                <option value="" hidden>
+                                    Select
+                                </option>
                                 {addressUses.map((use) => (
                                     <option key={use} className="text-capitalize" value={use}>
                                         {use}
@@ -1542,8 +1559,8 @@ const ClinicForm = ({
                                                     state: data?.components.state
                                                         ? data?.components.state
                                                         : data?.components.state_code,
-                                                        postalCode: data?.components.postcode || item.postalCode || "", // Auto-fill or keep user input
-                                                        country: data?.components?.country || '',
+                                                    postalCode: data?.components.postcode || item.postalCode || '', // Auto-fill or keep user input
+                                                    country: data?.components?.country || '',
                                                 };
                                                 // Update the specific address entry
                                                 const updatedAddresses = [...addresses];
@@ -1599,14 +1616,15 @@ const ClinicForm = ({
                                 data-has-value={!!getValues(`address[${index}].city`)}
                                 {...register(`address[${index}].city`)}
                                 // disabled={!selectedState || store?.getCitiesReducer?.loading}
-                                >
+                            >
                                 <option value="">
                                     {store?.getCitiesReducer?.loading ? 'Loading...' : 'Select City'}
                                 </option>
                                 {cities1?.map((data) => (
-                                    <option 
-                                    selected={data?.name == addresses[0]?.city} 
-                                    key={data?.name} value={data?._id}>
+                                    <option
+                                        selected={data?.name == addresses[0]?.city}
+                                        key={data?.name}
+                                        value={data?._id}>
                                         {data?.name}
                                     </option>
                                 ))}
