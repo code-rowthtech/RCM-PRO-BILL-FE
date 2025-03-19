@@ -1,5 +1,10 @@
 import { SettingsActionTypes } from "./constants"
 
+const initial_state = {
+    data: [],
+    message: "",
+    loading: false,
+  };
 
 const CREATE_MASTERS_DATA_INITIAL_STATE = {
     data: [],
@@ -206,17 +211,17 @@ export const updateMastersDataReducer = (state = UPDATE_MASTERS_DATA_INITIAL_STA
                 data: action.payload,
                 loading: false
             }
+        case SettingsActionTypes.UPDATE_MASTERS_DATA_RESET:
+            return {
+                data: initial_state.data,
+                loading: false,
+              };
         case SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR:
             return {
                 data: action.payload,
                 loading: false
             }
-        case SettingsActionTypes.STATE_EMPTY_INTIAL_STATE:
-            return {
-                data: [],
-                loading: false
-            }
-        default: return state
+        default: return {...state}
     }
 }
 

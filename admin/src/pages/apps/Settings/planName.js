@@ -63,7 +63,7 @@ const PlanName = () => {
         if (updateResponse === 200) {
             dispatch(getMastersDataAction({ status: status, category: 'plan_name', search: search, limit: 10, skip: skip }));
             closeUpdateModal()
-            dispatch(stateEmptydAction());
+            // dispatch(stateEmptydAction());
         }
     }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip, updateResponse]);
     const handleStatusChange = (isActive) => {

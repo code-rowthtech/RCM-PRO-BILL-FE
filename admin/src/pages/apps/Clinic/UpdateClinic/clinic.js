@@ -67,6 +67,7 @@ const Clinic = ({ id }) => {
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
+    console.log(cities1, 'cities1');
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const cities = store?.getCitiesReducer?.data?.cities;
     const subClinics = store?.getClinicsByParentReducer?.data?.result;
@@ -264,7 +265,8 @@ const Clinic = ({ id }) => {
     const handleStateSelection = (e) => {
         const selectedOption = e.target.selectedOptions[0]; // Get the selected <option>
         const key = JSON.parse(selectedOption.getAttribute('data-key'));
-        dispatch(getCitiesAction({ state_code: key?.id, name: '', limit: 25, skip: '' }));
+        console.log(key, 'key');
+        dispatch(getCitiesAction({ state_code: key, name: '', limit: 25, skip: '' }));
     };
 
     const handleMailingStateSelection = (e) => {
@@ -295,7 +297,7 @@ const Clinic = ({ id }) => {
                 identifierType: item.type || '',
                 use: item?.use || '',
                 value: item?.number || '',
-                documents: [item?.file?.url],
+                documents: [{ url: item?.file?.url || '', fileName: item?.file?.name || '234567' }],
                 expirationDate:
                     item.expiry ||
                     clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
@@ -587,7 +589,7 @@ const Clinic = ({ id }) => {
 
     useEffect(() => {
         if (updateSuccess === 200) {
-            dispatch(stateEmptydAction());
+            // dispatch(stateEmptydAction());
             closeStatusModal();
         }
     }, [updateSuccess]);
@@ -853,11 +855,10 @@ const Clinic = ({ id }) => {
                 clinicData?.identifier?.map((data) => ({
                     type: data.identifierType || '',
                     number: data?.value || '',
-                    // file: data?.file|| '',
-                    file: data?.documents?.[0]
+                    file: data?.documents?.[0]?.url
                         ? {
-                              url: data?.documents?.[0], // Store URL
-                              name: data?.documents?.[0].split('/').pop(), // Extract filename from URL
+                              url: data.documents[0].url,
+                              name: data.documents[0].url.split('/').pop(),
                           }
                         : '',
                     expiry: data?.expirationDate || '',
@@ -908,6 +909,7 @@ const Clinic = ({ id }) => {
                 })) || [{ use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]
             );
 
+            console.log(addresses, 'clinicDataIdentifier');
             // ✅ Set POCs (Point of Contacts)
             setPocs(
                 clinicData?.poc?.map((pocs) => ({
@@ -945,6 +947,15 @@ const Clinic = ({ id }) => {
         }
     }, [clinicData, setValue]);
 
+    useEffect(() => {
+        if (clinicData && statesData?.states?.length > 0) {
+            const stateCode = statesData?.states?.find((data) => data?.name === clinicData?.address?.[0]?.state)?.id;
+            // console.log({stateCode})
+            dispatch(
+                getCitiesAction({ state_code: stateCode, name: clinicData?.address?.[0]?.city, limit: '', skip: '' })
+            );
+        }
+    }, [clinicData, statesData]);
     // Runs when `apiResponse` changes
     const handleIdentifierFileChange = async (e, index) => {
         const selectedFile = e.target.files[0];
@@ -1005,7 +1016,9 @@ const Clinic = ({ id }) => {
                                 data-has-value={!!watch('practiceType')}
                                 {...register('practiceType', { required: 'This field is required' })}
                                 defaultValue="">
-                                <option value="" hidden>Select clinic type</option>
+                                <option value="" hidden>
+                                    Select clinic type
+                                </option>
                                 {clinicTypeData?.map((data) => (
                                     <option
                                         key={data?._id}
@@ -1312,7 +1325,10 @@ const Clinic = ({ id }) => {
                                         data-has-value={!!watch(`constantContact[${index}].use`)}
                                         {...register(`constantContact[${index}].use`)}
                                         onChange={(e) => handleContactChange(index, 'use', e.target.value)}>
-                                        <option value="" hidden>Select Option</option> {/* Placeholder option */}
+                                        <option value="" hidden>
+                                            Select Option
+                                        </option>{' '}
+                                        {/* Placeholder option */}
                                         <option value="temp">Temp</option>
                                         <option value="home">Home</option>
                                         <option value="work">Work</option>
@@ -1354,7 +1370,9 @@ const Clinic = ({ id }) => {
                                 data-has-value={!!watch(`addresses[${index}].use`)}
                                 {...register(`addresses[${index}].use`)}
                                 onChange={(e) => handleAddressChange(index, 'use', e.target.value)}>
-                                <option value="" hidden>Select</option>
+                                <option value="" hidden>
+                                    Select
+                                </option>
                                 <option value="home">Home</option>
                                 <option value="work">Work</option>
                                 <option value="temp">Temp</option>
@@ -1417,9 +1435,9 @@ const Clinic = ({ id }) => {
                                                     use: item.use, // preserve existing use
                                                     line: [data?.formatted ? data?.formatted : ''],
                                                     city:
-                                                    components.city || components.town || components.village || '',
+                                                        components.city || components.town || components.village || '',
                                                     state: components.state || components.state_code || '',
-                                                    postalCode: data?.components.postcode || item.postalCode || "", // Auto-fill or keep user input
+                                                    postalCode: data?.components.postcode || item.postalCode || '', // Auto-fill or keep user input
                                                     country: components.country || '',
                                                 };
                                                 // Update the specific address entry
@@ -1455,11 +1473,20 @@ const Clinic = ({ id }) => {
                             <Form.Label className="mb-1">State</Form.Label>
                             <Form.Select
                                 {...register(`address[${index}].state`)}
+                                value={addresses?.[0]?.state}
                                 data-has-value={!!getValues(`address[${index}].state`)}
-                                onChange={handleStateSelection}>
+                                onChange={(e) => {
+                                    handleStateSelection(e);
+                                    const updatedAddresses = [...addresses];
+                                    updatedAddresses[index] = {
+                                        ...updatedAddresses[index],
+                                        state: e.target.value,
+                                    };
+                                    setAddresses(updatedAddresses);
+                                }}>
                                 <option value="">Select State</option>
                                 {statesData?.states?.map((data) => (
-                                    <option key={data?.name} data-key={data?.id} value={data?.state_code}>
+                                    <option key={data?.name} data-key={data?.id} value={data?.name}>
                                         {data?.name}
                                     </option>
                                 ))}
@@ -1470,12 +1497,21 @@ const Clinic = ({ id }) => {
                             <Form.Select
                                 data-has-value={!!getValues(`address[${index}].city`)}
                                 {...register(`address[${index}].city`)}
-                                disabled={!selectedState || store?.getCitiesReducer?.loading}>
+                                value={addresses?.[0]?.city}
+                                onChange={(e) => {
+                                    const updatedAddresses = [...addresses];
+                                    updatedAddresses[index] = {
+                                        ...updatedAddresses[index],
+                                        city: e.target.value,
+                                    };
+                                    setAddresses(updatedAddresses);
+                                }}
+                            >
                                 <option value="">
                                     {store?.getCitiesReducer?.loading ? 'Loading...' : 'Select City'}
                                 </option>
                                 {cities1?.map((data) => (
-                                    <option key={data?.name} value={data?._id}>
+                                    <option key={data?.name} value={data?.name}>
                                         {data?.name}
                                     </option>
                                 ))}
@@ -1496,7 +1532,7 @@ const Clinic = ({ id }) => {
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    value={item.postalCode} // Bind postal code value
+                                    defaultValue={item.postalCode} // Bind postal code value
                                     placeholder="Postal Code"
                                     {...register(`postalCode`, {
                                         minLength: {
@@ -1633,7 +1669,7 @@ const Clinic = ({ id }) => {
                     <Col className="d-flex gap-2 justify-content-end align-items-end">
                         <Button
                             className="custom-buttons"
-                            disabled={!clinicData?.userId?.verified_email}
+                            disabled={!clinicData?.userId?.email}
                             onClick={() => {
                                 setShowReset(true);
                                 setValue('resetEmail', clinicData?.userId?.email);

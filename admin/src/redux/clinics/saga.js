@@ -20,7 +20,6 @@ import ToastHandle from '../../helpers/ToastMessage';
  * @param {*} payload - username and password
  */
 
-
 function* createClinicsFunction(data) {
     try {
         yield put({
@@ -31,7 +30,7 @@ function* createClinicsFunction(data) {
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
             ToastHandle(decryptedData?.message, 'success');
-            console.log(decryptedData.message,'new message');
+            console.log(decryptedData.message, 'new message');
 
             yield put({
                 type: ClinicsActionTypes.CREATE_CLINIC_SUCCESS,
@@ -74,6 +73,10 @@ function* updateClinicsFunction(data) {
             yield put({
                 type: ClinicsActionTypes.UPDATE_CLINIC_SUCCESS,
                 payload: { ...decryptedData },
+            });
+            yield put({
+                type: ClinicsActionTypes.UPDATE_CLINIC_RESET,
+                payload: {},
             });
         } else {
             yield put({

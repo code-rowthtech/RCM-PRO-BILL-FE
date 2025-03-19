@@ -613,16 +613,16 @@ const ClinicForm = ({
                     fileName: logoName || '',
                 },
                 identifier: constantIdentifiers.map((item) => ({
-                    identifierType: item.type,
-                    use: item.use,
-                    value: item.number,
+                    identifierType: item.type || '',
+                    use: item.use||'',
+                    value: item.number||'',
                     // documents: item.file ? {  url: item.file.url,fileName: item.file.name || '' } : null,
-                    documents: [{url:item?.file?.url}],
-                    expirationDate: item.expiry,
+                    documents: [{url:item?.file?.url || '', fileName: item?.file?.name || '234567'}],
+                    expirationDate: item.expiry || '' ,
                     status: 'active',
                     system: 'urn:oid:2.16.840.1.113883.4.7',
-                    sliceName: item.type,
-                    issuingAuthority: item.issuingAuthority,
+                    sliceName: item.type || '',
+                    issuingAuthority: item.issuingAuthority ||'',
                 })),
                 telecom: constantContact,
                 address: addresses,
@@ -1628,7 +1628,7 @@ const ClinicForm = ({
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    value={item.postalCode} // Bind postal code value
+                                    defaultValue={item.postalCode} // Bind postal code value
                                     placeholder="Postal Code"
                                     {...register(`postalCode`, {
                                         minLength: {
