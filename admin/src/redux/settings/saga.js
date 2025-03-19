@@ -204,6 +204,10 @@ function* updateMastersDataFunction(data) {
                 type: SettingsActionTypes.UPDATE_MASTERS_DATA_SUCCESS,
                 payload: { ...decryptedData },
             });
+            yield put({
+                type: SettingsActionTypes.UPDATE_MASTERS_DATA_RESET,
+                payload: {},
+              });   
         } else {
             yield put({
                 type: SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR,

@@ -41,7 +41,7 @@ const Updateclinic = () => {
 
     useEffect(() => {
         if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200 || updateSuccess === 200 || store?.newEmailReducer?.data?.status === 200) {
-            dispatch(getClinicById({ key: encryptMessage({ id }) }));
+            dispatch(getClinicById({ id }));
             const data = {
                 parentOrgId: id,
                 search :' '
