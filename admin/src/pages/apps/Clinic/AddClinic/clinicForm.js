@@ -661,7 +661,7 @@ const ClinicForm = ({
             }
         }
 
-        // Return the promise so that .then() can be chained
+
         return fetchGeocodeData(addressToSearch);
     };
     const getMailingGeolocation = (e) => {
