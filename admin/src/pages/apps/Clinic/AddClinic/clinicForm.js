@@ -617,7 +617,7 @@ const ClinicForm = ({
                     use: item.use,
                     value: item.number,
                     // documents: item.file ? {  url: item.file.url,fileName: item.file.name || '' } : null,
-                    documents: [item?.file?.url],
+                    documents: [{url:item?.file?.url}],
                     expirationDate: item.expiry,
                     status: 'active',
                     system: 'urn:oid:2.16.840.1.113883.4.7',
