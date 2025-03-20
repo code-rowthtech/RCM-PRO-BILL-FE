@@ -92,6 +92,7 @@ const ClinicForm = ({
     const [formValid, setFormValid] = useState(false);
     const [createTableData, setCreateTableData] = useState(null);
     const [searchedLocations, setSearchedLocations] = useState(null);
+    console.log(searchedLocations, 'searchedLocations');
     const [searchedMailingLocations, setSearchedMailingLocations] = useState(null);
     const [selectedStates, setSelectedStates] = useState([]);
     const [statesMenu, setStatesMenu] = useState(false);
@@ -612,7 +613,7 @@ const ClinicForm = ({
                     url: logo?.url.split('?')[0] || '',
                     fileName: logoName || '',
                 },
-             
+
                 identifier: constantIdentifiers
                     .filter((item) => item.number?.trim()) // Only include items with a non-empty 'number'
                     .map((item) => ({
@@ -838,6 +839,7 @@ const ClinicForm = ({
     const contactOptions = ['phone', 'fax', 'email', 'pager', 'url', 'sms', 'other'];
     const [constantIdentifiers, setConstantIdentifiers] = useState([]);
     const [constantContact, setConstantContact] = useState([]);
+    console.log(constantContact,'constantContact')
     const [name, setName] = useState({
         use: '',
         text: '',
@@ -1146,6 +1148,35 @@ const ClinicForm = ({
                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
                         </Form.Group>
                     </Col>
+                    {/* <Col sm={3}>
+    <Form.Group className="mb-2">
+        <Form.Label className="mb-0">
+            Email ID<span className="text-danger">*</span>
+        </Form.Label>
+        <Form.Control
+            type="text"
+            value={constantContact[constantContact?.length+1]?.value || ''} // Get value from constantContact array
+            {...register(`email-${constantContact?.length+1}`, {
+                required: 'This field is required',
+                pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Email regex
+                    message: 'Please enter a valid email address',
+                },
+            })}
+            onChange={(e) => {
+                handleContactChange(constantContact?.length+1, 'value', e.target.value); // Update via function
+                setResetEmail({ ...resetEmail, email: e.target.value }); // Optional: still update here?
+                // clearErrors(`email-${index}`); // Clear errors for this field
+            }}
+            placeholder="Email ID"
+        />
+
+        {errors[`email-${constantContact?.length+1}`] && (
+            <span className="text-danger">{errors[`email-${constantContact?.length+1}`].message}</span>
+        )}
+    </Form.Group>
+</Col> */}
+
                     <Col sm={3}>
                         <Form.Label className="mb-0">Upload Logo</Form.Label>
                         <div
@@ -1597,7 +1628,15 @@ const ClinicForm = ({
                             <Form.Select
                                 {...register(`address[${index}].state`)}
                                 data-has-value={!!getValues(`address[${index}].state`)}
-                                onChange={handleStateSelection}>
+                                onChange={(e) => {
+                                    handleStateSelection(e);
+                                    const updatedAddresses = [...addresses];
+                                    updatedAddresses[index] = {
+                                        ...updatedAddresses[index],
+                                        state: e.target.value,
+                                    };
+                                    setAddresses(updatedAddresses);
+                                }}>
                                 <option value="">Select State</option>
                                 {statesData?.states?.map((data) => (
                                     <option
@@ -1615,6 +1654,14 @@ const ClinicForm = ({
                             <Form.Select
                                 data-has-value={!!getValues(`address[${index}].city`)}
                                 {...register(`address[${index}].city`)}
+                                onChange={(e) => {
+                                    const updatedAddresses = [...addresses];
+                                    updatedAddresses[index] = {
+                                        ...updatedAddresses[index],
+                                        city: e.target.value,
+                                    };
+                                    setAddresses(updatedAddresses);
+                                }}
                                 // disabled={!selectedState || store?.getCitiesReducer?.loading}
                             >
                                 <option value="">
@@ -1624,7 +1671,7 @@ const ClinicForm = ({
                                     <option
                                         selected={data?.name == addresses[0]?.city}
                                         key={data?.name}
-                                        value={data?._id}>
+                                        value={data?.name}>
                                         {data?.name}
                                     </option>
                                 ))}
@@ -1648,7 +1695,7 @@ const ClinicForm = ({
                                     type="text"
                                     defaultValue={item.postalCode} // Bind postal code value
                                     placeholder="Postal Code"
-                                    {...register(`postalCode`, {
+                                    {...register(`address[${index}].postalCode`, {
                                         minLength: {
                                             value: 5,
                                             message: 'Postal code must be at least 5 characters long',

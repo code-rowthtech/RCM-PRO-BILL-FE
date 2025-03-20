@@ -30,8 +30,6 @@ function* createClinicsFunction(data) {
         const decryptedData = JSON.parse(decryptMessage(response.data.data));
         if (response.status === 200) {
             ToastHandle(decryptedData?.message, 'success');
-            console.log(decryptedData.message, 'new message');
-
             yield put({
                 type: ClinicsActionTypes.CREATE_CLINIC_SUCCESS,
                 payload: { ...decryptedData },
@@ -141,7 +139,6 @@ function* getClinicByParentFunction(data) {
             });
         }
     } catch (error) {
-        // console.log({ error })
         yield put({
             type: ClinicsActionTypes.GET_CLINIC_BY_PARENT_ERROR,
             payload: error,
@@ -336,7 +333,6 @@ function* getContractFunction(data) {
         }
     } catch (error) {
         // ToastHandle(error, 'danger')
-        // console.log({ error })
         yield put({
             type: ClinicsActionTypes.GET_CONTRACT_ERROR,
             payload: error,
@@ -365,7 +361,6 @@ function* generateContractFunction(data) {
             });
         }
     } catch (error) {
-        // console.log({ error })
         ToastHandle(error, 'danger');
         yield put({
             type: ClinicsActionTypes.GENERATE_CONTRACT_ERROR,
