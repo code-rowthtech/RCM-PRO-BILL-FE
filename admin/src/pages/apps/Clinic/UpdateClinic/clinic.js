@@ -66,6 +66,7 @@ const Clinic = ({ id }) => {
     console.log(clinicData, 'clinicDataIdentifier');
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
+    console.log(statesData, 'statesData');
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
     console.log(cities1, 'cities1');
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
@@ -278,14 +279,16 @@ const Clinic = ({ id }) => {
     const handleCitySelection = (e) => {};
 
     const onSubmit = (data) => {
+        console.log(data, 'data working');
         const newPayload = {
             userId: clinicData?.userId?._id,
             clinicId: clinicData?._id,
-            name: data?.clinicname,
+            name: { text: data?.clinicname },
+
             // active: true,
             email: data?.email || clinicData?.email || '',
 
-            orgType: data?.clinicType || clinicData?.orgType || '',
+            orgType: data?.practiceType || clinicData?.orgType || '',
             // orgSpecialty: clinicData?.orgSpecialty || [],
 
             orgLogo: {
@@ -293,26 +296,26 @@ const Clinic = ({ id }) => {
                 fileName: logoName || clinicData?.orgLogo?.fileName || '',
             },
             identifier: constantIdentifiers
-            .filter((item) => item.number?.trim()) // Only include items with a non-empty 'number'
-            .map((item) => ({
-                identifierType: item.type || '',
-                use: item.use || '',
-                value: item.number || '',
-                documents: [
-                    {
-                        url: item?.file?.url || '',
-                        fileName: item?.file?.name || '',
-                    },
-                ],
-                expirationDate:
-                    item.expiry ||
-                    clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
-                    '',
-                issuingAuthority: item.issuingAuthority || '',
-                status: 'active',
-                system: 'urn:oid:2.16.840.1.113883.4.7',
-                sliceName: item.type || '',
-            })),
+                .filter((item) => item.number?.trim()) // Only include items with a non-empty 'number'
+                .map((item) => ({
+                    identifierType: item.type || '',
+                    use: item.use || '',
+                    value: item.number || '',
+                    documents: [
+                        {
+                            url: item?.file?.url || '',
+                            fileName: item?.file?.name || '',
+                        },
+                    ],
+                    expirationDate:
+                        item.expiry ||
+                        clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
+                        '',
+                    issuingAuthority: item.issuingAuthority || '',
+                    status: 'active',
+                    system: 'urn:oid:2.16.840.1.113883.4.7',
+                    sliceName: item.type || '',
+                })),
 
             // identifier: constantIdentifiers.map((item) => ({
             //     ...(item.type&&{identifierType: item.type} ),
@@ -325,19 +328,19 @@ const Clinic = ({ id }) => {
             //     ...(item.system&&{system: 'urn:oid:2.16.840.1.113883.4.7'}),
             //     ...(item.sliceName&&{sliceName: item.sliceName}),
 
-                // identifierType: item.type || '',
-                // use: item?.use || '',
-                // value: item?.number || '',
+            // identifierType: item.type || '',
+            // use: item?.use || '',
+            // value: item?.number || '',
 
-                // documents: [{ url: item?.file?.url || '', fileName: item?.file?.name || '' }],
-                // expirationDate:
-                //     item.expiry ||
-                //     clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
-                //     '',
-                // status: 'active',
-                // system: 'urn:oid:2.16.840.1.113883.4.7',
-                // sliceName: item.type || '',
-                // issuingAuthority: item.issuingAuthority || '',
+            // documents: [{ url: item?.file?.url || '', fileName: item?.file?.name || '' }],
+            // expirationDate:
+            //     item.expiry ||
+            //     clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
+            //     '',
+            // status: 'active',
+            // system: 'urn:oid:2.16.840.1.113883.4.7',
+            // sliceName: item.type || '',
+            // issuingAuthority: item.issuingAuthority || '',
             // })),
 
             telecom: constantContact.map((contact) => ({
@@ -384,6 +387,7 @@ const Clinic = ({ id }) => {
     };
 
     const [searchedLocations, setSearchedLocations] = useState(null);
+    console.log(searchedLocations, 'searchedLocations');
     const [searchedMailingLocations, setSearchedMailingLocations] = useState(null);
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
@@ -446,6 +450,7 @@ const Clinic = ({ id }) => {
         });
     };
     const [selectedLocation, setSelectedLocation] = useState(null);
+    console.log(selectedLocation, 'selectedLocation');
     const [selectedMailingLocation, setSelectedMailingLocation] = useState(null);
     useEffect(() => {
         if (selectedLocation) {
@@ -462,23 +467,23 @@ const Clinic = ({ id }) => {
             const countyName = selectedLocation?.components?.county;
             dispatch(getCitiesAction({ state_code: stateId, name: countyName, limit: '', skip: '' }));
         }
-        if (selectedMailingLocation) {
-            setMailingLatitude(selectedMailingLocation?.bounds?.southwest?.lat);
-            setMailingLongitude(selectedMailingLocation?.bounds?.southwest?.lng);
-            setValue('mailingAddress', selectedMailingLocation?.formatted);
-            const stateId =
-                statesData?.states &&
-                statesData?.states.find((data) => data?.state_code === selectedMailingLocation?.components?.state_code)
-                    ?.id;
-            const selectedState =
-                statesData?.states &&
-                statesData?.states.find((data) => data?.state_code === selectedMailingLocation?.components?.state_code)
-                    ?._id;
-            setValue('mailingStateName', selectedState);
-            const countyName = selectedMailingLocation?.components?.county;
-            dispatch(getCities2Action({ state_code: stateId, name: countyName, limit: '', skip: '' }));
-        }
-    }, [selectedLocation, selectedMailingLocation, setValue, statesData, dispatch]);
+        // if (selectedMailingLocation) {
+        //     setMailingLatitude(selectedMailingLocation?.bounds?.southwest?.lat);
+        //     setMailingLongitude(selectedMailingLocation?.bounds?.southwest?.lng);
+        //     setValue('mailingAddress', selectedMailingLocation?.formatted);
+        //     const stateId =
+        //         statesData?.states &&
+        //         statesData?.states.find((data) => data?.state_code === selectedMailingLocation?.components?.state_code)
+        //             ?.id;
+        //     const selectedState =
+        //         statesData?.states &&
+        //         statesData?.states.find((data) => data?.state_code === selectedMailingLocation?.components?.state_code)
+        //             ?._id;
+        //     setValue('mailingStateName', selectedState);
+        //     const countyName = selectedMailingLocation?.components?.county;
+        //     dispatch(getCities2Action({ state_code: stateId, name: countyName, limit: '', skip: '' }));
+        // }
+    }, [selectedLocation, setValue, statesData, dispatch]);
     useEffect(() => {
         if (cities1) {
             const selectedCounty =
@@ -673,6 +678,7 @@ const Clinic = ({ id }) => {
     const [addresses, setAddresses] = useState([
         { use: '', line: [''], city: '', state: '', postalCode: '', country: '' }, // Default address
     ]);
+    console.log(addresses, 'addresses');    
     const [activeAddressIndex, setActiveAddressIndex] = useState(null);
     const [addressFocused, setAddressFocused] = useState(false);
     // Load Default Identifiers & Contacts
@@ -876,7 +882,7 @@ const Clinic = ({ id }) => {
             if (clinicData?.orgType) {
                 setValue('practiceType', clinicData?.orgType);
             }
-            setField('name', clinicData?.name);
+            setField('clinicname', clinicData?.name);
             setField('email', clinicData?.userId?.email);
             if (clinicData?.orgLogo) {
                 setLogoName(clinicData.orgLogo.fileName);
@@ -887,10 +893,10 @@ const Clinic = ({ id }) => {
                 clinicData?.identifier?.map((data) => ({
                     type: data.identifierType || '',
                     number: data?.value || '',
-                    file: data?.documents?.[0]?.url
+                    file: data?.documents?.[0]?.fileName
                         ? {
                               url: data.documents[0].url,
-                              name: data.documents[0].url.split('/').pop(),
+                              name: data.documents[0].fileName,
                           }
                         : '',
                     expiry: data?.expirationDate || '',
@@ -930,16 +936,27 @@ const Clinic = ({ id }) => {
             setConstantContact(contacts);
 
             // ✅ Set Addresses
-            setAddresses(
-                clinicData?.address?.map((addr) => ({
+            // setAddresses(
+            //     clinicData?.address?.map((addr) => ({
+            //         use: addr.use || '',
+            //         line: addr.line && Array.isArray(addr.line) ? addr.line : [''], // Ensure array
+            //         city: addr.city || '',
+            //         state: addr.state || '',
+            //         postalCode: addr.postalCode || '',
+            //         country: addr.country || '',
+            //     })) || [{ use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]
+            // );
+            if (clinicData?.address) {
+                const formattedAddresses = clinicData.address.map((addr) => ({
                     use: addr.use || '',
-                    line: addr.line && Array.isArray(addr.line) ? addr.line : [''], // Ensure array
+                    line: Array.isArray(addr.line) ? addr.line : [''],
                     city: addr.city || '',
                     state: addr.state || '',
                     postalCode: addr.postalCode || '',
                     country: addr.country || '',
-                })) || [{ use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]
-            );
+                }));
+                setAddresses(formattedAddresses);
+            }
 
             // ✅ Set POCs (Point of Contacts)
             setPocs(
@@ -989,6 +1006,7 @@ const Clinic = ({ id }) => {
     // Runs when `apiResponse` changes
     const handleIdentifierFileChange = async (e, index) => {
         const selectedFile = e.target.files[0];
+        console.log(selectedFile,'selectedFile')
         if (!selectedFile) return;
 
         try {
@@ -1020,7 +1038,7 @@ const Clinic = ({ id }) => {
                             </Form.Label>
                             <Form.Control
                                 type="text"
-                                {...register('name', {
+                                {...register('clinicname', {
                                     required: 'This field is required',
                                     validate: (value) => !value.startsWith(' ') || 'First character cannot be a space',
                                 })}
@@ -1170,9 +1188,9 @@ const Clinic = ({ id }) => {
                                                 : undefined
                                         }
                                         {...register(`identifiers[${index}].number`, {
-                                            required: defaultIdentifiers.includes(item.type)
-                                                ? 'Document Number is required'
-                                                : false,
+                                            // required: defaultIdentifiers.includes(item.type)
+                                            //     ? 'Document Number is required'
+                                            //     : false,
                                             validate: (value) => {
                                                 if (!value) return true; // Skip validation if field is empty (for dynamic fields)
 
@@ -1209,9 +1227,11 @@ const Clinic = ({ id }) => {
                                     <div
                                         onClick={() => document.getElementById(`fileInput-identifier-${index}`).click()}
                                         className={`custom-file-upload justify-content-between cursor-pointer ${
-                                            item.file ? 'form-control' : 'custom-form-fields'
+                                            item.file || item.uploading ? 'form-control' : 'custom-form-fields'
                                         }`}>
-                                        {item.file?.name
+                                        {item.uploading
+                                            ? 'Uploading...'
+                                            : item.file?.name
                                             ? item.file.name.length > 30
                                                 ? item.file.name.slice(0, 25) + '...'
                                                 : item.file.name
@@ -1220,6 +1240,7 @@ const Clinic = ({ id }) => {
                                             <FiDownloadCloud />
                                         </p>
                                     </div>
+
                                     <Form.Control
                                         type="file"
                                         id={`fileInput-identifier-${index}`}
@@ -1227,10 +1248,12 @@ const Clinic = ({ id }) => {
                                         accept=".png, .jpg, .jpeg, .pdf"
                                         onChange={(e) => handleIdentifierFileChange(e, index)}
                                     />
+
                                     {errors?.[index]?.file && (
                                         <span className="text-danger">Please upload a document</span>
                                     )}
                                 </Col>
+
                                 <Col>
                                     <Form.Select
                                         value={item.issuingAuthority}
@@ -1503,7 +1526,7 @@ const Clinic = ({ id }) => {
                             <Form.Label className="mb-1">State</Form.Label>
                             <Form.Select
                                 {...register(`address[${index}].state`)}
-                                value={addresses?.[0]?.state}
+                                value={item?.state}
                                 data-has-value={!!getValues(`address[${index}].state`)}
                                 onChange={(e) => {
                                     handleStateSelection(e);
@@ -1527,7 +1550,7 @@ const Clinic = ({ id }) => {
                             <Form.Select
                                 data-has-value={!!getValues(`address[${index}].city`)}
                                 {...register(`address[${index}].city`)}
-                                value={addresses?.[0]?.city}
+                                value={item?.city}
                                 onChange={(e) => {
                                     const updatedAddresses = [...addresses];
                                     updatedAddresses[index] = {
@@ -1535,8 +1558,7 @@ const Clinic = ({ id }) => {
                                         city: e.target.value,
                                     };
                                     setAddresses(updatedAddresses);
-                                }}
-                            >
+                                }}>
                                 <option value="">
                                     {store?.getCitiesReducer?.loading ? 'Loading...' : 'Select City'}
                                 </option>
@@ -1562,9 +1584,9 @@ const Clinic = ({ id }) => {
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    defaultValue={item.postalCode} // Bind postal code value
+                                    defaultValue={item.postalCode}
                                     placeholder="Postal Code"
-                                    {...register(`postalCode`, {
+                                    {...register(`address[${index}].postalCode`, {
                                         minLength: {
                                             value: 5,
                                             message: 'Postal code must be at least 5 characters long',
@@ -1577,9 +1599,12 @@ const Clinic = ({ id }) => {
                                     maxLength={5}
                                     onKeyPress={handleFirstSpace}
                                 />
-                                {errors.postalCode && <span className="text-danger">{errors.postalCode.message}</span>}
+                                {errors?.address?.[index]?.postalCode && (
+                                    <span className="text-danger">{errors.address[index].postalCode.message}</span>
+                                )}
                             </Form.Group>
                         </Col>
+
                         <Col sm={4} className="position-relative">
                             <Form.Label className="mb-1">Country</Form.Label>
 
@@ -1815,7 +1840,7 @@ const Clinic = ({ id }) => {
                             <Col sm={12} className="text-center">
                                 The practice will receive a reset password email at {clinicData?.userId?.email}.
                             </Col>
-                            <Col sm={12} className="text-center mt-2">
+                            <Col sm={12} className="text-center d-flex justify-content-center mt-2">
                                 <Button type="submit" disabled={store?.Auth?.loading} className="custom-buttons">
                                     {store?.Auth?.loading ? (
                                         <Spinner color="white" className="spinner-border-sm" />
