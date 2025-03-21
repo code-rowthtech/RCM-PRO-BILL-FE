@@ -643,7 +643,7 @@ const Clinic = ({ id }) => {
         'Other',
     ];
     const contactDetails = ['phone', 'email'];
-    const addressUses = ['home', 'work', 'temp', 'old', 'billing', 'mailing', 'primary'];
+    const addressUses = [ 'work', 'temp', 'old', 'billing', 'mailing', 'primary'];
     const uses = ['usual', 'old', 'temp', 'secondary', 'official'];
     const identifierOptions = [
         'NPI',
@@ -676,9 +676,9 @@ const Clinic = ({ id }) => {
         period: { start: new Date().toISOString() },
     });
     const [addresses, setAddresses] = useState([
-        { use: '', line: [''], city: '', state: '', postalCode: '', country: '' }, // Default address
+        { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }, // Default address
     ]);
-    console.log(addresses, 'addresses');    
+    console.log(addresses, 'addresses');
     const [activeAddressIndex, setActiveAddressIndex] = useState(null);
     const [addressFocused, setAddressFocused] = useState(false);
     // Load Default Identifiers & Contacts
@@ -713,7 +713,7 @@ const Clinic = ({ id }) => {
         setConstantContact([...constantContact, { system: '', value: '', use: '' }]);
     };
     const addAddress = () => {
-        setAddresses([...addresses, { use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]);
+        setAddresses([...addresses, { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
     };
 
     // Function to Remove Fields
@@ -1006,7 +1006,7 @@ const Clinic = ({ id }) => {
     // Runs when `apiResponse` changes
     const handleIdentifierFileChange = async (e, index) => {
         const selectedFile = e.target.files[0];
-        console.log(selectedFile,'selectedFile')
+        console.log(selectedFile, 'selectedFile');
         if (!selectedFile) return;
 
         try {
@@ -1383,10 +1383,8 @@ const Clinic = ({ id }) => {
                                         </option>{' '}
                                         {/* Placeholder option */}
                                         <option value="temp">Temp</option>
-                                        <option value="home">Home</option>
                                         <option value="work">Work</option>
                                         <option value="old">Old</option>
-                                        <option value="mobile">Mobile</option>
                                         {/* Add more options as needed */}
                                     </Form.Select>
                                     {index >= contactDetails.length && (
@@ -1579,7 +1577,7 @@ const Clinic = ({ id }) => {
                             />
                         </Col> */}
 
-                        <Col sm={4}>
+                        <Col sm={4}className='position-relative'>
                             <Form.Group className="mb-2">
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
@@ -1599,29 +1597,18 @@ const Clinic = ({ id }) => {
                                     maxLength={5}
                                     onKeyPress={handleFirstSpace}
                                 />
+                                {addresses.length > 1 && index !== 0 && (
+                                    <span
+                                        className="text-danger cursor-pointer position-absolute fs-5 fw-bold"
+                                        style={{ right: '-2%', top: '50%' }}
+                                        onClick={() => removeAddress(index)}>
+                                        <CiCircleMinus />
+                                    </span>
+                                )}
                                 {errors?.address?.[index]?.postalCode && (
                                     <span className="text-danger">{errors.address[index].postalCode.message}</span>
                                 )}
                             </Form.Group>
-                        </Col>
-
-                        <Col sm={4} className="position-relative">
-                            <Form.Label className="mb-1">Country</Form.Label>
-
-                            <Form.Control
-                                type="text"
-                                placeholder="Country"
-                                value={item.country}
-                                onChange={(e) => handleAddressChange(index, 'country', e.target.value)}
-                            />
-                            {addresses.length > 1 && index !== 0 && (
-                                <span
-                                    className="text-danger cursor-pointer position-absolute fs-5 fw-bold"
-                                    style={{ right: '-2%', top: '50%' }}
-                                    onClick={() => removeAddress(index)}>
-                                    <CiCircleMinus />
-                                </span>
-                            )}
                         </Col>
                     </Row>
                 ))}
