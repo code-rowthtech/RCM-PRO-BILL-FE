@@ -200,7 +200,7 @@ const ClinicForm = ({
             setLogo(null);
             setLogoName(null);
             setConstantIdentifiers([]);
-            setAddresses([{ use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]);
+            setAddresses([{ use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
             setIdentifierDocumnent(false);
             setPocs([]);
             // setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
@@ -821,7 +821,7 @@ const ClinicForm = ({
         'Other',
     ];
     const contactDetails = ['phone', 'email'];
-    const addressUses = ['home', 'work', 'temp', 'old', 'billing', 'mailing', 'primary'];
+    const addressUses = ['work', 'temp', 'old', 'billing', 'mailing', 'primary'];
     const uses = ['usual', 'old', 'temp', 'secondary', 'official'];
     const identifierOptions = [
         'NPI',
@@ -839,7 +839,7 @@ const ClinicForm = ({
     const contactOptions = ['phone', 'fax', 'email', 'pager', 'url', 'sms', 'other'];
     const [constantIdentifiers, setConstantIdentifiers] = useState([]);
     const [constantContact, setConstantContact] = useState([]);
-    console.log(constantContact,'constantContact')
+    console.log(constantContact, 'constantContact');
     const [name, setName] = useState({
         use: '',
         text: '',
@@ -850,7 +850,7 @@ const ClinicForm = ({
         period: { start: new Date().toISOString() },
     });
     const [addresses, setAddresses] = useState([
-        { use: '', line: [''], city: '', state: '', postalCode: '', country: '' }, // Default address
+        { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }, // Default address
     ]);
     const [activeAddressIndex, setActiveAddressIndex] = useState(null);
     const [addressFocused, setAddressFocused] = useState(false);
@@ -886,7 +886,7 @@ const ClinicForm = ({
         setConstantContact([...constantContact, { system: '', value: '', use: '' }]);
     };
     const addAddress = () => {
-        setAddresses([...addresses, { use: '', line: [''], city: '', state: '', postalCode: '', country: '' }]);
+        setAddresses([...addresses, { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
     };
 
     // Function to Remove Fields
@@ -1479,10 +1479,10 @@ const ClinicForm = ({
                                         </option>{' '}
                                         {/* Placeholder option */}
                                         <option value="temp">Temp</option>
-                                        <option value="home">Home</option>
+                                        {/* <option value="home">Home</option> */}
                                         <option value="work">Work</option>
                                         <option value="old">Old</option>
-                                        <option value="mobile">Mobile</option>
+                                        {/* <option value="mobile">Mobile</option> */}
                                         {/* Add more options as needed */}
                                     </Form.Select>
                                     {index >= contactDetails.length && (
@@ -1574,7 +1574,6 @@ const ClinicForm = ({
                                         <p
                                             key={suggestionIndex}
                                             onClick={() => {
-                                                console.log(data, 'data12456');
                                                 // Extract the necessary fields from the API response
                                                 // const formatted = data.formatted || '';
                                                 // const components = data.components || {};
@@ -1688,7 +1687,7 @@ const ClinicForm = ({
                             />
                         </Col> */}
 
-                        <Col sm={4}>
+                        <Col sm={4} className='position-relative'>
                             <Form.Group className="mb-2">
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
@@ -1708,11 +1707,19 @@ const ClinicForm = ({
                                     maxLength={5}
                                     onKeyPress={handleFirstSpace}
                                 />
+                                {addresses.length > 1 && index !== 0 && (
+                                    <span
+                                        className="text-danger cursor-pointer position-absolute fs-5 fw-bold"
+                                        style={{ right: '-2%', top: '50%' }}
+                                        onClick={() => removeAddress(index)}>
+                                        <CiCircleMinus />
+                                    </span>
+                                )}
                                 {errors.postalCode && <span className="text-danger">{errors.postalCode.message}</span>}
                             </Form.Group>
                         </Col>
 
-                        <Col sm={4} className="position-relative">
+                        {/* <Col sm={4} className="position-relative">
                             <Form.Label className="mb-1">Country</Form.Label>
 
                             <Form.Control
@@ -1721,15 +1728,7 @@ const ClinicForm = ({
                                 value={item.country}
                                 onChange={(e) => handleAddressChange(index, 'country', e.target.value)}
                             />
-                            {addresses.length > 1 && index !== 0 && (
-                                <span
-                                    className="text-danger cursor-pointer position-absolute fs-5 fw-bold"
-                                    style={{ right: '-2%', top: '50%' }}
-                                    onClick={() => removeAddress(index)}>
-                                    <CiCircleMinus />
-                                </span>
-                            )}
-                        </Col>
+                        </Col> */}
                     </Row>
                 ))}
                 <hr />

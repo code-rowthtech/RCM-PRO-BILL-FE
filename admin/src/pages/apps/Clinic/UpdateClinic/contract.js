@@ -124,7 +124,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                                                     onClick={() => {
                                                         setShow(true)
                                                     }}></i>
-                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
+                                                {/* <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i> */}
                                             </td>
                                         </tr>
                                     ) :
@@ -139,7 +139,7 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
                                                     onClick={() => {
                                                         setShow(true)
                                                     }}></i>
-                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
+                                                {/* <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i> */}
                                             </td>
                                         </tr>
                                 // ))
