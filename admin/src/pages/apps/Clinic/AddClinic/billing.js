@@ -2,40 +2,41 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions'
+import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
-import us from '../../../../assets/images/flags/us.jpg'
+import us from '../../../../assets/images/flags/us.jpg';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 import { useSearchParams } from 'react-router-dom';
-const BillingForm = ({ activeTab, setActiveTab, userIdForBilling,clinicId, billingId, multiple }) => {
-    console.log(userIdForBilling,'billingIdbillingId')
+const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, billingId, multiple }) => {
+    console.log(userIdForBilling, 'billingIdbillingId');
     const {
         register,
         handleSubmit,
         formState: { errors },
         reset,
-        watch, getValues,
+        watch,
+        getValues,
         setError,
-        clearErrors
+        clearErrors,
     } = useForm();
     const [searchParams] = useSearchParams();
     const parentClincId = searchParams.get('clincid');
     const parentUserId = searchParams.get('userId');
-    console.log({parentUserId})
+    console.log({ parentUserId });
     const [paymentType, setPaymentType] = useState('');
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
-    const [amount, setAmount] = useState((null));
+    const [amount, setAmount] = useState(null);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Store the selected date
-   
+
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
-const userId = localStorage.getItem('userIdForBilling')
+    const userId = localStorage.getItem('userIdForBilling');
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));
@@ -45,11 +46,11 @@ const userId = localStorage.getItem('userIdForBilling')
         }
     }, [dispatch, activeTab]);
 
-      useEffect(() => {
-            if (createResponse === 200 ) {
-                localStorage.removeItem('userIdForBilling')
-            }
-        }, [createResponse]);
+    useEffect(() => {
+        if (createResponse === 200) {
+            localStorage.removeItem('userIdForBilling');
+        }
+    }, [createResponse]);
     const adminData = JSON.parse(sessionStorage.getItem('hyper_user'));
     const onSubmit = (data) => {
         const payload = {
@@ -60,9 +61,9 @@ const userId = localStorage.getItem('userIdForBilling')
             billingContactemail: data?.email,
             adminId: adminData?._id,
             clinicCount: multiple === 0 ? 1 : multiple,
-        }
+        };
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
-        console.log(payload,'payloadblilling')
+        console.log(payload, 'payloadblilling');
     };
 
     const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
@@ -95,24 +96,27 @@ const userId = localStorage.getItem('userIdForBilling')
         setSelectedDate(e.target.value);
     };
     return (
-        <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+        <Form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <Row>
                 <Col sm={6} className="mb-2">
-                    <Form.Group >
-                        <Form.Label className='mb-1'>Subscription Plan <span className='text-danger'>*</span></Form.Label>
+                    <Form.Group>
+                        <Form.Label className="mb-1">
+                            Subscription Plan <span className="text-danger">*</span>
+                        </Form.Label>
                         <Form.Select
                             {...register('subscription', {
-                                required: 'This field is required'
+                                required: 'This field is required',
                             })}
                             // className={`${!!getValues('subscription') ? 'emptyField' : 'selectedField'}`}
                             onChange={(e) => {
                                 const selectedId = e.target.value;
-                                const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
+                                const selectedSubscription = subscriptionsData?.find((data) => data._id === selectedId);
                                 setAmount(selectedSubscription || 0);
-                                clearErrors('subscription')
-                            }}
-                        >
-                            <option value="" hidden>Select plan type</option>
+                                clearErrors('subscription');
+                            }}>
+                            <option value="" hidden>
+                                Select plan type
+                            </option>
                             {subscriptionsData?.map((data) => (
                                 <option value={data?._id} key={data?._id} className="text-capitalize">
                                     {data?.name} {data?.billingFrequency} {data?.price}
@@ -120,40 +124,38 @@ const userId = localStorage.getItem('userIdForBilling')
                             ))}
                         </Form.Select>
                     </Form.Group>
-                    {errors?.subscription && <span className='text-danger'>{errors?.subscription?.message}</span>}
+                    {errors?.subscription && <span className="text-danger">{errors?.subscription?.message}</span>}
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>Amount (in $)&nbsp;
-                            <span className=' uil-info-circle billing-info mb-0 cursor-pointer' />
+                        <Form.Label className="mb-1">
+                            Amount (in $)&nbsp;
+                            <span className=" uil-info-circle billing-info mb-0 cursor-pointer" />
                         </Form.Label>
                         <Form.Control
                             type="text"
-                            value={
-                                multiple > 0 ?
-                                    amount?.totalAmount * multiple
-                                    :
-                                    amount?.totalAmount
-                            }
+                            value={multiple > 0 ? amount?.totalAmount * multiple : amount?.totalAmount}
                             readOnly
                             // {...register('amount', { required: 'This field is required' })}
-                            placeholder="Amount" />
+                            placeholder="Amount"
+                        />
                         {/* {errors.amount && <span className="text-danger">{errors.amount.message}</span>} */}
                     </Form.Group>
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>Plan Tenure</Form.Label>
+                        <Form.Label className="mb-1">Plan Tenure</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder='Plan Tenure'
+                            placeholder="Plan Tenure"
                             defaultValue={amount?.billingFrequency}
-                            readOnly />
+                            readOnly
+                        />
                     </Form.Group>
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>Implemented Date</Form.Label>
+                        <Form.Label className="mb-1">Implemented Date</Form.Label>
                         <Form.Control
                             type="date"
                             placeholder="Implemented Date"
@@ -165,10 +167,10 @@ const userId = localStorage.getItem('userIdForBilling')
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>End Date</Form.Label>
+                        <Form.Label className="mb-1">End Date</Form.Label>
                         <Form.Control
                             type="date"
-                            placeholder='End Date'
+                            placeholder="End Date"
                             defaultValue={amount ? endDate : ''}
                             readOnly
                         />
@@ -176,77 +178,93 @@ const userId = localStorage.getItem('userIdForBilling')
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>Doctor Count</Form.Label>
+                        <Form.Label className="mb-1">Doctor Count</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder='Doctor Count'
+                            placeholder="Doctor Count"
                             defaultValue={amount?.doctorLimit}
-                            readOnly />
+                            readOnly
+                        />
                     </Form.Group>
                 </Col>
                 <Col sm={6}>
                     <Form.Group className="mb-2">
-                        <Form.Label className='mb-1'>Patient Count</Form.Label>
+                        <Form.Label className="mb-1">Patient Count</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder='Patient Count'
+                            placeholder="Patient Count"
                             defaultValue={amount?.patientLimit}
-                            readOnly />
+                            readOnly
+                        />
                     </Form.Group>
                 </Col>
             </Row>
             <hr />
-            <Row className=''>
+            <Row className="">
                 <Col sm={12}>
                     <Row>
-                        <Col sm={6} className=''>
-                            <Row className='mt-2'>
+                        <Col sm={6} className="">
+                            <Row className="mt-2">
                                 <Col sm={12}>
-                                    <span className='text-black fw-semibold'>Payment Information</span>
+                                    <span className="text-black fw-semibold">Payment Information</span>
                                 </Col>
                                 <Col sm={12}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Payment Method <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className="mb-1">
+                                            Payment Method <span className="text-danger">*</span>
+                                        </Form.Label>
                                         <Form.Select
                                             {...register('method', {
-                                                required: 'This field is required'
+                                                required: 'This field is required',
                                             })}
                                             className={`${!!getValues('method') ? 'emptyField' : 'selectedField'}`}
                                             onChange={(e) => {
-                                                setPaymentType(e.target.value)
-                                                clearErrors('method')
+                                                setPaymentType(e.target.value);
+                                                clearErrors('method');
                                             }}>
-                                            <option value='' hidden>Select payment method</option>
-                                            <option value='card'>Card</option>
-                                            <option value='online'>Online banking</option>
-                                            <option value='cheque'>Cheque</option>
+                                            <option value="" hidden>
+                                                Select payment method
+                                            </option>
+                                            <option value="card">Card</option>
+                                            <option value="online">Online banking</option>
+                                            <option value="cheque">Cheque</option>
                                         </Form.Select>
-                                        {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
+                                        {errors?.method && (
+                                            <span className="text-danger">{errors?.method?.message}</span>
+                                        )}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Billing Address <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className="mb-1">
+                                            Billing Address <span className="text-danger">*</span>
+                                        </Form.Label>
                                         <Form.Control
                                             type="text"
                                             {...register('billingaddress', { required: 'This field is required' })}
-                                            placeholder="Billing Address" />
-                                        {errors.billingaddress && <span className="text-danger">{errors.billingaddress.message}</span>}
+                                            placeholder="Billing Address"
+                                        />
+                                        {errors.billingaddress && (
+                                            <span className="text-danger">{errors.billingaddress.message}</span>
+                                        )}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Cardholder Name <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className="mb-1">
+                                            Cardholder Name <span className="text-danger">*</span>
+                                        </Form.Label>
                                         <Form.Control
                                             type="text"
                                             // {...register('cardholder', { required: 'This field is required' })}
-                                            placeholder="Name on card" />
+                                            placeholder="Name on card"
+                                        />
                                         {/* {errors.cardholder && <span className="text-danger">{errors.cardholder.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Credit / Debit Card Number</Form.Label>
+                                        <Form.Label className="mb-1">Credit / Debit Card Number</Form.Label>
                                         <Form.Control
                                             type="text"
                                             placeholder="xxxx-xxxx-xxxx"
@@ -264,7 +282,7 @@ const userId = localStorage.getItem('userIdForBilling')
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>CVV (Security Code)</Form.Label>
+                                        <Form.Label className="mb-1">CVV (Security Code)</Form.Label>
                                         <Form.Control
                                             type="text"
                                             // {...register('cvv', {
@@ -275,63 +293,75 @@ const userId = localStorage.getItem('userIdForBilling')
                                             //     },
                                             // })}
                                             maxLength={3}
-                                            placeholder="---" />
+                                            placeholder="---"
+                                        />
                                         {/* {errors.cvv && <span className="text-danger">{errors.cvv.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                     <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Expiration Date (Security Code)</Form.Label>
+                                        <Form.Label className="mb-1">Expiration Date (Security Code)</Form.Label>
                                         <Form.Control
                                             type="date"
                                             // {...register('expiration', { required: 'This field is required' })}
-                                            placeholder="---" />
+                                            placeholder="---"
+                                        />
                                         {/* {errors.expiration && <span className="text-danger">{errors.expiration.message}</span>} */}
                                     </Form.Group>
                                 </Col>
                             </Row>
-
                         </Col>
                         <Col sm={6}>
-                            <Row className='mt-2'>
+                            <Row className="mt-2">
                                 <Col sm={12}>
-                                    <span className='text-black fw-semibold'>Billing Contact Information</span>
+                                    <span className="text-black fw-semibold">Billing Contact Information</span>
                                 </Col>
-                                <Col sm={12} className='mb-2'>
+                                <Col sm={12} className="mb-2">
                                     <Form.Group className="">
-                                        <Form.Label className='mb-1'>Billing Contact Name <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className="mb-1">
+                                            Billing Contact Name <span className="text-danger">*</span>
+                                        </Form.Label>
                                         <Form.Control
-                                            type='text'
+                                            type="text"
                                             {...register('name', {
-                                                required: 'This field is required.'
+                                                required: 'This field is required.',
                                             })}
                                             onKeyPress={handleFirstSpace}
-                                            placeholder='Billing Contact Name' />
+                                            placeholder="Billing Contact Name"
+                                        />
                                     </Form.Group>
                                     {errors.name && <span className="text-danger">{errors.name.message}</span>}
                                 </Col>
-                                <Col sm={12} className='mb-2'>
+                                <Col sm={12} className="mb-2">
                                     <Form.Group className="">
-                                        <Form.Label className='mb-1'>Billing Contact Email <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className="mb-1">
+                                            Billing Contact Email <span className="text-danger">*</span>
+                                        </Form.Label>
                                         <Form.Control
-                                            type='email'
+                                            type="email"
                                             {...register('email', {
                                                 required: 'This field is required',
                                                 pattern: {
                                                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
-                                                    message: 'Please enter a valid email address'
-                                                }
+                                                    message: 'Please enter a valid email address',
+                                                },
                                             })}
-                                            placeholder='Billing Contact Email' />
+                                            placeholder="Billing Contact Email"
+                                        />
                                     </Form.Group>
                                     {errors.email && <span className="text-danger">{errors.email.message}</span>}
                                 </Col>
-                                <Col sm={12} className='mb-2'>
+                                <Col sm={12} className="mb-2">
                                     <Form.Group className="mb-0 position-relative">
-                                        <Form.Label className='mb-1'>Billing Contact Phone Number <span className='text-danger'>*</span></Form.Label>
+                                        <Form.Label className="mb-1">
+                                            Billing Contact Phone Number <span className="text-danger">*</span>
+                                        </Form.Label>
                                         <Form.Group>
                                             <InputGroup>
-                                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
+                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">
+                                                    &nbsp;&nbsp;+1
+                                                </InputGroup.Text>{' '}
+                                                {/* This is the prefix */}
                                                 <Form.Control
                                                     type="tel"
                                                     {...register('contact', {
@@ -342,12 +372,12 @@ const userId = localStorage.getItem('userIdForBilling')
                                                         },
                                                         maxLength: {
                                                             value: 13, // Includes characters for (XXX)XXX-XXXX
-                                                            message: 'Contact must not exceed 13 characters'
+                                                            message: 'Contact must not exceed 13 characters',
                                                         },
                                                         minLength: {
                                                             value: 13,
-                                                            message: 'Contact must not be less than 13 characters'
-                                                        }
+                                                            message: 'Contact must not be less than 13 characters',
+                                                        },
                                                     })}
                                                     onChange={(e) => {
                                                         let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
@@ -374,13 +404,8 @@ const userId = localStorage.getItem('userIdForBilling')
                                                 />
                                             </InputGroup>
                                         </Form.Group>
-                                        <div
-                                            className='position-absolute ' style={{ top: '52%', left: '1%' }}
-                                        >
-                                            <img
-                                                src={us}
-                                                alt="country code flag"
-                                                width={20} />
+                                        <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
+                                            <img src={us} alt="country code flag" width={20} />
                                         </div>
                                     </Form.Group>
                                     {/* <Form.Group className="">
@@ -409,24 +434,24 @@ const userId = localStorage.getItem('userIdForBilling')
                                 </Col>
                             </Row>
                         </Col>
-
-
                     </Row>
                 </Col>
             </Row>
-            <Row className='mt-2'>
-                <Col sm={12} className='d-flex justify-content-end'>
-                    <Button type='submit' className='custom-buttons' disabled={store?.createSubscriptionPlanReducer?.loading}>
-                        {store?.createSubscriptionPlanReducer?.loading ?
-                            <Spinner className='spinner-border-sm' color='white' />
-                            :
+            <Row className="mt-2">
+                <Col sm={12} className="d-flex justify-content-end">
+                    <Button
+                        type="submit"
+                        className="custom-buttons"
+                        disabled={store?.createSubscriptionPlanReducer?.loading}>
+                        {store?.createSubscriptionPlanReducer?.loading ? (
+                            <Spinner className="spinner-border-sm" color="white" />
+                        ) : (
                             'Generate Contract'
-                        }
+                        )}
                     </Button>
                 </Col>
             </Row>
-
         </Form>
-    )
-}
+    );
+};
 export default BillingForm;

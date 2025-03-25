@@ -46,7 +46,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
     const adminData = JSON.parse(sessionStorage.getItem('hyper_user'));
     const onSubmit = (data) => {
         const payload = {
-            subscription: data?.subscription,
+            subscriptionId: data?.subscription,
             userId: id,
             billingContactName: data?.name,
             billingContactPhone: '+1' + data?.contact?.replace(/\D/g, ''),

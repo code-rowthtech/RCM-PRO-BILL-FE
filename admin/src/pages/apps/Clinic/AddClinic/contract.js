@@ -148,7 +148,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                                                     onClick={() => {
                                                         setShow(true)
                                                     }}></i>
-                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
+                                                {/* <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i> */}
                                             </td>
                                         </tr>
                                     ) :
@@ -161,7 +161,7 @@ const Contract = ({ billingId, activeTab, contractId, setBillingId, setClinicId,
                                                     onClick={() => {
                                                         setShow(true)
                                                     }}></i>
-                                                <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i>
+                                                {/* <i className="mdi mdi-square-edit-outline cursor-pointer fs-4"></i> */}
                                             </td>
                                         </tr>
 
