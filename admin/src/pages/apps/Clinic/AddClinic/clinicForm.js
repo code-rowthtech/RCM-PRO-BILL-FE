@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Col, Form, Row, Button, Table, InputGroup, Dropdown } from 'react-bootstrap';
+import { Col, Form, Row, Button, Table, InputGroup, Dropdown,OverlayTrigger ,Tooltip } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ import {
     getClinicById,
     getClinicByParentAction,
 } from '../../../../redux/clinics/actions';
-import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
+import { FiDownloadCloud, FiInfo, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
@@ -1221,8 +1221,21 @@ const ClinicForm = ({
                             <Col>
                                 <Form.Label>Identifier Number</Form.Label>
                             </Col>
-                            <Col>
+                            <Col className="d-flex align-items-center gap-2">
                                 <Form.Label>Identifier Document</Form.Label>
+
+                                {/* Tooltip Icon */}
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                        <Tooltip id="tooltip-identifier">
+                                            File size should be less than 2MB. Supported formats: JPG, PNG, JPEG, PDF.
+                                        </Tooltip>
+                                    }>
+                                    <span className="text-secondary cursor-pointer mb-2">
+                                        <FiInfo size={15} />
+                                    </span>
+                                </OverlayTrigger>
                             </Col>
                             <Col>
                                 <Form.Label>Issuing Authority</Form.Label>
@@ -1271,7 +1284,7 @@ const ClinicForm = ({
                                                 ? 10
                                                 : item.type === 'NAIC'
                                                 ? 5
-                                                : undefined
+                                                : 10
                                         }
                                         {...register(`identifiers[${index}].number`, {
                                             // required: defaultIdentifiers.includes(item.type)
@@ -1317,7 +1330,9 @@ const ClinicForm = ({
                                         className={`custom-file-upload justify-content-between cursor-pointer ${
                                             item.file ? 'form-control' : 'custom-form-fields'
                                         }`}>
-                                        {item.file?.name
+                                        {identifierDocument
+                                            ? 'Uploading...'
+                                            : item.file?.name
                                             ? item.file.name.length > 30
                                                 ? item.file.name.slice(0, 25) + '...'
                                                 : item.file.name
@@ -1363,6 +1378,7 @@ const ClinicForm = ({
                                     <Form.Control
                                         type="date"
                                         value={item.expiry}
+                                        min={new Date().toISOString().split("T")[0]} // Sets min date to today
                                         onChange={(e) => handleChange(index, 'expiry', e.target.value)}
                                     />
                                     {errors?.[index]?.expiry && (
@@ -1687,7 +1703,7 @@ const ClinicForm = ({
                             />
                         </Col> */}
 
-                        <Col sm={4} className='position-relative'>
+                        <Col sm={4} className="position-relative">
                             <Form.Group className="mb-2">
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control

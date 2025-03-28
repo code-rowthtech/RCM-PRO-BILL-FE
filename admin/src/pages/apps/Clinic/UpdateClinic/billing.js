@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions'
 import { encryptMessage } from '../../../../cryptoUtils';
-import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
+import { addSubscriptionPlanAction, stateEmptydAction, updateClinicAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
 import { createdBy } from '../../Settings/userId';
@@ -19,7 +19,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
         reset,
         watch,
         setError,
-        clearErrors
+        clearErrors,setValue
     } = useForm();
     const [paymentType, setPaymentType] = useState('');
     const dispatch = useDispatch();
@@ -29,12 +29,47 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Store the selected date
 
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
+    console.log(subscriptionsData,'subscriptionsData')
+//    
     const subscriptionLoading = store?.getSubscriptionsReducer?.loading;
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
     const [loading, setLoading] = useState(false);
-    const billingDone = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscription?.isActive;
-    const billingData = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscription;
+    const billingDone = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscriptionId?.isActive;
+    const billingData = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscriptionId;
+    const addressResponse=store?.getClinicByIdReducer?.data?.clinic?.userId
+    console.log(addressResponse, 'billingData')
+    useEffect(()=>{
+        if(billingData){
+            setSelectedDate(billingData?.implimentFrom?new Date(billingData?.implimentFrom).toISOString().split("T")[0]:'')
+            setValue('subscription',billingData?.subscriptionId);
+            setValue('email',addressResponse?.email);
+            if (addressResponse?.subscriptionId?.billingContactPhone) {
+                // Extract only digits
+                let rawValue = addressResponse.subscriptionId.billingContactPhone.replace(/\D/g, '');
+        
+                // Ensure it contains only 10 digits (remove country code if present)
+                if (rawValue.startsWith('1') && rawValue.length === 11) {
+                    rawValue = rawValue.slice(1); // Remove leading "1"
+                }
+                if (rawValue.length > 10) {
+                    rawValue = rawValue.slice(0, 10);
+                }
+        
+                // Format as (XXX)XXX-XXXX
+                const formattedValue = rawValue.replace(
+                    /(\d{3})(\d{3})(\d{4})/,
+                    '($1)$2-$3'
+                );
+                // Set the formatted value in the form
+                setValue('contact', formattedValue);
+            }
+        setValue('name', addressResponse?.subscriptionId?.billingContactName);
+
+            const selectedSubscription = subscriptionsData?.find(data => data._id === billingData?.subscriptionId);
+            setAmount(selectedSubscription || 0);
+        }
+            },[billingData,subscriptionsData])
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));
@@ -82,9 +117,10 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value);
     };
+ 
     return (
         <>
-            {billingDone ?
+            {/* {billingDone ? */}
                 <>
                     {/* <Row>
                         <Col>
@@ -93,7 +129,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                             </h5>
                         </Col>
                     </Row> */}
-                    <Table responsive className="table-centered border border-muted table-nowrap mb-0">
+                    {/* <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                         <thead>
                             <tr>
                                 <th>Subscription Name</th>
@@ -124,9 +160,9 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                 </td>
                             </tr>
                         </tbody>
-                    </Table>
+                    </Table> */}
                 </>
-                :
+                {/* : */}
                 <div>
                     {subscriptionLoading ?
                         <Row>
@@ -407,33 +443,6 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                     </Form.Group>
                                                     {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
                                                 </Col>
-
-
-                                                {/* <Col sm={12} className='mb-2'>
-                                                    <Form.Group className="">
-                                                        <Form.Label className='mb-1'>Billing Contact Phone Number</Form.Label>
-                                                        <Form.Control
-                                                            type='text'
-                                                            {...register('contact', {
-                                                                required: 'This field is required',
-                                                                pattern: {
-                                                                    value: /^[0-9]*$/,
-                                                                    message: 'Contact must be a number'
-                                                                },
-                                                                maxLength: {
-                                                                    value: 10,
-                                                                    message: 'Contact must not exceed 10 digits'
-                                                                },
-                                                                minLength: {
-                                                                    value: 10,
-                                                                    message: 'Contact must not be less than 10 digits '
-                                                                }
-                                                            })}
-                                                            maxLength={10}
-                                                            placeholder='Billing Contact Phone Number' />
-                                                    </Form.Group>
-                                                    {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
-                                                </Col> */}
                                             </Row>
                                         </Col>
 
@@ -457,7 +466,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                     }
 
                 </div>
-            }
+            {/* } */}
         </>
 
 

@@ -263,9 +263,9 @@ const PlanName = () => {
                             </Col>
                         </Row>
                         <Modal.Footer>
-                            <Button onClick={closeAddModal} className='custom-buttons'>
+                            {/* <Button onClick={closeAddModal} className='custom-buttons'>
                                 Close
-                            </Button>
+                            </Button> */}
                             <Button type='submit' className='custom-buttons' disabled={store?.createMastersDataReducer?.loading}>
                                 {store?.createMastersDataReducer?.loading
                                     ?
@@ -332,9 +332,9 @@ const PlanName = () => {
                             </Col>
                         </Row>
                         <Modal.Footer>
-                            <Button onClick={closeUpdateModal} className='custom-buttons'>
+                            {/* <Button onClick={closeUpdateModal} className='custom-buttons'>
                                 Close
-                            </Button>
+                            </Button> */}
                             <Button type='submit' className='custom-buttons' disabled={store?.updateMastersDataReducer?.loading}>
                                 {store?.updateMastersDataReducer?.loading
                                     ?

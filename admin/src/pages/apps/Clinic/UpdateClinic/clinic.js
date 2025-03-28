@@ -1,9 +1,9 @@
 // src/components/Clinic.js
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Col, Form, Row, Button, InputGroup, Modal, Table } from 'react-bootstrap';
+import { Col, Form, Row, Button, InputGroup, Modal, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
-import { FiDownloadCloud } from 'react-icons/fi';
+import { FiDownloadCloud, FiInfo } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import us from '../../../../assets/images/flags/us.jpg';
@@ -59,6 +59,7 @@ const Clinic = ({ id }) => {
     const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const [statusModal, setStatusModal] = useState(false);
     const [statusData, setStatusData] = useState(null);
+    console.log(statusData, 'statusData');
     const store = useSelector((state) => state);
     const [accUploading, setAccUploading] = useState(false);
     const [identifierDocument, setIdentifierDocumnent] = useState(false);
@@ -643,7 +644,7 @@ const Clinic = ({ id }) => {
         'Other',
     ];
     const contactDetails = ['phone', 'email'];
-    const addressUses = [ 'work', 'temp', 'old', 'billing', 'mailing', 'primary'];
+    const addressUses = ['work', 'temp', 'old', 'billing', 'mailing', 'primary'];
     const uses = ['usual', 'old', 'temp', 'secondary', 'official'];
     const identifierOptions = [
         'NPI',
@@ -1142,8 +1143,21 @@ const Clinic = ({ id }) => {
                             <Col>
                                 <Form.Label>Identifier Number</Form.Label>
                             </Col>
-                            <Col>
+                            <Col className="d-flex align-items-center gap-2">
                                 <Form.Label>Identifier Document</Form.Label>
+
+                                {/* Tooltip Icon */}
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                        <Tooltip id="tooltip-identifier">
+                                            File size should be less than 2MB. Supported formats: JPG, PNG, JPEG, PDF.
+                                        </Tooltip>
+                                    }>
+                                    <span className="text-secondary cursor-pointer mb-2">
+                                        <FiInfo size={15} />
+                                    </span>
+                                </OverlayTrigger>
                             </Col>
                             <Col>
                                 <Form.Label>Issuing Authority</Form.Label>
@@ -1185,7 +1199,7 @@ const Clinic = ({ id }) => {
                                                 ? 10
                                                 : item.type === 'NAIC'
                                                 ? 5
-                                                : undefined
+                                                : 10
                                         }
                                         {...register(`identifiers[${index}].number`, {
                                             // required: defaultIdentifiers.includes(item.type)
@@ -1274,6 +1288,7 @@ const Clinic = ({ id }) => {
                                     <Form.Control
                                         type="date"
                                         value={item?.expiry ? formatDateForInput(item.expiry) : ''}
+                                        min={new Date().toISOString().split("T")[0]} // Sets min date to todayde
                                         onChange={(e) => handleChange(index, 'expiry', e.target.value)}
                                     />
                                     {index >= defaultIdentifiers?.length && (
@@ -1577,7 +1592,7 @@ const Clinic = ({ id }) => {
                             />
                         </Col> */}
 
-                        <Col sm={4}className='position-relative'>
+                        <Col sm={4} className="position-relative">
                             <Form.Group className="mb-2">
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control

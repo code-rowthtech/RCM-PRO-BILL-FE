@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Form, Modal, Row, Table } from 'react-bootstrap';
 import { FormInput } from '../../../components';
 import AddRoles from './Modal/createRole';
-import UpdateRole from './Modal/updateRole';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRolesAction, getUserRolesAction, updateUserRolesAction } from '../../../redux/actions';
-import { getMastersDataAction } from '../../../redux/settings/actions';
 import Paginations from '../../../helpers/Paginations';
 import Spinner from '../../../constants/Spinner';
 import { IoMdClose } from 'react-icons/io';
@@ -30,41 +28,27 @@ const RoleManagement = () => {
     const createResponse = store?.createUserRolesReducer?.data?.status;
     const updateResponse = store?.updateUserRolesReducer?.data?.status;
     const apiData = store?.getUserRolesReducer?.data?.users;
-    console.log(apiData,'apiData')
     const isAddPresent = userPermissions.includes('Create Users') || userPermissions.includes('ADD_A_USER');
     const isUpdatePresent = userPermissions.includes('Update Users') || userPermissions.includes('UPDATE_A_USER');
     useEffect(() => {
         dispatch(getUserRolesAction({ skip: skip, limit: 10, search: '', status: status }))
-        if (createResponse === 201 || updateResponse === 200) {
-            dispatch(getUserRolesAction({ skip: skip, limit: 10, search: '', status: status }));
-            dispatch(stateEmptydAction())
-            setShowModal(false);
-            setStatusModal(false);
-            setUpdateModal(false);
-        }
-    }, [dispatch, search, skip, status, createResponse, updateResponse])
+    }, [dispatch, search, skip, status])
     useEffect(() => {
-        dispatch(getRolesAction({ limit: '', skip: '', search: search, status: '' }));
-        dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: '' }));
     }, [dispatch])
     const handleClosemodal = () => {
         setShowModal(false);
     };
-
-    // const users=store?.
-    // useEffect(() => {
-    //     if (createResponse === 201 || updateResponse === 200) {
-    //         setShowModal(false);
-    //         dispatch(getUserRolesAction({ skip: 1, limit: 10, search: '', status: true }))
-    //     }
-    // }, [createResponse])
-
+    useEffect(() => {
+        if (createResponse === 201 || updateResponse === 200 ) {
+            setShowModal(false);
+            dispatch(getUserRolesAction({ skip: 1, limit: 10, search: '', status: true }))
+        }
+    }, [createResponse,updateResponse])
 
     const handleStatusChange = (data) => {
         setStatus(data);
         setSearch('');
     };
-
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber);
     };
