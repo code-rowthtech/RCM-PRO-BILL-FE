@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Col, Form, Row, Button, Table, InputGroup, Dropdown,OverlayTrigger ,Tooltip } from 'react-bootstrap';
+import { Col, Form, Row, Button, Table, InputGroup, Dropdown, OverlayTrigger, Tooltip, Modal } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
@@ -76,11 +76,16 @@ const ClinicForm = ({
     const [mailingLongitude, setMailingLongitude] = useState(null);
     const [mailingLatitude, setMailingLatitude] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
+    const [showPopup, setShowPopup] = useState(false); // Controls success popup
     const [mailingStateToSelect, setMailingStateToSelect] = useState(null);
     const [medicalDetails, setMedicalDetails] = useState([{ name: '', number: '', url: null, fileName: '' }]);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' },
     ]);
+    let message = `A confirmation email has been sent to your registered email address. Please check your inbox (and spam folder if necessary) for the email. In the email, you will find a link to set up your account password. Follow the instructions to create a secure password and access your account. Once your password is set, you can log in and proceed with adding your billing details to complete the setup. If you face any issues, feel free to contact our support team.`;
+    let sentences = message.split(".").filter(sentence => sentence.trim() !== "");
+
+
     const [stateDetails, setStateDetails] = useState([{ name: '', number: '', url: null, fileName: '' }]);
     const [posDetails, setPosDetails] = useState([{ name: '', email: '', role: '', contact: '' }]);
     const [ids, setIds] = useState({
@@ -113,6 +118,7 @@ const ClinicForm = ({
     // GET store data
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const createResponse = store?.createClinicsReducer?.data?.status;
+    console.log(createResponse, 'createResponse');
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.result;
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
@@ -195,6 +201,7 @@ const ClinicForm = ({
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (createResponse === 200) {
+            setShowPopup(true); // Show success popup
             reset();
             setConstantContact([]);
             setLogo(null);
@@ -218,7 +225,6 @@ const ClinicForm = ({
             if (!parentClinicId && counter === 0 && !isModalRequest) {
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
-                setActiveTab('billing');
             }
         }
         if (createResponse === 200 && parentClinicId) {
@@ -229,6 +235,10 @@ const ClinicForm = ({
             dispatch(getClinicByParentAction(payload));
         }
     }, [createResponse, clinicsList, parentClinicId, counter]);
+    const handleClosePopup = () => {
+        setShowPopup(false);
+        setActiveTab('billing');
+    };
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (deleteResponse === 200 && parentClinicId) {
@@ -1378,7 +1388,7 @@ const ClinicForm = ({
                                     <Form.Control
                                         type="date"
                                         value={item.expiry}
-                                        min={new Date().toISOString().split("T")[0]} // Sets min date to today
+                                        min={new Date().toISOString().split('T')[0]} // Sets min date to today
                                         onChange={(e) => handleChange(index, 'expiry', e.target.value)}
                                     />
                                     {errors?.[index]?.expiry && (
@@ -1883,7 +1893,31 @@ const ClinicForm = ({
                         )}
                     </Col>
                 </Row>
+                <Modal show={showPopup} onHide={handleClosePopup} centered backdrop="static">
+                    <Modal.Header closeButton className="border-0"></Modal.Header>
+                    <Modal.Body className="text-center">
+                        {/* Success Icon */}
+                        <div className="d-flex justify-content-center mb-3">
+                            <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '3rem' }}></i>
+                        </div>
+                        {/* Success Message */}
+                        <h4 className="fw-bold">Practice Created Successfully!</h4>
+                        <ul className="list-inline text-muted">
+                            {sentences.map((sentence, index) => (
+                                <li key={index} className="list-inline-item">
+                                    {sentence.trim()}.
+                                </li>
+                            ))}
+                        </ul>
+                    </Modal.Body>
+                    <Modal.Footer className="border-0 d-flex justify-content-center">
+                        <Button className="px-4 py-2 fw-semibold custom-buttons" onClick={handleClosePopup}>
+                            Proceed to Billing
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Form>
+
             <Row className={`${clinicsList?.length > 0 || (clinicData && parentClinicId) ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">
