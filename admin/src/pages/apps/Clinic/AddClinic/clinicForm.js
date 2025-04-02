@@ -197,7 +197,7 @@ const ClinicForm = ({
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (createResponse === 200) {
-            setShowPopup(true); // Show success popup
+            // setShowPopup(true); // Show success popup
             reset();
             setConstantContact([]);
             setLogo(null);
