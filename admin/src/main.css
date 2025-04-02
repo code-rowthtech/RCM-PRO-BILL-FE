@@ -73,8 +73,16 @@
     transition-duration: 0.4s;
 }
 
+.input-group-text {
+    padding: 3px !important;
+}
+
 .light-border-bottom {
     border-bottom: 1px solid #313a4615 !important;
+}
+.no-arrow {
+    appearance: none;
+    background-image: none !important;
 }
 
 table {

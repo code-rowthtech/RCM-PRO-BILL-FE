@@ -35,11 +35,13 @@ const ProfileMenus = [
 type TopbarProps = {
     hideLogo?: boolean,
     navCssClasses?: string,
-    openLeftMenuCallBack?: () => void,
+    // openLeftMenuCallBack?: () => void,
     topbarDark?: boolean,
 };
 
-const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: TopbarProps): React$Element<any> => {
+const Topbar = ({ hideLogo, navCssClasses,
+    //  openLeftMenuCallBack,
+     topbarDark }: TopbarProps): React$Element<any> => {
     const dispatch = useDispatch();
     const [isopen, setIsopen] = useState(false);
     const navbarCssClasses = navCssClasses || '';
@@ -57,7 +59,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
         '/dashboard/project': 'Dashboard',
         '/profile': 'Profile',
         '/apps/subscriptions/list': 'Subscriptions',
-        '/apps/roles/list': 'Role Management',
+        '/apps/users/list': 'User Management',
         '/apps/rcm/allclinics': 'Practices',
         '/apps/rcm/addclinic': 'Add Practice',
         '/apps/rcm/updateclinic': 'Update Practice',
@@ -114,7 +116,7 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
 
     const handleLeftMenuCallBack = () => {
         setIsopen((prevState) => !prevState);
-        if (openLeftMenuCallBack) openLeftMenuCallBack();
+        // if (openLeftMenuCallBack) openLeftMenuCallBack();
 
         switch (layoutType) {
             case layoutConstants.LAYOUT_VERTICAL:
@@ -164,7 +166,9 @@ const Topbar = ({ hideLogo, navCssClasses, openLeftMenuCallBack, topbarDark }: T
 
                     {(layoutType === layoutConstants.LAYOUT_VERTICAL || layoutType === layoutConstants.LAYOUT_FULL) && (
                         <div className='d-flex align-items-center'>
-                            <button className="button-menu-mobile open-left" onClick={handleLeftMenuCallBack}>
+                            <button className="button-menu-mobile open-left"
+                             onClick={handleLeftMenuCallBack}
+                             >
                                 <i className="mdi mdi-menu" />
                             </button>
                             <h4 className=''>{pageTitle}</h4>

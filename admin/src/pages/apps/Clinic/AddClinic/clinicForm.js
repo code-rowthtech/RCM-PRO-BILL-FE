@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Col, Form, Row, Button, Table, InputGroup, Dropdown } from 'react-bootstrap';
+import { Col, Form, Row, Button, Table, InputGroup, Dropdown, OverlayTrigger, Tooltip, Modal } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import Spinner from '../../../../constants/Spinner';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ import {
     getClinicById,
     getClinicByParentAction,
 } from '../../../../redux/clinics/actions';
-import { FiDownloadCloud, FiMinus } from 'react-icons/fi';
+import { FiDownloadCloud, FiInfo, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import { encryptMessage } from '../../../../cryptoUtils';
 import ToastHandle from '../../../../helpers/ToastMessage';
@@ -76,11 +76,15 @@ const ClinicForm = ({
     const [mailingLongitude, setMailingLongitude] = useState(null);
     const [mailingLatitude, setMailingLatitude] = useState(null);
     const [stateToSelect, setStateToSelect] = useState(null);
+    const [showPopup, setShowPopup] = useState(false); // Controls success popup
     const [mailingStateToSelect, setMailingStateToSelect] = useState(null);
     const [medicalDetails, setMedicalDetails] = useState([{ name: '', number: '', url: null, fileName: '' }]);
     const [accreditationDetails, setAccreditationDetails] = useState([
         { name: '', number: '', url: null, fileName: '' },
     ]);
+    let message = `A confirmation email has been sent to your registered email address. Please check your inbox (and spam folder if necessary) for the email. In the email, you will find a link to set up your account password. Follow the instructions to create a secure password and access your account. Once your password is set, you can log in and proceed with adding your billing details to complete the setup. If you face any issues, feel free to contact our support team.`;
+    let sentences = message.split('.').filter((sentence) => sentence.trim() !== '');
+
     const [stateDetails, setStateDetails] = useState([{ name: '', number: '', url: null, fileName: '' }]);
     const [posDetails, setPosDetails] = useState([{ name: '', email: '', role: '', contact: '' }]);
     const [ids, setIds] = useState({
@@ -92,7 +96,6 @@ const ClinicForm = ({
     const [formValid, setFormValid] = useState(false);
     const [createTableData, setCreateTableData] = useState(null);
     const [searchedLocations, setSearchedLocations] = useState(null);
-    console.log(searchedLocations, 'searchedLocations');
     const [searchedMailingLocations, setSearchedMailingLocations] = useState(null);
     const [selectedStates, setSelectedStates] = useState([]);
     const [statesMenu, setStatesMenu] = useState(false);
@@ -103,12 +106,12 @@ const ClinicForm = ({
     const [accUploading, setAccUploading] = useState(false);
     const [identifierDocument, setIdentifierDocumnent] = useState(false);
     const userId = store?.createClinicsReducer?.data?.user?._id;
-    useEffect(() => {
-        const validCodes = taxonomyCodes.filter((code) => code.trim() !== '');
-        if (validCodes?.length > 0) {
-            setResetEmail({ ...resetEmail, taxonomyCodes: taxonomyCodes });
-        }
-    }, [taxonomyCodes]);
+    // useEffect(() => {
+    //     const validCodes = taxonomyCodes.filter((code) => code.trim() !== '');
+    //     if (validCodes?.length > 0) {
+    //         setResetEmail({ ...resetEmail, taxonomyCodes: taxonomyCodes });
+    //     }
+    // }, [taxonomyCodes]);
 
     // GET store data
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -118,7 +121,6 @@ const ClinicForm = ({
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const statesData = store?.getStatesReducer?.data;
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
-    console.log(cities1, 'cities1');
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const deleteResponse = store?.deleteClinicOnboardingReducer?.data?.status;
     const cities = store?.getCitiesReducer?.data?.cities;
@@ -195,12 +197,13 @@ const ClinicForm = ({
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (createResponse === 200) {
+            setShowPopup(true); // Show success popup
             reset();
             setConstantContact([]);
             setLogo(null);
             setLogoName(null);
             setConstantIdentifiers([]);
-            setAddresses([{ use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
+            setAddresses([{ type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
             setIdentifierDocumnent(false);
             setPocs([]);
             // setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
@@ -218,7 +221,6 @@ const ClinicForm = ({
             if (!parentClinicId && counter === 0 && !isModalRequest) {
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
-                setActiveTab('billing');
             }
         }
         if (createResponse === 200 && parentClinicId) {
@@ -229,6 +231,10 @@ const ClinicForm = ({
             dispatch(getClinicByParentAction(payload));
         }
     }, [createResponse, clinicsList, parentClinicId, counter]);
+    const handleClosePopup = () => {
+        setShowPopup(false);
+        setActiveTab('billing');
+    };
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (deleteResponse === 200 && parentClinicId) {
@@ -641,8 +647,8 @@ const ClinicForm = ({
                 poc: pocs,
             };
 
-            console.log('Final Payload:', newPayload);
             dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
+            console.log(newPayload, 'payload');
         }
     };
 
@@ -809,7 +815,7 @@ const ClinicForm = ({
     // const [constantIdentifiers, setConstantIdentifiers] = useState([
     // ]);
     // const [identifierTypes, SetIdentifierTypes] = useState(['NPI', 'TIN', 'EIN', 'Medicare', 'Medicaid', 'State License', 'Accreditation', 'CLIA', 'DUNS', 'Facility ID']);
-    const defaultIdentifiers = ['NPI', 'CLIA', 'NAIC'];
+    const defaultIdentifiers = ['NPI', 'TIN', 'Taxonomy'];
     const defaultIssuingAuthority = [
         'NPPES',
         'CLIA',
@@ -833,13 +839,14 @@ const ClinicForm = ({
         'Accreditation',
         'CLIA',
         'DUNS',
+        'Taxonomy',
+        'CCN',
         'Facility ID',
     ];
 
     const contactOptions = ['phone', 'fax', 'email', 'pager', 'url', 'sms', 'other'];
     const [constantIdentifiers, setConstantIdentifiers] = useState([]);
     const [constantContact, setConstantContact] = useState([]);
-    console.log(constantContact, 'constantContact');
     const [name, setName] = useState({
         use: '',
         text: '',
@@ -850,8 +857,9 @@ const ClinicForm = ({
         period: { start: new Date().toISOString() },
     });
     const [addresses, setAddresses] = useState([
-        { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }, // Default address
+        { type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }, // Default address
     ]);
+    const addressTypes = ['postal', 'physical', 'both'];
     const [activeAddressIndex, setActiveAddressIndex] = useState(null);
     const [addressFocused, setAddressFocused] = useState(false);
     // Load Default Identifiers & Contacts
@@ -886,7 +894,10 @@ const ClinicForm = ({
         setConstantContact([...constantContact, { system: '', value: '', use: '' }]);
     };
     const addAddress = () => {
-        setAddresses([...addresses, { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
+        setAddresses([
+            ...addresses,
+            { type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' },
+        ]);
     };
 
     // Function to Remove Fields
@@ -1058,7 +1069,6 @@ const ClinicForm = ({
             const url = await handleUpload(selectedFile, setIdentifierDocumnent); // Upload file
             setConstantIdentifiers((prevDetails) => {
                 const updatedDetails = [...prevDetails];
-                console.log(url, 'constantIdentifierurl');
                 updatedDetails[index] = {
                     ...updatedDetails[index],
                     file: {
@@ -1184,7 +1194,11 @@ const ClinicForm = ({
                             className={`custom-file-upload justify-content-between cursor-pointer ${
                                 logoName || logoUploading ? 'form-control' : 'custom-form-fields'
                             }`}>
-                            {logoName ? logoName : logoUploading ? 'Uploading...' : 'Upload Logo'}
+                            {logoName
+                                ? logoName.split('/').pop().slice(0, 30) + '...'
+                                : logoUploading
+                                ? 'Uploading...'
+                                : 'Upload Logo'}
                             <p className="mb-0">
                                 <FiDownloadCloud />
                             </p>
@@ -1221,8 +1235,21 @@ const ClinicForm = ({
                             <Col>
                                 <Form.Label>Identifier Number</Form.Label>
                             </Col>
-                            <Col>
+                            <Col className="d-flex align-items-center gap-2">
                                 <Form.Label>Identifier Document</Form.Label>
+
+                                {/* Tooltip Icon */}
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                        <Tooltip id="tooltip-identifier">
+                                            File size should be less than 2MB. Supported formats: JPG, PNG, JPEG, PDF.
+                                        </Tooltip>
+                                    }>
+                                    <span className="text-secondary cursor-pointer mb-2">
+                                        <FiInfo size={15} />
+                                    </span>
+                                </OverlayTrigger>
                             </Col>
                             <Col>
                                 <Form.Label>Issuing Authority</Form.Label>
@@ -1240,17 +1267,15 @@ const ClinicForm = ({
                                     <Form.Select
                                         value={item.type}
                                         data-has-value={!!watch(`identifiers[${index}].type`)}
-                                        {...register(
-                                            `identifiers[${index}].type`
-                                            //  { required: 'Identifier Type is required' }
-                                        )}
+                                        {...register(`identifiers[${index}].type`)}
                                         onChange={(e) => handleChange(index, 'type', e.target.value)}
-                                        disabled={defaultIdentifiers.includes(item.type)}>
+                                        disabled={defaultIdentifiers.includes(item.type)}
+                                        className={defaultIdentifiers.includes(item.type) ? 'no-arrow' : ''}>
                                         <option value="" disabled>
                                             Select Identifier Type
                                         </option>
                                         {identifierOptions.map((option) => (
-                                            <option key={option} className="" value={option}>
+                                            <option key={option} value={option}>
                                                 {option}
                                             </option>
                                         ))}
@@ -1271,7 +1296,7 @@ const ClinicForm = ({
                                                 ? 10
                                                 : item.type === 'NAIC'
                                                 ? 5
-                                                : undefined
+                                                : 10
                                         }
                                         {...register(`identifiers[${index}].number`, {
                                             // required: defaultIdentifiers.includes(item.type)
@@ -1317,7 +1342,9 @@ const ClinicForm = ({
                                         className={`custom-file-upload justify-content-between cursor-pointer ${
                                             item.file ? 'form-control' : 'custom-form-fields'
                                         }`}>
-                                        {item.file?.name
+                                        {identifierDocument
+                                            ? 'Uploading...'
+                                            : item.file?.name
                                             ? item.file.name.length > 30
                                                 ? item.file.name.slice(0, 25) + '...'
                                                 : item.file.name
@@ -1363,6 +1390,7 @@ const ClinicForm = ({
                                     <Form.Control
                                         type="date"
                                         value={item.expiry}
+                                        min={new Date().toISOString().split('T')[0]} // Sets min date to today
                                         onChange={(e) => handleChange(index, 'expiry', e.target.value)}
                                     />
                                     {errors?.[index]?.expiry && (
@@ -1433,10 +1461,16 @@ const ClinicForm = ({
                                 {/* Contact Value Field (Dynamic) */}
                                 <Col sm={4}>
                                     {item.system === 'phone' ? (
-                                        <InputGroup className="position-relative">
+                                        <InputGroup
+                                        // className="position-relative"
+                                        >
                                             {/* Country Code Prefix */}
-                                            <InputGroup.Text className="ps-4 p-0 pe-1 fw-bold text-black">
+                                            {/* <InputGroup.Text className="ps-4 p-0 pe-1 fw-bold text-black">
                                                 +1
+                                            </InputGroup.Text> */}
+                                            <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                                <img src={us} alt="country code flag" width={16} />
+                                                +1{' '}
                                             </InputGroup.Text>
 
                                             {/* Phone Input */}
@@ -1452,11 +1486,11 @@ const ClinicForm = ({
                                                 style={{ paddingLeft: '40px' }}
                                             />
                                             {/* Flag Icon */}
-                                            <div
+                                            {/* <div
                                                 className="position-absolute"
                                                 style={{ left: '10px', top: '50%', transform: 'translateY(-50%)' }}>
                                                 <img src={us} alt="flag" width={20} />
-                                            </div>
+                                            </div> */}
                                         </InputGroup>
                                     ) : (
                                         <Form.Control
@@ -1511,8 +1545,26 @@ const ClinicForm = ({
                 </Row>
                 {addresses.map((item, index) => (
                     <Row key={index} className="mb-2">
+                        <Col sm={4} className="mb-0" style={{ height: 'fit-content' }}>
+                            <Form.Label className="mb-1">Address Type</Form.Label>
+                            <Form.Select
+                                value={item.type}
+                                className="text-capitalize"
+                                data-has-value={!!watch(`address[${index}].type`)}
+                                {...register(`address[${index}].type`)}
+                                onChange={(e) => handleAddressChange(index, 'type', e.target.value)}>
+                                <option value="" hidden>
+                                    Select
+                                </option>
+                                {addressTypes?.map((type) => (
+                                    <option key={type} className="text-capitalize" value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Col>
                         <Col sm={4} className="mb-2">
-                            <Form.Label className="mb-1">Use</Form.Label>
+                            <Form.Label className="mb-1">Address Use</Form.Label>
                             <Form.Select
                                 value={item.use}
                                 className="text-capitalize"
@@ -1530,7 +1582,7 @@ const ClinicForm = ({
                             </Form.Select>
                         </Col>
                         <Col sm={4} className="mb-2 position-relative">
-                            <Form.Label className="mb-1">Address</Form.Label>
+                            <Form.Label className="mb-1">Address Line</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Street Address"
@@ -1594,7 +1646,6 @@ const ClinicForm = ({
                                                 };
                                                 // Update the specific address entry
                                                 const updatedAddresses = [...addresses];
-                                                console.log(updatedAddresses, 'updatedAddresses11');
                                                 updatedAddresses[index] = newAddress;
                                                 setAddresses(updatedAddresses);
                                                 // Clear suggestions and remove focus
@@ -1687,7 +1738,7 @@ const ClinicForm = ({
                             />
                         </Col> */}
 
-                        <Col sm={4} className='position-relative'>
+                        <Col sm={4} className="position-relative">
                             <Form.Group className="mb-2">
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
@@ -1789,12 +1840,14 @@ const ClinicForm = ({
                             </Col>
                             {poc.telecom.map((telecom, telecomIndex) => (
                                 <Col sm={6} key={telecomIndex}>
-                                    <Form.Group className="mb-2 position-relative">
+                                    <Form.Group className="mb-2 ">
                                         <Form.Label className="mb-1">Phone Number</Form.Label>
                                         <InputGroup>
                                             {/* Country Code Prefix */}
-                                            <InputGroup.Text className="ps-3 pe-1 p-0 fw-bold text-black">
-                                                &nbsp;&nbsp;+1
+                                            <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                                {' '}
+                                                <img src={us} alt="country code flag" width={16} />
+                                                +1{' '}
                                             </InputGroup.Text>
 
                                             {/* Phone Input Field */}
@@ -1815,9 +1868,9 @@ const ClinicForm = ({
                                         </InputGroup>
 
                                         {/* Flag Icon */}
-                                        <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
+                                        {/* <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
                                             <img src={us} alt="country code flag" width={20} />
-                                        </div>
+                                        </div> */}
                                     </Form.Group>
                                 </Col>
                             ))}
@@ -1867,7 +1920,29 @@ const ClinicForm = ({
                         )}
                     </Col>
                 </Row>
+                <Modal show={showPopup} onHide={handleClosePopup} centered backdrop="static">
+                    <Modal.Header closeButton className="border-0 w-100 text-center d-flex justify-content-center">
+                        <h5 className="m-0 text-center w-100">Practice Created Successfully!</h5>
+                    </Modal.Header>
+                    <Modal.Body className="text-center">
+                        {/* Success Message */}
+                        <h4 className="fw-bold"></h4>
+                        <ul className="list-inline text-muted text-start">
+                            {sentences.map((sentence, index) => (
+                                <li key={index} className="list-inline-item ">
+                                    {index + 1}. {sentence.trim()}.
+                                </li>
+                            ))}
+                        </ul>
+                    </Modal.Body>
+                    <Modal.Footer className="border-0 d-flex justify-content-center">
+                        <Button className="px-4 py-2 fw-semibold custom-buttons" onClick={handleClosePopup}>
+                            Proceed to Billing
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Form>
+
             <Row className={`${clinicsList?.length > 0 || (clinicData && parentClinicId) ? '' : 'd-none'}`}>
                 <Col>
                     <Table responsive className="mt-3 table-centered border border-muted table-nowrap mb-0 ">

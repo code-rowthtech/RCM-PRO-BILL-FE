@@ -22,7 +22,6 @@ const Contracttable = ({ activeTab, setQuillBuffer }) => {
     const [editMode, setEditMode] = useState(false);
     const store = useSelector((state) => state);
     const contracts = store?.getContractReducer?.data;
-    console.log(contracts, 'contracts')
     const contractFormat = store?.getContractFormatReducer?.data?.templates?.html;
     useEffect(() => {
         if (activeTab === 'contract') {

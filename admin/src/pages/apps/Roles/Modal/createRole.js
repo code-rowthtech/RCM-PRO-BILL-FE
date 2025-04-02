@@ -8,6 +8,7 @@ import {
     createUserRolesAction,
     getCitiesAction,
     getPermissionAction,
+    getRolesAction,
     getStatesByCountryAction,
 } from '../../../../redux/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
@@ -56,14 +57,15 @@ const AddRoles = ({ show, closeModal }) => {
     }));
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const updateResponse = store?.updateUserRolesReducer?.data?.status;
+    const designation = store?.getMastersDataReducer?.data?.clinicTypes;
 
     useEffect(() => {
-        // if (show) {
-        dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
-        dispatch(getPermissionAction({ search: '', limit: '' }));
-        // }
-    }, [dispatch, createResponse, updateResponse]);
-    const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
+        if (show) {
+            dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
+            dispatch(getStatesByCountryAction());
+            dispatch(getRolesAction({ status: true, search: '', limit: 10 }));
+        }
+    }, [show]);
 
     const {
         register,
@@ -79,37 +81,39 @@ const AddRoles = ({ show, closeModal }) => {
     const stateGeoLocation = watch('stateName');
     const password = watch('password');
     const confirmPassword = watch('confirmPassword');
-    const designation = store?.getMastersDataReducer?.data?.clinicTypes;
     const creatorId = JSON.parse(sessionStorage.getItem('hyper_user'))?._id;
     const onSubmit = (data) => {
         const payload = {
             name: {
-               text: data.name,
+                text: data.name,
             },
             email: data.email,
             password: data.password,
-            telecom: [{
-                use: 'work',
-                system: "phone",
-                value: '+1' + data?.phone?.replace(/\D/g, ''),
-            }],
+            telecom: [
+                {
+                    use: 'work',
+                    system: 'phone',
+                    value: '+1' + data?.phone?.replace(/\D/g, ''),
+                },
+            ],
             reportingTo: creatorId,
             createdById: creatorId,
             joiningDate: data.joiningDate,
             designation: designationValue,
             roleId: data.role,
-            address:[{
-                line:[data?.address],
-                city:data?.city,
-                state:data?.stateName,
-                postalCode:data?.zip,
-                latitude:latitude,
-                longitude: longitude,
-                country:country,
-            }]
-
+            address: [
+                {
+                    line: [data?.address],
+                    city: selectedCity,
+                    state: data?.stateName,
+                    postalCode: data?.zip,
+                    latitude: latitude,
+                    longitude: longitude,
+                    country: 'US',
+                },
+            ],
         };
-        console.log(payload,'jhgfghjk')
+        console.log(payload, 'jhgfghjk');
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
@@ -138,11 +142,6 @@ const AddRoles = ({ show, closeModal }) => {
             setDesignationError('');
         }
     };
-
-    useEffect(()=>{
-         dispatch(getStatesByCountryAction())
-    },[dispatch])
-    console.log()
 
     const handleReEnterDesignationChange = (e) => {
         setReEnterDesignationValue(e.target.value);
@@ -183,12 +182,11 @@ const AddRoles = ({ show, closeModal }) => {
             }
         });
     };
-     useEffect(() => {
-            if (citySearch) {
-                setValue('city', cities1 && cities1.find((data) => data?.name === citySearch)?._id);
-            }
-         
-        }, [citySearch, cities1]);
+    useEffect(() => {
+        if (citySearch) {
+            setValue('city', cities1 && cities1.find((data) => data?.name === citySearch)?._id);
+        }
+    }, [citySearch, cities1]);
     useEffect(() => {
         if (latitude && longitude) {
             setFocused(false);
@@ -204,15 +202,14 @@ const AddRoles = ({ show, closeModal }) => {
         dispatch(getCitiesAction({ state_code: key, name: '', limit: 25 }));
     };
 
-     useEffect(() => {
-            if (stateGeoLocation) {
-                setStateToSelect(
-                    statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation)
-                );
-            }
-           
-        }, [stateGeoLocation]);
-  useEffect(() => {
+    useEffect(() => {
+        if (stateGeoLocation) {
+            setStateToSelect(
+                statesData?.states && statesData?.states.find((data) => data?.state_code === stateGeoLocation)
+            );
+        }
+    }, [stateGeoLocation]);
+    useEffect(() => {
         if (stateToSelect) {
             dispatch(
                 getCitiesAction({
@@ -224,10 +221,10 @@ const AddRoles = ({ show, closeModal }) => {
             );
         }
     }, [stateToSelect, citySearch]);
- 
+
     const handleCitySelection = (e) => {
-        const value = e.target.value;
-        setSelectedCity(value);
+        // const value = e.target.value;
+        setSelectedCity(e);
     };
     return (
         <Modal centered show={show} size="lg">
@@ -271,13 +268,17 @@ const AddRoles = ({ show, closeModal }) => {
                             </Form.Group>
                         </Col>
                         <Col sm={6} className="mb-2">
-                            <Form.Group className="mb-0 position-relative">
+                            <Form.Group className="mb-0">
                                 <Form.Label className="mb-1">
                                     Contact Number <span className="text-danger">*</span>
                                 </Form.Label>
                                 <Form.Group>
                                     <InputGroup>
-                                        <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">+1</InputGroup.Text>{' '}
+                                        <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                            {' '}
+                                            <img src={us} alt="country code flag" width={16} />
+                                            +1{' '}
+                                        </InputGroup.Text>
                                         {/* This is the prefix */}
                                         <Form.Control
                                             type="tel"
@@ -321,13 +322,13 @@ const AddRoles = ({ show, closeModal }) => {
                                         />
                                     </InputGroup>
                                 </Form.Group>
-                                <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
+                                {/* <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
                                     <img src={us} alt="country code flag" width={20} />
-                                </div>
+                                </div> */}
                             </Form.Group>
                             {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                         </Col>
-                        <Col sm={6}>
+                        {/* <Col sm={6}>
                             <Form.Group className="mb-2">
                                 <Form.Label>Reporting</Form.Label>
                                 <Form.Select disabled>
@@ -337,7 +338,7 @@ const AddRoles = ({ show, closeModal }) => {
                                     <option value="">3</option>
                                 </Form.Select>
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                         <Col sm={6}>
                             <Form.Group className="mb-2">
                                 <Form.Label>
@@ -388,7 +389,7 @@ const AddRoles = ({ show, closeModal }) => {
                                             validate: (value) => value === password || 'Passwords do not match',
                                         })}
                                         // onKeyPress={(event)   => handleFirstSpace(event, 0)}
-                                        onCopy={(e) => e.preventDefault()}
+                                        onCopy={(e) => e.preventDerfault()}
                                         onCut={(e) => e.preventDefault()}
                                         onPaste={(e) => e.preventDefault()}
                                     />
@@ -441,6 +442,32 @@ const AddRoles = ({ show, closeModal }) => {
                                     ))}
                                 </Form.Select>
                                 {designationError && <span className="text-danger">{designationError}</span>}
+                            </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                            <Form.Group className="mb-2">
+                                <Form.Label>
+                                    Role <span className="text-danger">*</span>
+                                </Form.Label>
+                                <Form.Select
+                                    {...register('role', {
+                                        required: 'This field is required',
+                                    })}
+                                    data-has-value={!!getValues('role')}
+                                    onBlur={(e) => {
+                                        e.target.setAttribute('data-has-value', !!e.target.value);
+                                    }}
+                                    className="text-capitalize">
+                                    <option value="" key="">
+                                        Select role
+                                    </option>
+                                    {decryptedRolesData?.map((data) => (
+                                        <option className="text-capitalize" value={data?._id} key={data?._id}>
+                                            {data?.name}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                                {errors?.role && <span className="text-danger">{errors?.role?.message}</span>}
                             </Form.Group>
                         </Col>
                         {/* ADDRESS */}
@@ -517,6 +544,48 @@ const AddRoles = ({ show, closeModal }) => {
                                                 )}
                                             </Form.Group>
                                         </Col>
+                                        <Col sm={12}>
+                                            <Form.Group className="mb-2">
+                                                <Form.Label className="mb-1">Zip</Form.Label>
+                                                <Form.Control
+                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
+                                                    type="text"
+                                                    {...register('zip', {
+                                                        minLength: {
+                                                            value: 5,
+                                                            message: 'ZIP code must be at least 5 characters long',
+                                                        },
+                                                        pattern: {
+                                                            value: /^[0-9]+$/,
+                                                            message: 'ZIP code must contain numbers only',
+                                                        },
+                                                    })}
+                                                    onKeyPress={handleFirstSpace}
+                                                    placeholder="Zip"
+                                                    maxLength={5}
+                                                />
+                                                {errors.zip && (
+                                                    <span className="text-danger">{errors.zip.message}</span>
+                                                )}
+                                            </Form.Group>
+                                        </Col>
+                                        {/* <Col sm={12}>
+                                            <Form.Group className="mb-2">
+                                                <Form.Label className="mb-1">Street</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    {...register('street')}
+                                                    onKeyPress={handleFirstSpace}
+                                                    onChange={(e) => {
+                                                        clearErrors('street');
+                                                    }}
+                                                    placeholder="Street"
+                                                />
+                                                {errors.street && (
+                                                    <span className="text-danger">{errors.street.message}</span>
+                                                )}
+                                            </Form.Group>
+                                        </Col> */}
 
                                         {/* <Col sm={6}>
                                             <Form.Group className="mb-2">
@@ -538,7 +607,7 @@ const AddRoles = ({ show, closeModal }) => {
                                                 />
                                             </Form.Group>
                                         </Col> */}
-                                        <Col sm={12}>
+                                        {/* <Col sm={12}>
                                             <Form.Group className="mb-2">
                                                 <Form.Label className="mb-1">Country</Form.Label>
                                                 <Form.Control
@@ -547,7 +616,7 @@ const AddRoles = ({ show, closeModal }) => {
                                                     placeholder="Country"
                                                 />
                                             </Form.Group>
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                 </Col>
                                 <Col sm={6}>
@@ -591,63 +660,20 @@ const AddRoles = ({ show, closeModal }) => {
                                                         e.target.setAttribute('data-has-value', !!e.target.value);
                                                     }}
                                                     onChange={(e) => {
-                                                        handleCitySelection(e);
+                                                        handleCitySelection(e.target.value);
                                                         clearErrors('city');
                                                     }}>
                                                     <option value="">
                                                         {store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}
                                                     </option>
                                                     {cities1?.map((data) => (
-                                                        <option key={data?.name} value={data?._id}>
+                                                        <option key={data?.name} value={data?.name}>
                                                             {data?.name}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
                                                 {errors.city && (
                                                     <span className="text-danger">{errors.city.message}</span>
-                                                )}
-                                            </Form.Group>
-                                        </Col>
-
-                                        <Col sm={6}>
-                                            <Form.Group className="mb-2">
-                                                <Form.Label className="mb-1">Street</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    {...register('street')}
-                                                    onKeyPress={handleFirstSpace}
-                                                    onChange={(e) => {
-                                                        clearErrors('street');
-                                                    }}
-                                                    placeholder="Street"
-                                                />
-                                                {errors.street && (
-                                                    <span className="text-danger">{errors.street.message}</span>
-                                                )}
-                                            </Form.Group>
-                                        </Col>
-                                        <Col sm={6}>
-                                            <Form.Group className="mb-2">
-                                                <Form.Label className="mb-1">Zip</Form.Label>
-                                                <Form.Control
-                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
-                                                    type="text"
-                                                    {...register('zip', {
-                                                        minLength: {
-                                                            value: 5,
-                                                            message: 'ZIP code must be at least 5 characters long',
-                                                        },
-                                                        pattern: {
-                                                            value: /^[0-9]+$/,
-                                                            message: 'ZIP code must contain numbers only',
-                                                        },
-                                                    })}
-                                                    onKeyPress={handleFirstSpace}
-                                                    placeholder="Zip"
-                                                    maxLength={5}
-                                                />
-                                                {errors.zip && (
-                                                    <span className="text-danger">{errors.zip.message}</span>
                                                 )}
                                             </Form.Group>
                                         </Col>
@@ -669,39 +695,13 @@ const AddRoles = ({ show, closeModal }) => {
                                 {designationError && <span className="text-danger">{designationError}</span>}
                             </Form.Group>
                         </Col> */}
-                        <Col sm={6}>
-                            <Form.Group className="mb-2">
-                                <Form.Label>
-                                    Role <span className="text-danger">*</span>
-                                </Form.Label>
-                                <Form.Select
-                                    {...register('role', {
-                                        required: 'This field is required',
-                                    })}
-                                    data-has-value={!!getValues('role')}
-                                    onBlur={(e) => {
-                                        e.target.setAttribute('data-has-value', !!e.target.value);
-                                    }}
-                                    className="text-capitalize">
-                                    <option value="" key="">
-                                        Select role
-                                    </option>
-                                    {decryptedRolesData?.map((data) => (
-                                        <option className="text-capitalize" value={data?._id} key={data?._id}>
-                                            {data?.name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                                {errors?.role && <span className="text-danger">{errors?.role?.message}</span>}
-                            </Form.Group>
-                        </Col>
                     </Row>
                     {/* <hr className='my-1' /> */}
 
                     <Modal.Footer className="border-0">
-                        <Button className="custom-buttons" onClick={() => closeModal()}>
+                        {/* <Button className="custom-buttons" onClick={() => closeModal()}>
                             Cancel
-                        </Button>
+                        </Button> */}
                         <Button
                             type="submit"
                             disabled={store?.createUserRolesReducer?.loading}

@@ -49,9 +49,7 @@ axios.interceptors.response.use(
     },
     (error) => {
         // Decrypt and log the error message
-        const decryptedData = error?.response?.data?.data
-            ? JSON.parse(decryptMessage(error.response.data.data))
-            : null;
+        const decryptedData = error?.response?.data?.data ? JSON.parse(decryptMessage(error.response.data.data)) : null;
         console.log('API Core Error:', decryptedData);
 
         // Default error message
@@ -79,7 +77,6 @@ axios.interceptors.response.use(
     }
 );
 
-
 const AUTH_SESSION_KEY = 'hyper_user';
 
 /**
@@ -87,9 +84,18 @@ const AUTH_SESSION_KEY = 'hyper_user';
  * @param {*} token
  */
 const setAuthorization = (token) => {
-    if (token) axios.defaults.headers.common['Authorization'] = `${encryptMessage(token)}`;
-    else delete axios.defaults.headers.common['Authorization'];
+    const userData = JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY));
+
+    if (userData?._id) {
+        axios.defaults.headers.common['x-user-id'] = `${encryptMessage(userData?._id)}`; // Set new value for 'XUIXX'
+    }
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = `${encryptMessage(token)}`;
+    } else {
+        delete axios.defaults.headers.common['Authorization']; // Remove the header if token is null/undefined
+    }
 };
+
 
 const getUserFromSession = () => {
     const user = sessionStorage.getItem(AUTH_SESSION_KEY);
@@ -104,8 +110,8 @@ class APICore {
         if (params) {
             var queryString = params
                 ? Object.keys(params)
-                    .map((key) => key + '=' + params[key])
-                    .join('&')
+                      .map((key) => key + '=' + params[key])
+                      .join('&')
                 : '';
             response = axios.get(`${url}?${queryString}`, params);
         } else {
@@ -119,8 +125,8 @@ class APICore {
         if (params) {
             var queryString = params
                 ? Object.keys(params)
-                    .map((key) => key + '=' + params[key])
-                    .join('&')
+                      .map((key) => key + '=' + params[key])
+                      .join('&')
                 : '';
             response = axios.get(`${url}?${queryString}`, { responseType: 'blob' });
         } else {
@@ -135,8 +141,8 @@ class APICore {
         if (params) {
             queryString = params
                 ? Object.keys(params)
-                    .map((key) => key + '=' + params[key])
-                    .join('&')
+                      .map((key) => key + '=' + params[key])
+                      .join('&')
                 : '';
         }
 

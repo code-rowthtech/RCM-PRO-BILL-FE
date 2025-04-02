@@ -52,7 +52,6 @@ const Index = () => {
     const createResponse = store?.createClinicsReducer?.data?.status;
     const createBillingResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const userIdForBilling = store?.createClinicsReducer?.data?.user?._id;
-    console.log(userIdForBilling, 'userIdForBilling');
 
     useEffect(() => {
         if (userIdForBilling) {
@@ -66,9 +65,9 @@ const Index = () => {
         if (addClinicResponse === 200) {
             reset();
             setAddClinicData(store?.createClinicsReducer?.data?.data)
-            dispatch(stateEmptydAction());
+            // dispatch(stateEmptydAction());
         }
-    }, [dispatch, addClinicResponse, activeTab])
+    }, [dispatch, addClinicResponse])
 
     const setMailDataNull = () => {
         setResetEmail({

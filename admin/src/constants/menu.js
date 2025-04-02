@@ -32,9 +32,9 @@ const MENU_ITEMS = [
     },
     {
         key: 'rolemanagement',
-        label: 'Role Management',
+        label: 'User Management',
         icon: 'uil-user-circle',
-        url: '/apps/roles/list',
+        url: '/apps/users/list',
     },
     // {
     //     key: 'doctors',

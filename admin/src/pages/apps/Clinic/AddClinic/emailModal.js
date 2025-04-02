@@ -23,7 +23,7 @@ const SendEmailModal = ({ show, closeModal, mailId, setIsModalRequest, setMailDa
         if (createResponse === 200) {
             setIsModalRequest(false);
             closeModal();
-            setMailDataNull()
+            // setMailDataNull()
         }
         if (mailId?.email) {
             setValue('email', mailId?.email)

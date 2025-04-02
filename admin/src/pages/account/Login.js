@@ -30,7 +30,7 @@ const Login = (): React$Element<any> => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const location = useLocation();
-    const redirectUrl = location.state && location.state.from ? location.state.from.pathname : '/apps/rcm/allclinics';
+    const redirectUrl = location.state && location.state.from ? location.state.from.pathname : 'dashboard';
 
     useEffect(() => {
         dispatch(resetAuth());
@@ -109,8 +109,8 @@ const Login = (): React$Element<any> => {
                         defaultValue="" // Ensures the field is initialized
                     />
 
-                    <div className="mb-3 mb-0 d-flex justify-content-center">
-                        <Button className="custom-buttons" type="submit" disabled={loading}>
+                    <div className="mb-3  mb-0 d-flex justify-content-center">
+                        <Button className="custom-buttons w-25 " type="submit" disabled={loading}>
                             {loading ? (
                                 <Spinner color="white" className="spinner-border-sm" />
                             ) : (

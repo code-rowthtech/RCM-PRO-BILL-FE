@@ -1,9 +1,9 @@
 // src/components/Clinic.js
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Col, Form, Row, Button, InputGroup, Modal, Table } from 'react-bootstrap';
+import { Col, Form, Row, Button, InputGroup, Modal, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
-import { FiDownloadCloud } from 'react-icons/fi';
+import { FiDownloadCloud, FiInfo } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleUpload } from '../../../../helpers/HandleUpload';
 import us from '../../../../assets/images/flags/us.jpg';
@@ -63,12 +63,9 @@ const Clinic = ({ id }) => {
     const [accUploading, setAccUploading] = useState(false);
     const [identifierDocument, setIdentifierDocumnent] = useState(false);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
-    console.log(clinicData, 'clinicDataIdentifier');
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const statesData = store?.getStatesReducer?.data;
-    console.log(statesData, 'statesData');
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
-    console.log(cities1, 'cities1');
     const cities2 = store?.getCitiesReducer?.cities2?.data?.cities;
     const cities = store?.getCitiesReducer?.data?.cities;
     const subClinics = store?.getClinicsByParentReducer?.data?.result;
@@ -266,7 +263,6 @@ const Clinic = ({ id }) => {
     const handleStateSelection = (e) => {
         const selectedOption = e.target.selectedOptions[0]; // Get the selected <option>
         const key = JSON.parse(selectedOption.getAttribute('data-key'));
-        console.log(key, 'key');
         dispatch(getCitiesAction({ state_code: key, name: '', limit: 25, skip: '' }));
     };
 
@@ -279,7 +275,6 @@ const Clinic = ({ id }) => {
     const handleCitySelection = (e) => {};
 
     const onSubmit = (data) => {
-        console.log(data, 'data working');
         const newPayload = {
             userId: clinicData?.userId?._id,
             clinicId: clinicData?._id,
@@ -354,8 +349,6 @@ const Clinic = ({ id }) => {
             poc: pocs.length > 0 ? pocs : clinicData?.poc || [],
         };
 
-        console.log('Final Payload:', newPayload);
-
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -387,7 +380,6 @@ const Clinic = ({ id }) => {
     };
 
     const [searchedLocations, setSearchedLocations] = useState(null);
-    console.log(searchedLocations, 'searchedLocations');
     const [searchedMailingLocations, setSearchedMailingLocations] = useState(null);
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
@@ -450,7 +442,6 @@ const Clinic = ({ id }) => {
         });
     };
     const [selectedLocation, setSelectedLocation] = useState(null);
-    console.log(selectedLocation, 'selectedLocation');
     const [selectedMailingLocation, setSelectedMailingLocation] = useState(null);
     useEffect(() => {
         if (selectedLocation) {
@@ -631,7 +622,7 @@ const Clinic = ({ id }) => {
         }
     }, [updateSuccess]);
     // new changes
-    const defaultIdentifiers = ['NPI', 'CLIA', 'NAIC'];
+    const defaultIdentifiers = ['NPI', 'TIN', 'Taxonomy'];
     const defaultIssuingAuthority = [
         'NPPES',
         'CLIA',
@@ -643,7 +634,7 @@ const Clinic = ({ id }) => {
         'Other',
     ];
     const contactDetails = ['phone', 'email'];
-    const addressUses = [ 'work', 'temp', 'old', 'billing', 'mailing', 'primary'];
+    const addressUses = ['work', 'temp', 'old', 'billing', 'mailing', 'primary'];
     const uses = ['usual', 'old', 'temp', 'secondary', 'official'];
     const identifierOptions = [
         'NPI',
@@ -654,6 +645,8 @@ const Clinic = ({ id }) => {
         'State License',
         'Accreditation',
         'CLIA',
+        'CCN',
+        'Taxonomy',
         'DUNS',
         'Facility ID',
     ];
@@ -676,9 +669,9 @@ const Clinic = ({ id }) => {
         period: { start: new Date().toISOString() },
     });
     const [addresses, setAddresses] = useState([
-        { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }, // Default address
+        { type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }, // Default address
     ]);
-    console.log(addresses, 'addresses');
+    const addressTypes = ['postal', 'physical', 'both'];
     const [activeAddressIndex, setActiveAddressIndex] = useState(null);
     const [addressFocused, setAddressFocused] = useState(false);
     // Load Default Identifiers & Contacts
@@ -713,7 +706,10 @@ const Clinic = ({ id }) => {
         setConstantContact([...constantContact, { system: '', value: '', use: '' }]);
     };
     const addAddress = () => {
-        setAddresses([...addresses, { use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
+        setAddresses([
+            ...addresses,
+            { type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' },
+        ]);
     };
 
     // Function to Remove Fields
@@ -948,6 +944,7 @@ const Clinic = ({ id }) => {
             // );
             if (clinicData?.address) {
                 const formattedAddresses = clinicData.address.map((addr) => ({
+                    type: addr.type || '',
                     use: addr.use || '',
                     line: Array.isArray(addr.line) ? addr.line : [''],
                     city: addr.city || '',
@@ -1006,11 +1003,10 @@ const Clinic = ({ id }) => {
     // Runs when `apiResponse` changes
     const handleIdentifierFileChange = async (e, index) => {
         const selectedFile = e.target.files[0];
-        console.log(selectedFile, 'selectedFile');
         if (!selectedFile) return;
 
         try {
-            const url = await handleUpload(selectedFile, setAccUploading); // Upload file
+            const url = await handleUpload(selectedFile, setIdentifierDocumnent); // Upload file
             setConstantIdentifiers((prevDetails) => {
                 const updatedDetails = [...prevDetails];
                 updatedDetails[index] = {
@@ -1106,7 +1102,11 @@ const Clinic = ({ id }) => {
                             className={`custom-file-upload justify-content-between cursor-pointer ${
                                 logoName || logoUploading ? 'form-control' : 'custom-form-fields'
                             }`}>
-                            {logoName ? logoName : logoUploading ? 'Uploading...' : 'Upload Logo'}
+                            {logoName
+                                ? logoName.split('/').pop().slice(0, 30) + '...'
+                                : logoUploading
+                                ? 'Uploading...'
+                                : 'Upload Logo'}
                             <p className="mb-0">
                                 <FiDownloadCloud />
                             </p>
@@ -1142,8 +1142,21 @@ const Clinic = ({ id }) => {
                             <Col>
                                 <Form.Label>Identifier Number</Form.Label>
                             </Col>
-                            <Col>
+                            <Col className="d-flex align-items-center gap-2">
                                 <Form.Label>Identifier Document</Form.Label>
+
+                                {/* Tooltip Icon */}
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                        <Tooltip id="tooltip-identifier">
+                                            File size should be less than 2MB. Supported formats: JPG, PNG, JPEG, PDF.
+                                        </Tooltip>
+                                    }>
+                                    <span className="text-secondary cursor-pointer mb-2">
+                                        <FiInfo size={15} />
+                                    </span>
+                                </OverlayTrigger>
                             </Col>
                             <Col>
                                 <Form.Label>Issuing Authority</Form.Label>
@@ -1164,6 +1177,7 @@ const Clinic = ({ id }) => {
                                         )}
                                         value={item.type}
                                         onChange={(e) => handleChange(index, 'type', e.target.value)}
+                                        className={defaultIdentifiers.includes(item.type) ? 'no-arrow' : ''}
                                         disabled={defaultIdentifiers.includes(item.type)}>
                                         <option value="" hidden>
                                             Select Identifier Type
@@ -1185,7 +1199,7 @@ const Clinic = ({ id }) => {
                                                 ? 10
                                                 : item.type === 'NAIC'
                                                 ? 5
-                                                : undefined
+                                                : 10
                                         }
                                         {...register(`identifiers[${index}].number`, {
                                             // required: defaultIdentifiers.includes(item.type)
@@ -1229,7 +1243,7 @@ const Clinic = ({ id }) => {
                                         className={`custom-file-upload justify-content-between cursor-pointer ${
                                             item.file || item.uploading ? 'form-control' : 'custom-form-fields'
                                         }`}>
-                                        {item.uploading
+                                        {identifierDocument
                                             ? 'Uploading...'
                                             : item.file?.name
                                             ? item.file.name.length > 30
@@ -1274,6 +1288,7 @@ const Clinic = ({ id }) => {
                                     <Form.Control
                                         type="date"
                                         value={item?.expiry ? formatDateForInput(item.expiry) : ''}
+                                        min={new Date().toISOString().split('T')[0]} // Sets min date to todayde
                                         onChange={(e) => handleChange(index, 'expiry', e.target.value)}
                                     />
                                     {index >= defaultIdentifiers?.length && (
@@ -1337,10 +1352,12 @@ const Clinic = ({ id }) => {
                                 </Col>
                                 <Col sm={4}>
                                     {item.system === 'phone' ? (
-                                        <InputGroup className="position-relative">
+                                        <InputGroup className="">
                                             {/* Country Code Prefix */}
-                                            <InputGroup.Text className="ps-4 p-0 pe-1 fw-bold text-black">
-                                                +1
+                                            <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                                {' '}
+                                                <img src={us} alt="country code flag" width={16} />
+                                                +1{' '}
                                             </InputGroup.Text>
 
                                             {/* Phone Input */}
@@ -1356,11 +1373,11 @@ const Clinic = ({ id }) => {
                                                 style={{ paddingLeft: '40px' }}
                                             />
                                             {/* Flag Icon */}
-                                            <div
+                                            {/* <div
                                                 className="position-absolute"
                                                 style={{ left: '10px', top: '50%', transform: 'translateY(-50%)' }}>
                                                 <img src={us} alt="flag" width={20} />
-                                            </div>
+                                            </div> */}
                                         </InputGroup>
                                     ) : (
                                         <Form.Control
@@ -1414,6 +1431,24 @@ const Clinic = ({ id }) => {
                 </Row>
                 {addresses.map((item, index) => (
                     <Row key={index} className="mb-2">
+                        <Col sm={4} className="mb-0" style={{ height: 'fit-content' }}>
+                            <Form.Label className="mb-1">Address Type</Form.Label>
+                            <Form.Select
+                                value={item.type}
+                                className="text-capitalize"
+                                data-has-value={!!watch(`address[${index}].type`)}
+                                {...register(`address[${index}].type`)}
+                                onChange={(e) => handleAddressChange(index, 'type', e.target.value)}>
+                                <option value="" hidden>
+                                    Select
+                                </option>
+                                {addressTypes?.map((type) => (
+                                    <option key={type} className="text-capitalize" value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Col>
                         <Col sm={4} className="mb-2">
                             <Form.Label className="mb-1">Use</Form.Label>
                             <Form.Select
@@ -1577,7 +1612,7 @@ const Clinic = ({ id }) => {
                             />
                         </Col> */}
 
-                        <Col sm={4}className='position-relative'>
+                        <Col sm={4} className="position-relative">
                             <Form.Group className="mb-2">
                                 <Form.Label className="mb-1">Postal Code</Form.Label>
                                 <Form.Control
@@ -1672,12 +1707,18 @@ const Clinic = ({ id }) => {
 
                             {poc?.telecom?.map((telecom, telecomIndex) => (
                                 <Col sm={6} key={telecomIndex}>
-                                    <Form.Group className="mb-2 position-relative">
+                                    <Form.Group className="mb-2">
                                         <Form.Label className="mb-1">Phone Number</Form.Label>
                                         <InputGroup>
                                             {/* Country Code Prefix */}
-                                            <InputGroup.Text className="ps-3 pe-1 p-0 fw-bold text-black">
+                                            {/* <InputGroup.Text className="ps-3 pe-1 p-0 fw-bold text-black">
                                                 &nbsp;&nbsp;+1
+                                            </InputGroup.Text> */}
+
+                                            <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                                {' '}
+                                                <img src={us} alt="country code flag" width={16} />
+                                                +1{' '}
                                             </InputGroup.Text>
 
                                             {/* Phone Input Field */}
@@ -1698,9 +1739,9 @@ const Clinic = ({ id }) => {
                                         </InputGroup>
 
                                         {/* Flag Icon */}
-                                        <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
+                                        {/* <div className="position-absolute" style={{ top: '52%', left: '1%' }}>
                                             <img src={us} alt="country code flag" width={20} />
-                                        </div>
+                                        </div> */}
                                     </Form.Group>
                                 </Col>
                             ))}

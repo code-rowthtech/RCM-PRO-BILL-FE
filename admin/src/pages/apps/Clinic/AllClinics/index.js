@@ -19,7 +19,7 @@ import Select from 'react-select/base';
 import { useForm } from 'react-hook-form';
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
-    const [name, setName] = useState('');
+    const [name, setName] = useState(null);
     const [skip, setSkip] = useState(1);
     const [status, setStatus] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
@@ -27,7 +27,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log('deleteData', deleteData);
+    console.log(clinicsData,'clinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -37,17 +37,30 @@ const OrderList = (): React$Element<React$FragmentType> => {
         register,
         getValues,
     } = useForm();
+
     useEffect(() => {
-        const payload = {
-            name: name,
-            skip: skip,
-            limit: 10,
-            status: status,
-            clinicType: selectedClinicType,
+        const hasFilters = name !== null || skip !== 1 || status !== true || selectedClinicType!=='';
+    
+        if (hasFilters) {
+            const payload = {
+                name,
+                skip,
+                limit: 10,
+                status,
+                clinicType: selectedClinicType,
+            };
+            dispatch(getClinicAction({ payload }));
+        } else if (clinicsData === undefined) {
+            dispatch(getClinicAction({ payload: { name: '', skip: 1, limit: 10, status: true, clinicType: '' } }));
         }
-        dispatch(getClinicAction({ payload }));
-        dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', skip: '', limit: '' }));
-    }, [dispatch, name, skip, status, selectedClinicType])
+    }, [name, skip, status, selectedClinicType, dispatch]); 
+    useEffect(() => {
+        if (clinicTypeData === undefined) {
+            dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', skip: '', limit: '' }));
+        }
+    }, [clinicTypeData, dispatch]);
+    
+    
     useEffect(() => {
         const payload = {
             name: name,
@@ -68,7 +81,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
             id: deleteData?._id,
             active: !deleteData?.active
         }
-        console.log(payload,'activeaaa')
         dispatch(updateClinicAction({ key: encryptMessage(payload) }));
         dispatch(stateEmptydAction());
     }
@@ -127,7 +139,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                     e.target.setAttribute('data-has-value', !!e.target.value);
                                                 }}
                                                 onChange={handleClinicTypeChange}>
-                                                <option value={''} key={''}>All Practices</option>
+                                                <option value={'all'} key={''}>All Practices</option>
                                                 {clinicTypeData?.map((data, index) => (
                                                     <option className='text-capitalize' value={data?.name} key={data?._id}>{data?.name}</option>
                                                 ))}

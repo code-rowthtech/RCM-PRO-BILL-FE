@@ -8,6 +8,7 @@ import {
     createUserRolesAction,
     getCitiesAction,
     getPermissionAction,
+    getRolesAction,
     getStatesByCountryAction,
     stateEmptydAction,
     updateUserRolesAction,
@@ -24,7 +25,7 @@ import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const UpdateRoles = ({ show, closeModal, data }) => {
     const dispatch = useDispatch();
-    console.log(data,'datadatadatadatadata')
+    console.log(data, 'datadatadatadatadata');
     const {
         register,
         handleSubmit,
@@ -64,7 +65,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
         name: `${item?.name}`,
     }));
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
-
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const setField = (key, value) => value && setValue(key, value);
     useEffect(() => {
@@ -85,32 +85,43 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                 : '';
             setValue('joiningDate', formattedJoiningDate);
             setValue('designation', data?.designation);
-            setValue('role', data?.roleId?._id);
+            setValue('role', data?.roleId);
             const formattedLeavingDate = data?.leavingDate
                 ? new Date(data?.leavingDate).toISOString().split('T')[0]
                 : '';
-                setField('address', data?.address?.[0]?.line || '');
-                setField('stateName', data?.address?.[0]?.state || '');
-                setField('city', data?.address?.[0]?.city || '');
-                setCountry( data?.address?.[0]?.country || '');
-                setField('street', data?.address?.[0]?.street || '');
-                setField('zip', data?.address?.[0]?.postalCode || '');
-                // if (data?.address?.[0]?.city) {
-                //             dispatch(
-                //                 getCitiesAction({
-                //                     state_code: data?.address?.[0]?.state?.id,
-                //                     name: data?.address?.[0]?.city?.name,
-                //                     limit: '',
-                //                     skip: '',
-                //                 })
-                //             );
-                //         }
+            setField('address', data?.address?.[0]?.line || '');
+            setField('stateName', data?.address?.[0]?.state || '');
+            setField('city', data?.address?.[0]?.city || '');
+            setCountry(data?.address?.[0]?.country || '');
+            setField('street', data?.address?.[0]?.street || '');
+            setField('zip', data?.address?.[0]?.postalCode || '');
+            // if (data?.address?.[0]?.city) {
+            //             dispatch(
+            //                 getCitiesAction({
+            //                     state_code: data?.address?.[0]?.state?.id,
+            //                     name: data?.address?.[0]?.city?.name,
+            //                     limit: '',
+            //                     skip: '',
+            //                 })
+            //             );
+            //         }
 
             setValue('leavingDate', formattedLeavingDate);
         }
-    }, [data, setValue,cities1]);
+    }, [data, setValue, cities1]);
 
     const [updateId, setUpdateId] = useState(null);
+    useEffect(() => {
+        if (show) {
+            // console.log(designation)
+            // if(designation){
+            dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
+
+            // }
+            dispatch(getStatesByCountryAction());
+            dispatch(getRolesAction({ status: true, search: '', limit: 10 }));
+        }
+    }, [show]);
     useEffect(() => {
         if (data?._id) {
             setUpdateId(data?._id);
@@ -140,24 +151,24 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
     const onSubmit = (formdata) => {
         const payload = {
-            id: updateId,  // Ensure ID is included
+            id: updateId, // Ensure ID is included
             name: { text: formdata.name }, // Ensure name is properly structured
             email: formdata.email,
             role: formdata.role,
             phone: formdata.phone ? '+1' + formdata.phone.replace(/\D/g, '') : '', // Format phone number
-            ...(formdata.leavingDate ? { leavingDate: formdata.leavingDate } : {}),// Add conditionally
+            ...(formdata.leavingDate ? { leavingDate: formdata.leavingDate } : {}), // Add conditionally
             address: [
                 {
-                    line: formdata.address || '',  
-                    city: formdata.city || '',
+                    line: formdata.address || '',
+                    city: selectedCity || '',
                     state: formdata.stateName || '',
-                    country: country || '',
+                    country: 'US' || '',
                     postalCode: formdata.zip || '',
                 },
             ],
         };
-        
-     console.log(payload,"formdata")
+
+        console.log(payload, 'formdata');
         dispatch(updateUserRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
@@ -167,9 +178,12 @@ const UpdateRoles = ({ show, closeModal, data }) => {
         }
     }, [createResponse]);
 
-    useEffect(() => {
-        dispatch(getStatesByCountryAction());
-    }, [dispatch]);
+    // useEffect(() => {
+    //     if(show && statesData?.states?.length < 1  ){
+    //         dispatch(getStatesByCountryAction());
+    //     }
+
+    // }, [dispatch]);
 
     const getGeolocation = (e) => {
         const addressToSearch = e.target.value;
@@ -247,7 +261,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     };
 
     return (
-        <Modal centered show={show} size='lg'>
+        <Modal centered show={show} size="lg">
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
@@ -286,7 +300,11 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 </Form.Label>
                                 <Form.Group>
                                     <InputGroup>
-                                        <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">+1</InputGroup.Text>
+                                        <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                            {' '}
+                                            <img src={us} alt="country code flag" width={16} />
+                                            +1{' '}
+                                        </InputGroup.Text>
                                         <Form.Control
                                             type="tel"
                                             {...register('phone', {
@@ -329,13 +347,13 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                         />
                                     </InputGroup>
                                 </Form.Group>
-                                <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
+                                {/* <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
                                     <img src={us} alt="country code flag" width={20} />
-                                </div>
+                                </div> */}
                             </Form.Group>
                             {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                         </Col>
-                        <Col sm={6}>
+                        {/* <Col sm={6}>
                             <Form.Group className="mb-2">
                                 <Form.Label>Reporting</Form.Label>
                                 <Form.Select disabled>
@@ -345,7 +363,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                     <option value="">3</option>
                                 </Form.Select>
                             </Form.Group>
-                        </Col>
+                        </Col> */}
                         <Col sm={6}>
                             <Form.Group className="mb-2">
                                 <Form.Label>Start Date</Form.Label>
@@ -366,15 +384,16 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 <Form.Select
                                     {...register('designation')}
                                     data-has-value={!!getValues('designation')}
+                                    value={getValues('designation')}
                                     onBlur={(e) => {
                                         e.target.setAttribute('data-has-value', !!e.target.value);
                                     }}>
                                     <option value={''} key={''}>
                                         Designation
                                     </option>
-                                    {designation?.map((data, i) => (
-                                        <option key={data?._id} value={data?.name}>
-                                            {data?.name}
+                                    {designation?.map((item, i) => (
+                                        <option key={item?._id} value={item?.name}>
+                                            {item?.name}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -391,13 +410,14 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                     onBlur={(e) => {
                                         e.target.setAttribute('data-has-value', !!e.target.value);
                                     }}
+                                    value={getValues('role')}
                                     className="text-capitalize">
                                     <option value="" key="">
                                         Select role
                                     </option>
-                                    {decryptedRolesData?.map((data) => (
-                                        <option className="text-capitalize" value={data?._id} key={data?._id}>
-                                            {data?.name}
+                                    {decryptedRolesData?.map((item) => (
+                                        <option className="text-capitalize" value={item?._id} key={item?._id}>
+                                            {item?.name}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -478,6 +498,48 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                 )}
                                             </Form.Group>
                                         </Col>
+                                        <Col sm={12}>
+                                            <Form.Group className="mb-2">
+                                                <Form.Label className="mb-1">Zip</Form.Label>
+                                                <Form.Control
+                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
+                                                    type="text"
+                                                    {...register('zip', {
+                                                        minLength: {
+                                                            value: 5,
+                                                            message: 'ZIP code must be at least 5 characters long',
+                                                        },
+                                                        pattern: {
+                                                            value: /^[0-9]+$/,
+                                                            message: 'ZIP code must contain numbers only',
+                                                        },
+                                                    })}
+                                                    onKeyPress={handleFirstSpace}
+                                                    placeholder="Zip"
+                                                    maxLength={5}
+                                                />
+                                                {errors.zip && (
+                                                    <span className="text-danger">{errors.zip.message}</span>
+                                                )}
+                                            </Form.Group>
+                                        </Col>
+                                        {/* <Col sm={12}>
+                                            <Form.Group className="mb-2">
+                                                <Form.Label className="mb-1">Street</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    {...register('street')}
+                                                    onKeyPress={handleFirstSpace}
+                                                    onChange={(e) => {
+                                                        clearErrors('street');
+                                                    }}
+                                                    placeholder="Street"
+                                                />
+                                                {errors.street && (
+                                                    <span className="text-danger">{errors.street.message}</span>
+                                                )}
+                                            </Form.Group>
+                                        </Col> */}
 
                                         {/* <Col sm={6}>
                                                                     <Form.Group className="mb-2">
@@ -499,7 +561,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                                         />
                                                                     </Form.Group>
                                                                 </Col> */}
-                                        <Col sm={12}>
+                                        {/* <Col sm={12}>
                                             <Form.Group className="mb-2">
                                                 <Form.Label className="mb-1">Country</Form.Label>
                                                 <Form.Control
@@ -508,7 +570,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                     placeholder="Country"
                                                 />
                                             </Form.Group>
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                 </Col>
                                 <Col sm={6}>
@@ -559,56 +621,13 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                         {store?.getCitiesReducer?.loading ? 'Loading...' : 'City'}
                                                     </option>
                                                     {cities1?.map((data) => (
-                                                        <option key={data?.name} value={data?._id}>
+                                                        <option key={data?.name} value={data?.name}>
                                                             {data?.name}
                                                         </option>
                                                     ))}
                                                 </Form.Select>
                                                 {errors.city && (
                                                     <span className="text-danger">{errors.city.message}</span>
-                                                )}
-                                            </Form.Group>
-                                        </Col>
-{/* 
-                                        <Col sm={6}>
-                                            <Form.Group className="mb-2">
-                                                <Form.Label className="mb-1">Street</Form.Label>
-                                                <Form.Control
-                                                    type="text"
-                                                    {...register('street')}
-                                                    onKeyPress={handleFirstSpace}
-                                                    onChange={(e) => {
-                                                        clearErrors('street');
-                                                    }}
-                                                    placeholder="Street"
-                                                />
-                                                {errors.street && (
-                                                    <span className="text-danger">{errors.street.message}</span>
-                                                )}
-                                            </Form.Group>
-                                        </Col> */}
-                                        <Col sm={12}>
-                                            <Form.Group className="mb-2">
-                                                <Form.Label className="mb-1">Zip</Form.Label>
-                                                <Form.Control
-                                                    defaultValue={updatePage ? clinicDataToUpdate?.address?.zip : ''}
-                                                    type="text"
-                                                    {...register('zip', {
-                                                        minLength: {
-                                                            value: 5,
-                                                            message: 'ZIP code must be at least 5 characters long',
-                                                        },
-                                                        pattern: {
-                                                            value: /^[0-9]+$/,
-                                                            message: 'ZIP code must contain numbers only',
-                                                        },
-                                                    })}
-                                                    onKeyPress={handleFirstSpace}
-                                                    placeholder="Zip"
-                                                    maxLength={5}
-                                                />
-                                                {errors.zip && (
-                                                    <span className="text-danger">{errors.zip.message}</span>
                                                 )}
                                             </Form.Group>
                                         </Col>
@@ -620,9 +639,9 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                     {/* <hr className='my-1' /> */}
 
                     <Modal.Footer className="border-0">
-                        <Button className="custom-buttons" onClick={() => closeModal()}>
+                        {/* <Button className="custom-buttons" onClick={() => closeModal()}>
                             Cancel
-                        </Button>
+                        </Button> */}
                         <Button
                             type="submit"
                             disabled={store?.updateUserRolesReducer?.loading}
