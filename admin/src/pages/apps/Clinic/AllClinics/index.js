@@ -29,6 +29,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const clinicsData = store?.getClinicsReducer?.data?.data;
     console.log(clinicsData,'clinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
+    const createSuccess = store?.createClinicsReducer?.data?.status;
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const isAddPresent = userPermissions.includes('add clinic') || userPermissions.includes('ADD_A_PRACTICE');
@@ -69,11 +70,11 @@ const OrderList = (): React$Element<React$FragmentType> => {
             status: status,
             clinicType: selectedClinicType,
         }
-        if (updateSuccess === 200) {
+        if (updateSuccess === 200 || createSuccess === 200) {
             dispatch(getClinicAction({ payload }))
             closeDeleteModal();
         }
-    }, [updateSuccess])
+    }, [updateSuccess,createSuccess])
     const handleStatusUpdate = () => {
         const payload = {
             userId: deleteData?.userId?._id,
