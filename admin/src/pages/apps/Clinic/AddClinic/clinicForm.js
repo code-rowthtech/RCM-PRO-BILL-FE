@@ -206,6 +206,7 @@ const ClinicForm = ({
             setAddresses([{ type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
             setIdentifierDocumnent(false);
             setPocs([]);
+            setActiveTab('billing');
             // setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
             // setPosDetails([{ name: '', number: '', url: null, fileName: '' }]);
             // setStateDetails([{ name: '', number: '', url: null, fileName: '' }]);
