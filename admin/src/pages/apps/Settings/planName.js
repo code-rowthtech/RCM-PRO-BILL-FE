@@ -1,45 +1,58 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Form, Modal, Row, Table } from 'react-bootstrap'
-import Spinner from '../../../constants/Spinner'
-import { FormInput } from '../../../components'
-import { FiFileText, FiFilter } from 'react-icons/fi'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Col, Form, Modal, Row, Table } from 'react-bootstrap';
+import Spinner from '../../../constants/Spinner';
+import { FormInput } from '../../../components';
+import { FiFileText, FiFilter } from 'react-icons/fi';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { encryptMessage } from '../../../cryptoUtils'
-import { createMastersDataAction, getMastersDataAction, stateEmptydAction, updateMastersDataAction } from '../../../redux/settings/actions'
-import { IoMdClose } from 'react-icons/io'
-import Paginations from '../../../helpers/Paginations'
-import { formatDate } from '../../../helpers/dateFormat'
-import { createdBy } from './userId'
-import { handleFirstSpace } from '../../../helpers/noBeginningSpace'
+import { encryptMessage } from '../../../cryptoUtils';
+import {
+    createMastersDataAction,
+    getMastersDataAction,
+    stateEmptydAction,
+    updateMastersDataAction,
+} from '../../../redux/settings/actions';
+import { IoMdClose } from 'react-icons/io';
+import Paginations from '../../../helpers/Paginations';
+import { formatDate } from '../../../helpers/dateFormat';
+import { createdBy } from './userId';
+import { handleFirstSpace } from '../../../helpers/noBeginningSpace';
 
 const PlanName = () => {
     const store = useSelector((state) => state);
-    const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        watch,
+        reset,
+        setValue,
+        formState: { errors },
+    } = useForm();
     const dispatch = useDispatch();
-    const nameValue = watch("name");
+    const nameValue = watch('name');
     const [addPlanNameModal, setAddPlanNameModal] = useState(false);
     const [updatePlanNameModal, setUpdatePlanNameModal] = useState(false);
     const [updateData, setUpdateData] = useState(null);
     const [search, setSearch] = useState('');
     const [skip, setSkip] = useState(1);
     const [status, setStatus] = useState(true);
+    const [count, setCount] = useState(false);
     const closeAddModal = () => {
         setAddPlanNameModal(false);
-    }
+    };
     const closeUpdateModal = () => {
         setUpdatePlanNameModal(false);
         setUpdateData(null);
         reset();
-    }
+    };
     const addPlanName = (data) => {
         const payload = {
             name: data?.name,
             description: data?.description,
             category: 'plan_name',
             createdBy: createdBy,
-        }
-        dispatch(createMastersDataAction({ key: encryptMessage(payload) }))
+        };
+        dispatch(createMastersDataAction({ key: encryptMessage(payload) }));
     };
 
     const updatePlanName = (data) => {
@@ -48,27 +61,51 @@ const PlanName = () => {
             id: updateData?._id,
             description: data?.description,
             category: 'plan_name',
-        }
-        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
+        };
+        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }));
     };
     const createResponse = store?.createMastersDataReducer?.data;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const updateResponse = store?.updateMastersDataReducer?.data?.status;
+
     useEffect(() => {
-        dispatch(getMastersDataAction({ status: status, category: 'plan_name', search: search, skip: skip, limit: 10 }));
+        const payload = {
+            search,
+            skip,
+            limit: 10,
+            status,
+            category: 'plan_name',
+        };
+        if (search !== '' || skip !== 1 || status !== true) {
+            dispatch(getMastersDataAction(payload));
+        } else if (!clinicTypeData || clinicTypeData.length === 0) {
+            dispatch(
+                getMastersDataAction({ status: status, category: 'plan_name', search: search, limit: 10, skip: skip })
+            );
+        }
         if (store?.createMastersDataReducer?.data?.status === 201) {
             reset();
-            closeAddModal()
+            closeAddModal();
         }
         if (updateResponse === 200) {
-            dispatch(getMastersDataAction({ status: status, category: 'plan_name', search: search, limit: 10, skip: skip }));
-            closeUpdateModal()
+            dispatch(
+                getMastersDataAction({ status: status, category: 'plan_name', search: search, limit: 10, skip: skip })
+            );
+            closeUpdateModal();
             // dispatch(stateEmptydAction());
         }
     }, [store?.createMastersDataReducer?.data, dispatch, search, status, skip, updateResponse]);
+    // useEffect(() => {
+    //     if (count) {
+    //         dispatch(
+    //             getMastersDataAction({ search: search, skip: skip, limit: 10, status: status, category: 'plan_name' })
+    //         );
+    //     }
+    // }, [status]);
     const handleStatusChange = (isActive) => {
         setStatus(isActive);
         setSearch('');
+        setCount(true);
     };
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber);
@@ -77,54 +114,59 @@ const PlanName = () => {
         const payload = {
             id: data?._id,
             isActive: !data?.isActive,
-            settingType: 'plan'
-        }
-        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }))
-    }
+            settingType: 'plan',
+        };
+        dispatch(updateMastersDataAction({ key: encryptMessage(payload) }));
+    };
 
     useEffect(() => {
         if (updateData) {
-            setValue('name', updateData?.name)
-            setValue('description', updateData?.description)
+            setValue('name', updateData?.name);
+            setValue('description', updateData?.description);
         }
-    }, [updateData])
+    }, [updateData]);
     return (
-        <Row className='mt-2'>
+        <Row className="mt-2">
             <Col xs={12}>
                 <Card>
-                    <Card.Body className='scroll-container' style={{ height: '88vh' }}>
+                    <Card.Body className="scroll-container" style={{ height: '88vh' }}>
                         <Row className="mb-2">
-                            <Col sm={6} className='d-flex align-items-center'>
-                                <Button variant={status === false ? 'outlined' : ''}
+                            <Col sm={6} className="d-flex align-items-center">
+                                <Button
+                                    variant={status === false ? 'outlined' : ''}
                                     onClick={() => handleStatusChange(true)}
-                                    className={`${status === true ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
-                                >
+                                    className={`${
+                                        status === true ? 'custom-buttons' : 'custom-inactive-buttons'
+                                    } me-2`}>
                                     Active
                                 </Button>
 
-                                <Button variant={status === true ? 'outlined' : ''}
+                                <Button
+                                    variant={status === true ? 'outlined' : ''}
                                     onClick={() => handleStatusChange(false)}
-                                    className={`${status === false ? 'custom-buttons' : 'custom-inactive-buttons'} me-2`}
-                                >
+                                    className={`${
+                                        status === false ? 'custom-buttons' : 'custom-inactive-buttons'
+                                    } me-2`}>
                                     Inactive
                                 </Button>
                             </Col>
 
-                            <Col sm={6} className='text-end'>
+                            <Col sm={6} className="text-end">
                                 <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
-                                    <Col xs="auto" className='d-flex gap-2'>
+                                    <Col xs="auto" className="d-flex gap-2">
                                         <FormInput
                                             type="text"
                                             onChange={(e) => {
-                                                setSearch(e.target.value);
+                                                setSearch(e.target.value?e.target.value:' ');
                                                 setSkip(1);
                                             }}
-                                            placeholder="Search..." />
+                                            placeholder="Search..."
+                                        />
                                         <Button className="custom-buttons ">
-                                            <FiFilter className='fs-4' />
+                                            <FiFilter className="fs-4" />
                                         </Button>
                                         <Button className="custom-buttons ">
-                                            <FiFileText className='fs-4' />
+                                            <FiFileText className="fs-4" />
                                         </Button>
                                         <Button onClick={() => setAddPlanNameModal(true)} className="custom-buttons">
                                             New Plan Name
@@ -146,28 +188,24 @@ const PlanName = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {store?.getMastersDataReducer?.loading ?
+                                        {store?.getMastersDataReducer?.loading ? (
                                             <tr>
-                                                <td colSpan={6} className='text-center'>
+                                                <td colSpan={6} className="text-center">
                                                     <Spinner />
                                                 </td>
                                             </tr>
-                                            :
-                                            store?.getMastersDataReducer?.data?.pagination?.totalRecords === 0 ?
-                                                <tr>
-                                                    <td colSpan={6} className='text-center'>
-                                                        <h3 className='my-5'>No Data Found</h3>
-                                                    </td>
-                                                </tr>
-                                                :
-
-                                                clinicTypeData?.map((data, index) => (
-                                                    <tr key={index}>
-                                                        <td>{index + 1}</td>
-                                                        <td className='text-capitalize'>
-                                                            {data?.name}
-                                                        </td>
-                                                        {/* <td className='text-capitalize'>
+                                        ) : store?.getMastersDataReducer?.data?.pagination?.totalRecords === 0 ? (
+                                            <tr>
+                                                <td colSpan={6} className="text-center">
+                                                    <h3 className="my-5">No Data Found</h3>
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            clinicTypeData?.map((data, index) => (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td className="text-capitalize">{data?.name}</td>
+                                                    {/* <td className='text-capitalize'>
                                                             <span
                                                                 data-bs-toggle="tooltip"
                                                                 title={data?.description}
@@ -175,26 +213,33 @@ const PlanName = () => {
                                                                 {data?.description.substring(0, 20) + '...'}
                                                             </span>
                                                         </td> */}
-                                                        <td className='text-capitalize'>{new Date(data.createdAt).toLocaleDateString('en-GB')}</td>
-                                                        <td>
-                                                            <Form.Switch checked={data?.isActive} onChange={() => handleUpdate(data)} />
-                                                        </td>
-                                                        <td>
-                                                            {/* <Link to="#" className="action-icon"> */}
-                                                            <i className="mdi fs-4 mdi-square-edit-outline cursor-pointer"
-                                                                onClick={() => {
-                                                                    setUpdateData(data)
-                                                                    setUpdatePlanNameModal(true);
-                                                                }} />
-                                                            {/* </Link> */}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                        }
+                                                    <td className="text-capitalize">
+                                                        {new Date(data.createdAt).toLocaleDateString('en-GB')}
+                                                    </td>
+                                                    <td>
+                                                        <Form.Switch
+                                                            checked={data?.isActive}
+                                                            onChange={() => handleUpdate(data)}
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        {/* <Link to="#" className="action-icon"> */}
+                                                        <i
+                                                            className="mdi fs-4 mdi-square-edit-outline cursor-pointer"
+                                                            onClick={() => {
+                                                                setUpdateData(data);
+                                                                setUpdatePlanNameModal(true);
+                                                            }}
+                                                        />
+                                                        {/* </Link> */}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
                                     </tbody>
                                 </Table>
                                 <Row>
-                                    <Col className='mt-2 d-flex justify-content-end'>
+                                    <Col className="mt-2 d-flex justify-content-end">
                                         <Paginations
                                             currentPage={skip}
                                             totalPages={store?.getMastersDataReducer?.data?.pagination?.totalPages}
@@ -203,7 +248,6 @@ const PlanName = () => {
                                     </Col>
                                 </Row>
                             </Col>
-
                         </Row>
                     </Card.Body>
                 </Card>
@@ -220,16 +264,18 @@ const PlanName = () => {
                         </Col>
                     </Row>
                     {/* <h4 className="mt-0 text-center">New Clinic Type</h4> */}
-                    <Form autoComplete='off' onSubmit={handleSubmit(addPlanName)}>
+                    <Form autoComplete="off" onSubmit={handleSubmit(addPlanName)}>
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>
+                                        Plan Name <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter plan name"
                                         onKeyPress={handleFirstSpace}
-                                        {...register("name", { required: "Plan name is required" })}
+                                        {...register('name', { required: 'Plan name is required' })}
                                     />
                                     {errors.name && <p className="text-danger">{errors.name.message}</p>}
                                 </Form.Group>
@@ -237,13 +283,15 @@ const PlanName = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Plan Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>
+                                        Re-Enter Plan Name <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Plan Name"
-                                        {...register("reEnterName", {
-                                            required: "Please re-enter plan name",
-                                            validate: value => value === nameValue || "Plan name do not match"
+                                        {...register('reEnterName', {
+                                            required: 'Please re-enter plan name',
+                                            validate: (value) => value === nameValue || 'Plan name do not match',
                                         })}
                                         onKeyPress={handleFirstSpace}
                                     />
@@ -257,7 +305,7 @@ const PlanName = () => {
                                         as={'textarea'}
                                         rows={3}
                                         placeholder="Enter description"
-                                        {...register("description")}
+                                        {...register('description')}
                                     />
                                 </Form.Group>
                             </Col>
@@ -266,13 +314,15 @@ const PlanName = () => {
                             {/* <Button onClick={closeAddModal} className='custom-buttons'>
                                 Close
                             </Button> */}
-                            <Button type='submit' className='custom-buttons' disabled={store?.createMastersDataReducer?.loading}>
-                                {store?.createMastersDataReducer?.loading
-                                    ?
-                                    < Spinner color='white' className='spinner-border-sm' />
-                                    :
+                            <Button
+                                type="submit"
+                                className="custom-buttons"
+                                disabled={store?.createMastersDataReducer?.loading}>
+                                {store?.createMastersDataReducer?.loading ? (
+                                    <Spinner color="white" className="spinner-border-sm" />
+                                ) : (
                                     'Submit'
-                                }
+                                )}
                             </Button>
                         </Modal.Footer>
                     </Form>
@@ -295,11 +345,13 @@ const PlanName = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Plan Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>
+                                        Plan Name <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Enter plan name"
-                                        {...register("name", { required: "Plan name is required" })}
+                                        {...register('name', { required: 'Plan name is required' })}
                                     />
                                     {errors.name && <p className="text-danger">{errors.name.message}</p>}
                                 </Form.Group>
@@ -307,13 +359,15 @@ const PlanName = () => {
 
                             <Col md={6}>
                                 <Form.Group className="mb-2">
-                                    <Form.Label>Re-Enter Plan Name <span className='text-danger'>*</span></Form.Label>
+                                    <Form.Label>
+                                        Re-Enter Plan Name <span className="text-danger">*</span>
+                                    </Form.Label>
                                     <Form.Control
                                         type="text"
                                         placeholder="Re-enter Plan Name"
-                                        {...register("reEnterName", {
-                                            required: "Please re-enter plan name",
-                                            validate: value => value === nameValue || "Plan names do not match"
+                                        {...register('reEnterName', {
+                                            required: 'Please re-enter plan name',
+                                            validate: (value) => value === nameValue || 'Plan names do not match',
                                         })}
                                     />
                                     {errors.reEnterName && <p className="text-danger">{errors.reEnterName.message}</p>}
@@ -326,7 +380,7 @@ const PlanName = () => {
                                         as={'textarea'}
                                         rows={3}
                                         placeholder="Enter description"
-                                        {...register("description")}
+                                        {...register('description')}
                                     />
                                 </Form.Group>
                             </Col>
@@ -335,20 +389,22 @@ const PlanName = () => {
                             {/* <Button onClick={closeUpdateModal} className='custom-buttons'>
                                 Close
                             </Button> */}
-                            <Button type='submit' className='custom-buttons' disabled={store?.updateMastersDataReducer?.loading}>
-                                {store?.updateMastersDataReducer?.loading
-                                    ?
-                                    < Spinner color='white' className='spinner-border-sm' />
-                                    :
+                            <Button
+                                type="submit"
+                                className="custom-buttons"
+                                disabled={store?.updateMastersDataReducer?.loading}>
+                                {store?.updateMastersDataReducer?.loading ? (
+                                    <Spinner color="white" className="spinner-border-sm" />
+                                ) : (
                                     'Update'
-                                }
+                                )}
                             </Button>
                         </Modal.Footer>
                     </Form>
                 </Modal.Body>
             </Modal>
         </Row>
-    )
-}
+    );
+};
 
-export default PlanName
+export default PlanName;

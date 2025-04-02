@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Col, Form, InputGroup, Row, Table } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, OverlayTrigger, Row, Table, Tooltip } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions'
+import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import { addSubscriptionPlanAction, stateEmptydAction, updateClinicAction } from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
 import { createdBy } from '../../Settings/userId';
-import us from '../../../../assets/images/flags/us.jpg'
+import us from '../../../../assets/images/flags/us.jpg';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 const Billing = ({ activeTab, setActiveTab, id }) => {
-
     const {
         register,
         handleSubmit,
@@ -19,35 +18,36 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
         reset,
         watch,
         setError,
-        clearErrors,setValue
+        clearErrors,
+        setValue,
     } = useForm();
     const [paymentType, setPaymentType] = useState('');
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
-    const [amount, setAmount] = useState((null));
+    const [amount, setAmount] = useState(null);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); // Store the selected date
 
     const subscriptionsData = store?.getSubscriptionsReducer?.data?.plans;
-    console.log(subscriptionsData,'subscriptionsData')
-//    
+    //
     const subscriptionLoading = store?.getSubscriptionsReducer?.loading;
     const createResponse = store?.createSubscriptionPlanReducer?.data?.status;
     const subClinics = store?.getClinicsByParentReducer?.data?.data;
     const [loading, setLoading] = useState(false);
     const billingDone = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscriptionId?.isActive;
     const billingData = store?.getClinicByIdReducer?.data?.clinic?.userId?.subscriptionId;
-    const addressResponse=store?.getClinicByIdReducer?.data?.clinic?.userId
-    console.log(addressResponse, 'billingData')
-    useEffect(()=>{
-        if(billingData){
-            setSelectedDate(billingData?.implimentFrom?new Date(billingData?.implimentFrom).toISOString().split("T")[0]:'')
-            setValue('subscription',billingData?.subscriptionId);
-            setValue('email',addressResponse?.email);
+    const addressResponse = store?.getClinicByIdReducer?.data?.clinic?.userId;
+    useEffect(() => {
+        if (billingData) {
+            setSelectedDate(
+                billingData?.implimentFrom ? new Date(billingData?.implimentFrom).toISOString().split('T')[0] : ''
+            );
+            setValue('subscription', billingData?.subscriptionId);
+            setValue('email', addressResponse?.email);
             if (addressResponse?.subscriptionId?.billingContactPhone) {
                 // Extract only digits
                 let rawValue = addressResponse.subscriptionId.billingContactPhone.replace(/\D/g, '');
-        
+
                 // Ensure it contains only 10 digits (remove country code if present)
                 if (rawValue.startsWith('1') && rawValue.length === 11) {
                     rawValue = rawValue.slice(1); // Remove leading "1"
@@ -55,21 +55,19 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                 if (rawValue.length > 10) {
                     rawValue = rawValue.slice(0, 10);
                 }
-        
+
                 // Format as (XXX)XXX-XXXX
-                const formattedValue = rawValue.replace(
-                    /(\d{3})(\d{3})(\d{4})/,
-                    '($1)$2-$3'
-                );
+                const formattedValue = rawValue.replace(/(\d{3})(\d{3})(\d{4})/, '($1)$2-$3');
                 // Set the formatted value in the form
                 setValue('contact', formattedValue);
             }
-        setValue('name', addressResponse?.subscriptionId?.billingContactName);
+            setValue('name', addressResponse?.subscriptionId?.billingContactName);
+            setValue('billingaddress', addressResponse?.address[0]?.city);
 
-            const selectedSubscription = subscriptionsData?.find(data => data._id === billingData?.subscriptionId);
+            const selectedSubscription = subscriptionsData?.find((data) => data._id === billingData?.subscriptionId);
             setAmount(selectedSubscription || 0);
         }
-            },[billingData,subscriptionsData])
+    }, [billingData, subscriptionsData]);
     useEffect(() => {
         if (activeTab === 'billing') {
             dispatch(getSubscriptionsAction({ search: '', status: true, skip: 1 }));
@@ -87,7 +85,7 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
             billingContactPhone: '+1' + data?.contact?.replace(/\D/g, ''),
             billingContactemail: data?.email.toLowerCase(),
             adminId: createdBy,
-        }
+        };
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
     };
 
@@ -117,19 +115,19 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value);
     };
- 
+
     return (
         <>
             {/* {billingDone ? */}
-                <>
-                    {/* <Row>
+            <>
+                {/* <Row>
                         <Col>
                             <h5 className=''>
                                 There is already a subscription attached to this account. Below are the details of the current subscription:
                             </h5>
                         </Col>
                     </Row> */}
-                    {/* <Table responsive className="table-centered border border-muted table-nowrap mb-0">
+                {/* <Table responsive className="table-centered border border-muted table-nowrap mb-0">
                         <thead>
                             <tr>
                                 <th>Subscription Name</th>
@@ -161,255 +159,318 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                             </tr>
                         </tbody>
                     </Table> */}
-                </>
-                {/* : */}
-                <div>
-                    {subscriptionLoading ?
+            </>
+            {/* : */}
+            <div>
+                {subscriptionLoading ? (
+                    <Row>
+                        <Col className="d-flex justify-content-center align-items-center">
+                            <Spinner />
+                        </Col>
+                    </Row>
+                ) : (
+                    <Form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
                         <Row>
-                            <Col className='d-flex justify-content-center align-items-center'>
-                                <Spinner />
+                            <Col sm={6} className="mb-2">
+                                <Form.Group>
+                                    <Form.Label className="mb-1">
+                                        Subscription Plan <span className="text-danger">*</span>
+                                    </Form.Label>
+                                    <Form.Select
+                                        {...register('subscription', {
+                                            required: 'This field is required',
+                                        })}
+                                        data-has-value={!!watch('subscription')}
+                                        onChange={(e) => {
+                                            const selectedId = e.target.value;
+                                            const selectedSubscription = subscriptionsData?.find(
+                                                (data) => data._id === selectedId
+                                            );
+                                            setAmount(selectedSubscription || 0);
+                                            clearErrors('subscription');
+                                        }}>
+                                        <option value="">Select plan type</option>
+                                        {subscriptionsData?.map((data) => (
+                                            <option value={data?._id} key={data?._id} className="text-capitalize">
+                                                {data?.name} {data?.billingFrequency} {data?.price}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                                {errors?.subscription && (
+                                    <span className="text-danger">{errors?.subscription?.message}</span>
+                                )}
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="mb-1">
+                                        Amount (in $)&nbsp;
+                                        <span
+                                            className=" uil-info-circle mb-0 cursor-pointer"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="The amount displayed is inclusive of all applicable taxes and covers all added clinics."
+                                        />
+                                    </Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        value={amount?.totalAmount}
+                                        readOnly
+                                        // {...register('amount', { required: 'This field is required' })}
+                                        placeholder="Amount"
+                                    />
+                                    {/* {errors.amount && <span className="text-danger">{errors.amount.message}</span>} */}
+                                </Form.Group>
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="mb-1">Plan Tenure</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Plan Tenure"
+                                        defaultValue={amount?.billingFrequency}
+                                        readOnly
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="mb-1">Implemented Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        placeholder="Implemented Date"
+                                        value={selectedDate} // Controlled input
+                                        onChange={handleDateChange} // Update state on change
+                                        min={new Date().toISOString().split('T')[0]} // Min date is today
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="mb-1">End Date</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        placeholder="End Date"
+                                        defaultValue={amount ? endDate : ''}
+                                        readOnly
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="mb-1">Doctor Count</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Doctor Count"
+                                        defaultValue={amount?.doctorLimit}
+                                        readOnly
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col sm={6}>
+                                <Form.Group className="mb-2">
+                                    <Form.Label className="mb-1">Patient Count</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Patient Count"
+                                        defaultValue={amount?.patientLimit}
+                                        readOnly
+                                    />
+                                </Form.Group>
                             </Col>
                         </Row>
-                        :
-                        <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
-                            <Row>
-                                <Col sm={6} className="mb-2">
-                                    <Form.Group >
-                                        <Form.Label className='mb-1'>Subscription Plan <span className='text-danger'>*</span></Form.Label>
-                                        <Form.Select
-                                            {...register('subscription', {
-                                                required: 'This field is required'
-                                            })}
-                                            onChange={(e) => {
-                                                const selectedId = e.target.value;
-                                                const selectedSubscription = subscriptionsData?.find(data => data._id === selectedId);
-                                                setAmount(selectedSubscription || 0);
-                                                clearErrors('subscription')
-                                            }}
-                                        >
-                                            <option value="">Select plan type</option>
-                                            {subscriptionsData?.map((data) => (
-                                                <option value={data?._id} key={data?._id} className="text-capitalize">
-                                                    {data?.name} {data?.billingFrequency} {data?.price}
-                                                </option>
-                                            ))}
-                                        </Form.Select>
-                                    </Form.Group>
-                                    {errors?.subscription && <span className='text-danger'>{errors?.subscription?.message}</span>}
-                                </Col>
-                                <Col sm={6}>
-                                    <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Amount (in $)&nbsp;
-                                            <span className=' uil-info-circle mb-0 cursor-pointer'
-                                                data-toggle="tooltip"
-                                                data-placement="top"
-                                                title="The amount displayed is inclusive of all applicable taxes and covers all added clinics." />
-                                        </Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            value={
-                                                amount?.totalAmount
-                                            }
-                                            readOnly
-                                            // {...register('amount', { required: 'This field is required' })}
-                                            placeholder="Amount" />
-                                        {/* {errors.amount && <span className="text-danger">{errors.amount.message}</span>} */}
-                                    </Form.Group>
-                                </Col>
-                                <Col sm={6}>
-                                    <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Plan Tenure</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder='Plan Tenure'
-                                            defaultValue={amount?.billingFrequency}
-                                            readOnly />
-                                    </Form.Group>
-                                </Col>
-                                <Col sm={6}>
-                                    <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Implemented Date</Form.Label>
-                                        <Form.Control
-                                            type="date"
-                                            placeholder="Implemented Date"
-                                            value={selectedDate} // Controlled input
-                                            onChange={handleDateChange} // Update state on change
-                                            min={new Date().toISOString().split('T')[0]} // Min date is today
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col sm={6}>
-                                    <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>End Date</Form.Label>
-                                        <Form.Control
-                                            type="date"
-                                            placeholder='End Date'
-                                            defaultValue={amount ? endDate : ''}
-                                            readOnly
-                                        />
-                                    </Form.Group>
-                                </Col>
-                                <Col sm={6}>
-                                    <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Doctor Count</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder='Doctor Count'
-                                            defaultValue={amount?.doctorLimit}
-                                            readOnly />
-                                    </Form.Group>
-                                </Col>
-                                <Col sm={6}>
-                                    <Form.Group className="mb-2">
-                                        <Form.Label className='mb-1'>Patient Count</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder='Patient Count'
-                                            defaultValue={amount?.patientLimit}
-                                            readOnly />
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                            <hr />
-                            <Row className=''>
+                        {billingData ? (
+                            ''
+                        ) : (
+                            <Row className="">
                                 <Col sm={12}>
                                     <Row>
-                                        <Col sm={6} className=''>
-                                            <Row className=''>
+                                        <Col sm={6} className="">
+                                            <Row className="">
                                                 <Col sm={12}>
-                                                    <span className='text-black fw-semibold'>Payment Information</span>
+                                                    <span className="text-black fw-semibold">Payment Information</span>
                                                 </Col>
                                                 <Col sm={12}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Payment Method <span className='text-danger'>*</span></Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Payment Method <span className="text-danger">*</span>
+                                                        </Form.Label>
                                                         <Form.Select
                                                             {...register('method', {
-                                                                required: 'This field is required'
+                                                                required: 'This field is required',
                                                             })}
                                                             onChange={(e) => {
-                                                                setPaymentType(e.target.value)
-                                                                clearErrors('method')
+                                                                setPaymentType(e.target.value);
+                                                                clearErrors('method');
                                                             }}>
-                                                            <option value=''>Select payment method</option>
-                                                            <option value='card'>Card</option>
-                                                            <option value='online'>Online banking</option>
-                                                            <option value='cheque'>Cheque</option>
+                                                            <option value="">Select payment method</option>
+                                                            <option value="card">Card</option>
+                                                            <option value="online">Online banking</option>
+                                                            <option value="cheque">Cheque</option>
                                                         </Form.Select>
-                                                        {errors?.method && <span className='text-danger'>{errors?.method?.message}</span>}
+                                                        {errors?.method && (
+                                                            <span className="text-danger">
+                                                                {errors?.method?.message}
+                                                            </span>
+                                                        )}
                                                     </Form.Group>
                                                 </Col>
                                                 <Col sm={12}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Billing Address <span className='text-danger'>*</span></Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Billing Address <span className="text-danger">*</span>
+                                                        </Form.Label>
                                                         <Form.Control
                                                             type="text"
-                                                            {...register('billingaddress', { required: 'This field is required' })}
-                                                            placeholder="Billing Address" />
-                                                        {errors.billingaddress && <span className="text-danger">{errors.billingaddress.message}</span>}
+                                                            {...register('billingaddress', {
+                                                                required: 'This field is required',
+                                                            })}
+                                                            placeholder="Billing Address"
+                                                        />
+                                                        {errors.billingaddress && (
+                                                            <span className="text-danger">
+                                                                {errors.billingaddress.message}
+                                                            </span>
+                                                        )}
                                                     </Form.Group>
                                                 </Col>
                                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Cardholder Name</Form.Label>
+                                                        <Form.Label className="mb-1">Cardholder Name</Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             // {...register('cardholder', { required: 'This field is required' })}
-                                                            placeholder="Name on card" />
+                                                            placeholder="Name on card"
+                                                        />
                                                         {/* {errors.cardholder && <span className="text-danger">{errors.cardholder.message}</span>} */}
                                                     </Form.Group>
                                                 </Col>
                                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Credit / Debit Card Number</Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Credit / Debit Card Number
+                                                        </Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             // {...register('cardnumber', { required: 'This field is required' })}
-                                                            placeholder="xxxx-xxxx-xxxx" />
+                                                            placeholder="xxxx-xxxx-xxxx"
+                                                        />
                                                         {/* {errors.cardnumber && <span className="text-danger">{errors.cardnumber.message}</span>} */}
                                                     </Form.Group>
                                                 </Col>
                                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>CVV (Security Code)</Form.Label>
+                                                        <Form.Label className="mb-1">CVV (Security Code)</Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             // {...register('cvv', { required: 'This field is required' })}
-                                                            placeholder="---" />
+                                                            placeholder="---"
+                                                        />
                                                         {/* {errors.cvv && <span className="text-danger">{errors.cvv.message}</span>} */}
                                                     </Form.Group>
                                                 </Col>
                                                 <Col sm={12} className={`${paymentType === 'card' ? '' : 'd-none'}`}>
                                                     <Form.Group className="mb-2">
-                                                        <Form.Label className='mb-1'>Expiration Date (Security Code)</Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Expiration Date (Security Code)
+                                                        </Form.Label>
                                                         <Form.Control
                                                             type="text"
                                                             // {...register('expiration', { required: 'This field is required' })}
-                                                            placeholder="---" />
+                                                            placeholder="---"
+                                                        />
                                                         {/* {errors.expiration && <span className="text-danger">{errors.expiration.message}</span>} */}
                                                     </Form.Group>
                                                 </Col>
                                             </Row>
-
                                         </Col>
                                         <Col sm={6}>
-                                            <Row className=''>
+                                            <Row className="">
                                                 <Col sm={12}>
-                                                    <span className='text-black fw-semibold'>Billing Contact Information</span>
+                                                    <span className="text-black fw-semibold">
+                                                        Billing Contact Information
+                                                    </span>
                                                 </Col>
-                                                <Col sm={12} className='mb-2'>
+                                                <Col sm={12} className="mb-2">
                                                     <Form.Group className="">
-                                                        <Form.Label className='mb-1'>Billing Contact Name <span className='text-danger'>*</span></Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Billing Contact Name <span className="text-danger">*</span>
+                                                        </Form.Label>
                                                         <Form.Control
-                                                            type='text'
+                                                            type="text"
                                                             {...register('name', {
-                                                                required: 'This field is required.'
+                                                                required: 'This field is required.',
                                                             })}
-                                                            placeholder='Billing Contact Name' />
+                                                            placeholder="Billing Contact Name"
+                                                        />
                                                     </Form.Group>
-                                                    {errors.name && <span className="text-danger">{errors.name.message}</span>}
+                                                    {errors.name && (
+                                                        <span className="text-danger">{errors.name.message}</span>
+                                                    )}
                                                 </Col>
-                                                <Col sm={12} className='mb-2'>
+                                                <Col sm={12} className="mb-2">
                                                     <Form.Group className="">
-                                                        <Form.Label className='mb-1'>Billing Contact Email <span className='text-danger'>*</span></Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Billing Contact Email <span className="text-danger">*</span>
+                                                        </Form.Label>
                                                         <Form.Control
-                                                            type='email'
+                                                            type="email"
                                                             {...register('email', {
                                                                 required: 'This field is required',
                                                                 pattern: {
                                                                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Regex for email validation
-                                                                    message: 'Please enter a valid email address'
-                                                                }
+                                                                    message: 'Please enter a valid email address',
+                                                                },
                                                             })}
-                                                            placeholder='Billing Contact Email' />
+                                                            placeholder="Billing Contact Email"
+                                                        />
                                                     </Form.Group>
-                                                    {errors.email && <span className="text-danger">{errors.email.message}</span>}
+                                                    {errors.email && (
+                                                        <span className="text-danger">{errors.email.message}</span>
+                                                    )}
                                                 </Col>
-                                                <Col sm={12} className='mb-2'>
+                                                <Col sm={12} className="mb-2">
                                                     <Form.Group className="mb-0 position-relative">
-                                                        <Form.Label className='mb-1'>Billing Contact Phone Number <span className='text-danger'>*</span></Form.Label>
+                                                        <Form.Label className="mb-1">
+                                                            Billing Contact Phone Number{' '}
+                                                            <span className="text-danger">*</span>
+                                                        </Form.Label>
                                                         <Form.Group>
                                                             <InputGroup>
-                                                                <InputGroup.Text className='ps-3 pe-1 fw-bold text-black'>&nbsp;&nbsp;+1</InputGroup.Text> {/* This is the prefix */}
+                                                                <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                                                    {' '}
+                                                                    <img src={us} alt="country code flag" width={16} />
+                                                                    +1{' '}
+                                                                </InputGroup.Text>
+
+                                                                {/* This is the prefix */}
                                                                 <Form.Control
                                                                     type="tel"
                                                                     {...register('contact', {
                                                                         required: 'This field is required',
                                                                         pattern: {
                                                                             value: /^\(\d{3}\)\d{3}-\d{4}$/, // Matches (XXX)XXX-XXXX format
-                                                                            message: 'Contact must be in the format (XXX)XXX-XXXX',
+                                                                            message:
+                                                                                'Contact must be in the format (XXX)XXX-XXXX',
                                                                         },
                                                                         maxLength: {
                                                                             value: 13, // Includes characters for (XXX)XXX-XXXX
-                                                                            message: 'Contact must not exceed 13 characters'
+                                                                            message:
+                                                                                'Contact must not exceed 13 characters',
                                                                         },
                                                                         minLength: {
                                                                             value: 13,
-                                                                            message: 'Contact must not be less than 13 characters'
-                                                                        }
+                                                                            message:
+                                                                                'Contact must not be less than 13 characters',
+                                                                        },
                                                                     })}
                                                                     onChange={(e) => {
-                                                                        let rawValue = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
-                                                                        if (rawValue.length > 10) rawValue = rawValue.slice(0, 10); // Limit to 10 digits
+                                                                        let rawValue = e.target.value.replace(
+                                                                            /\D/g,
+                                                                            ''
+                                                                        ); // Remove all non-numeric characters
+                                                                        if (rawValue.length > 10)
+                                                                            rawValue = rawValue.slice(0, 10); // Limit to 10 digits
                                                                         const formattedValue = rawValue.replace(
                                                                             /(\d{1,3})(\d{0,3})(\d{0,4})/,
                                                                             (match, p1, p2, p3) => {
@@ -432,44 +493,82 @@ const Billing = ({ activeTab, setActiveTab, id }) => {
                                                                 />
                                                             </InputGroup>
                                                         </Form.Group>
-                                                        <div
-                                                            className='position-absolute ' style={{ top: '52%', left: '1%' }}
-                                                        >
-                                                            <img
-                                                                src={us}
-                                                                alt="country code flag"
-                                                                width={20} />
-                                                        </div>
+                                                        {/* <div
+                                                            className="position-absolute "
+                                                            style={{ top: '52%', left: '1%' }}>
+                                                            <img src={us} alt="country code flag" width={20} />
+                                                        </div> */}
                                                     </Form.Group>
-                                                    {errors.contact && <span className="text-danger">{errors.contact.message}</span>}
+                                                    {errors.contact && (
+                                                        <span className="text-danger">{errors.contact.message}</span>
+                                                    )}
                                                 </Col>
                                             </Row>
                                         </Col>
-
-
                                     </Row>
                                 </Col>
                             </Row>
-                            <Row className='mt-2'>
-                                <Col sm={12} className='d-flex justify-content-end'>
-                                    <Button type='submit' className='custom-buttons' disabled={store?.createSubscriptionPlanReducer?.loading}>
-                                        {store?.createSubscriptionPlanReducer?.loading ?
-                                            <Spinner className='spinner-border-sm' color='white' />
-                                            :
-                                            'Generate Contract'
-                                        }
+                        )}
+
+                        <Row className="mt-2">
+                            <Col sm={12} className="d-flex justify-content-end gap-2">
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={
+                                        // store?.userBillingCompleted ? (
+                                        <Tooltip id="billing-tooltip">Billing in progress.</Tooltip>
+                                        // ) : (
+                                        // <></>
+                                        // )
+                                    }>
+                                    <span className="d-inline-block">
+                                        <Button
+                                            type="submit"
+                                            className="custom-buttons"
+                                            disabled
+                                            style={{ pointerEvents: 'none' }}>
+                                            Upgrade Subscription
+                                        </Button>
+                                    </span>
+                                </OverlayTrigger>
+                                {/* <Button
+                                    type="submit"
+                                    className="custom-buttons"
+                                    disabled
+
+                                    // ={store?.createSubscriptionPlanReducer?.loading}
+                                >
+                                    {/* {store?.createSubscriptionPlanReducer?.loading ? */}
+                                {/* // <Spinner className='spinner-border-sm' color='white' /> */}
+                                {/* // : */}
+                                {/* Upgrade Subscription */}
+                                {/* } */}
+                                {/* </Button> */}
+
+                                {billingData ? (
+                                    <Button onClick={() => setActiveTab('contract')} className="custom-buttons">
+                                        Next{' '}
                                     </Button>
-                                </Col>
-                            </Row>
-
-                        </Form>
-                    }
-
-                </div>
+                                ) : (
+                                    <Button
+                                        type="submit"
+                                        className="custom-buttons"
+                                        disabled={store?.createSubscriptionPlanReducer?.loading}>
+                                        {' '}
+                                        {store?.createSubscriptionPlanReducer?.loading ? (
+                                            <Spinner className="spinner-border-sm" color="white" />
+                                        ) : (
+                                            'Next'
+                                        )}{' '}
+                                    </Button>
+                                )}
+                            </Col>
+                        </Row>
+                    </Form>
+                )}
+            </div>
             {/* } */}
         </>
-
-
-    )
-}
+    );
+};
 export default Billing;

@@ -254,7 +254,7 @@ const AllRoutes = () => {
                             ],
                         },
                         {
-                            path: 'roles',
+                            path: 'users',
                             children: [
                                 {
                                     path: 'list',

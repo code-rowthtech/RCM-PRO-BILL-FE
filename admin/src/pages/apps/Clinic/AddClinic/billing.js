@@ -4,14 +4,16 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSubscriptionsAction } from '../../../../redux/subscriptions/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
-import { addSubscriptionPlanAction, stateEmptydAction } from '../../../../redux/actions';
+import {
+    addSubscriptionPlanAction,
+    //  stateEmptydAction
+} from '../../../../redux/actions';
 import ToastHandle from '../../../../helpers/ToastMessage';
 import Spinner from '../../../../constants/Spinner';
 import us from '../../../../assets/images/flags/us.jpg';
 import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 import { useSearchParams } from 'react-router-dom';
 const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, billingId, multiple }) => {
-    console.log(userIdForBilling, 'billingIdbillingId');
     const {
         register,
         handleSubmit,
@@ -25,7 +27,6 @@ const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, bill
     const [searchParams] = useSearchParams();
     const parentClincId = searchParams.get('clincid');
     const parentUserId = searchParams.get('userId');
-    console.log({ parentUserId });
     const [paymentType, setPaymentType] = useState('');
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
@@ -63,7 +64,6 @@ const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, bill
             clinicCount: multiple === 0 ? 1 : multiple,
         };
         dispatch(addSubscriptionPlanAction({ key: encryptMessage(payload) }));
-        console.log(payload, 'payloadblilling');
     };
 
     const billingAddResponse = store?.createSubscriptionPlanReducer?.data?.status;
@@ -358,9 +358,12 @@ const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, bill
                                         </Form.Label>
                                         <Form.Group>
                                             <InputGroup>
-                                                <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">
-                                                    &nbsp;&nbsp;+1
-                                                </InputGroup.Text>{' '}
+                                                <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                                    {' '}
+                                                    <img src={us} alt="country code flag" width={16} />
+                                                    +1{' '}
+                                                </InputGroup.Text>
+
                                                 {/* This is the prefix */}
                                                 <Form.Control
                                                     type="tel"
@@ -404,9 +407,9 @@ const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, bill
                                                 />
                                             </InputGroup>
                                         </Form.Group>
-                                        <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
+                                        {/* <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
                                             <img src={us} alt="country code flag" width={20} />
-                                        </div>
+                                        </div> */}
                                     </Form.Group>
                                     {/* <Form.Group className="">
                                         <Form.Control

@@ -18,7 +18,6 @@ const Updateclinic = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const id = searchParams.get('updateid');
-    console.log(id,'iddddddd')
     const [activeTab, setActiveTab] = useState('clinic');
     const [billingId,setBillingId]=useState(null)
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer

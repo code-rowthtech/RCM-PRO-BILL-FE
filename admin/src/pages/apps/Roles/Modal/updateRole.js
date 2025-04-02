@@ -25,7 +25,7 @@ import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const UpdateRoles = ({ show, closeModal, data }) => {
     const dispatch = useDispatch();
-    console.log(data,'datadatadatadatadata')
+    console.log(data, 'datadatadatadatadata');
     const {
         register,
         handleSubmit,
@@ -89,39 +89,39 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             const formattedLeavingDate = data?.leavingDate
                 ? new Date(data?.leavingDate).toISOString().split('T')[0]
                 : '';
-                setField('address', data?.address?.[0]?.line || '');
-                setField('stateName', data?.address?.[0]?.state || '');
-                setField('city', data?.address?.[0]?.city || '');
-                setCountry( data?.address?.[0]?.country || '');
-                setField('street', data?.address?.[0]?.street || '');
-                setField('zip', data?.address?.[0]?.postalCode || '');
-                // if (data?.address?.[0]?.city) {
-                //             dispatch(
-                //                 getCitiesAction({
-                //                     state_code: data?.address?.[0]?.state?.id,
-                //                     name: data?.address?.[0]?.city?.name,
-                //                     limit: '',
-                //                     skip: '',
-                //                 })
-                //             );
-                //         }
+            setField('address', data?.address?.[0]?.line || '');
+            setField('stateName', data?.address?.[0]?.state || '');
+            setField('city', data?.address?.[0]?.city || '');
+            setCountry(data?.address?.[0]?.country || '');
+            setField('street', data?.address?.[0]?.street || '');
+            setField('zip', data?.address?.[0]?.postalCode || '');
+            // if (data?.address?.[0]?.city) {
+            //             dispatch(
+            //                 getCitiesAction({
+            //                     state_code: data?.address?.[0]?.state?.id,
+            //                     name: data?.address?.[0]?.city?.name,
+            //                     limit: '',
+            //                     skip: '',
+            //                 })
+            //             );
+            //         }
 
             setValue('leavingDate', formattedLeavingDate);
         }
-    }, [data, setValue,cities1]);
+    }, [data, setValue, cities1]);
 
     const [updateId, setUpdateId] = useState(null);
-     useEffect(() => {
-            if (show) {
-                // console.log(designation)
-                // if(designation){
-                    dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
-                    
-                // }
-          dispatch(getStatesByCountryAction())
+    useEffect(() => {
+        if (show) {
+            // console.log(designation)
+            // if(designation){
+            dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
+
+            // }
+            dispatch(getStatesByCountryAction());
             dispatch(getRolesAction({ status: true, search: '', limit: 10 }));
-            }
-        }, [show]);
+        }
+    }, [show]);
     useEffect(() => {
         if (data?._id) {
             setUpdateId(data?._id);
@@ -151,15 +151,15 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     const designation = store?.getMastersDataReducer?.data?.clinicTypes;
     const onSubmit = (formdata) => {
         const payload = {
-            id: updateId,  // Ensure ID is included
+            id: updateId, // Ensure ID is included
             name: { text: formdata.name }, // Ensure name is properly structured
             email: formdata.email,
             role: formdata.role,
             phone: formdata.phone ? '+1' + formdata.phone.replace(/\D/g, '') : '', // Format phone number
-            ...(formdata.leavingDate ? { leavingDate: formdata.leavingDate } : {}),// Add conditionally
+            ...(formdata.leavingDate ? { leavingDate: formdata.leavingDate } : {}), // Add conditionally
             address: [
                 {
-                    line: formdata.address || '',  
+                    line: formdata.address || '',
                     city: selectedCity || '',
                     state: formdata.stateName || '',
                     country: 'US' || '',
@@ -167,8 +167,8 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                 },
             ],
         };
-        
-     console.log(payload,"formdata")
+
+        console.log(payload, 'formdata');
         dispatch(updateUserRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
@@ -182,7 +182,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     //     if(show && statesData?.states?.length < 1  ){
     //         dispatch(getStatesByCountryAction());
     //     }
-       
+
     // }, [dispatch]);
 
     const getGeolocation = (e) => {
@@ -261,7 +261,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     };
 
     return (
-        <Modal centered show={show} size='lg'>
+        <Modal centered show={show} size="lg">
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
@@ -300,7 +300,11 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                 </Form.Label>
                                 <Form.Group>
                                     <InputGroup>
-                                        <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">+1</InputGroup.Text>
+                                        <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                            {' '}
+                                            <img src={us} alt="country code flag" width={16} />
+                                            +1{' '}
+                                        </InputGroup.Text>
                                         <Form.Control
                                             type="tel"
                                             {...register('phone', {
@@ -343,9 +347,9 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                         />
                                     </InputGroup>
                                 </Form.Group>
-                                <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
+                                {/* <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
                                     <img src={us} alt="country code flag" width={20} />
-                                </div>
+                                </div> */}
                             </Form.Group>
                             {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                         </Col>
@@ -536,7 +540,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                 )}
                                             </Form.Group>
                                         </Col> */}
-                                       
+
                                         {/* <Col sm={6}>
                                                                     <Form.Group className="mb-2">
                                                                         <Form.Label className="mb-1">Latitude</Form.Label>
@@ -627,8 +631,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                 )}
                                             </Form.Group>
                                         </Col>
-                                    
-
                                     </Row>
                                 </Col>
                             </Row>
@@ -637,9 +639,9 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                     {/* <hr className='my-1' /> */}
 
                     <Modal.Footer className="border-0">
-                        <Button className="custom-buttons" onClick={() => closeModal()}>
+                        {/* <Button className="custom-buttons" onClick={() => closeModal()}>
                             Cancel
-                        </Button>
+                        </Button> */}
                         <Button
                             type="submit"
                             disabled={store?.updateUserRolesReducer?.loading}

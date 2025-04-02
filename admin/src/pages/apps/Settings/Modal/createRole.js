@@ -27,11 +27,11 @@ const AddRoles = ({ show, closeModal }) => {
         reset
     } = useForm();
 
-    useEffect(() => {
-        if (show) {
-            dispatch(getPermissionAction({ search: '', limit: '', skip: '' }))
-        }
-    }, [show])
+    // useEffect(() => {
+    //     if (show) {
+    //         dispatch(getPermissionAction({ search: '', limit: '', skip: '' }))
+    //     }
+    // }, [show])
 
 
     const onSubmit = (data) => {

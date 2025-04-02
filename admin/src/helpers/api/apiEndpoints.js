@@ -51,7 +51,7 @@ export const getCodesApi = `${BaseRoute}/codes/find`;
 
 
 
-// ROLE MANAGEMENT
+// User Management
 export const addNewUserRole = `${BaseRoute}/role-management/create`;
 export const updateNewUserRole = `${BaseRoute}/role-management/edit`;
 export const getNewUserRole = `${BaseRoute}/role-management/`;

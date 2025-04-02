@@ -268,13 +268,17 @@ const AddRoles = ({ show, closeModal }) => {
                             </Form.Group>
                         </Col>
                         <Col sm={6} className="mb-2">
-                            <Form.Group className="mb-0 position-relative">
+                            <Form.Group className="mb-0">
                                 <Form.Label className="mb-1">
                                     Contact Number <span className="text-danger">*</span>
                                 </Form.Label>
                                 <Form.Group>
                                     <InputGroup>
-                                        <InputGroup.Text className="ps-3 pe-1 fw-bold text-black">+1</InputGroup.Text>{' '}
+                                        <InputGroup.Text className="p-0 px-1 d-flex align-items-center justify-content-center fs-6 gap-1 fw-bold text-black">
+                                            {' '}
+                                            <img src={us} alt="country code flag" width={16} />
+                                            +1{' '}
+                                        </InputGroup.Text>
                                         {/* This is the prefix */}
                                         <Form.Control
                                             type="tel"
@@ -318,9 +322,9 @@ const AddRoles = ({ show, closeModal }) => {
                                         />
                                     </InputGroup>
                                 </Form.Group>
-                                <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
+                                {/* <div className="position-absolute " style={{ top: '52%', left: '1%' }}>
                                     <img src={us} alt="country code flag" width={20} />
-                                </div>
+                                </div> */}
                             </Form.Group>
                             {errors.phone && <span className="text-danger">{errors.phone.message}</span>}
                         </Col>
@@ -582,7 +586,6 @@ const AddRoles = ({ show, closeModal }) => {
                                                 )}
                                             </Form.Group>
                                         </Col> */}
-                                       
 
                                         {/* <Col sm={6}>
                                             <Form.Group className="mb-2">
@@ -674,8 +677,6 @@ const AddRoles = ({ show, closeModal }) => {
                                                 )}
                                             </Form.Group>
                                         </Col>
-                                      
-                                     
                                     </Row>
                                 </Col>
                             </Row>
@@ -694,14 +695,13 @@ const AddRoles = ({ show, closeModal }) => {
                                 {designationError && <span className="text-danger">{designationError}</span>}
                             </Form.Group>
                         </Col> */}
-                     
                     </Row>
                     {/* <hr className='my-1' /> */}
 
                     <Modal.Footer className="border-0">
-                        <Button className="custom-buttons" onClick={() => closeModal()}>
+                        {/* <Button className="custom-buttons" onClick={() => closeModal()}>
                             Cancel
-                        </Button>
+                        </Button> */}
                         <Button
                             type="submit"
                             disabled={store?.createUserRolesReducer?.loading}
