@@ -5,10 +5,10 @@ import { FormInput } from '../../../components'
 import { Link } from 'react-router-dom'
 import AddRoles from './Modal/createRole'
 import { useDispatch, useSelector } from 'react-redux'
-import { getPermissionAction, getRolesAction, updateRolesAction } from '../../../redux/actions'
+import { getRolesAction, updateRolesAction } from '../../../redux/actions'
 import UpdateRole from './Modal/updateRole'
 import { encryptMessage } from '../../../cryptoUtils'
-// import { stateEmptydAction } from '../../../redux/roles/actions'
+import { stateEmptydAction } from '../../../redux/roles/actions'
 import Spinner from '../../../constants/Spinner'
 import Paginations from '../../../helpers/Paginations'
 
@@ -27,10 +27,9 @@ const Roles = () => {
         setShowModal(false);
     };
     useEffect(() => {
-        dispatch(getPermissionAction({ search: '', limit: '', skip: '' }));
         dispatch(getRolesAction({ limit: 10, skip: skip, search: search, status: status }));
         if (updateSuccess === 200 || createSuccess === 200) {
-            // dispatch(stateEmptydAction());
+            dispatch(stateEmptydAction());
             dispatch(getRolesAction({ limit: 10, skip: skip, search: search, status: status }));
         }
     }, [dispatch, updateSuccess, skip, search, createSuccess, status])
@@ -171,7 +170,7 @@ const Roles = () => {
                                                                     }}>
                                                                         <i className="mdi  mdi-square-edit-outline"></i>
                                                                     </Link>
-                                                                    {/* <i onClick={() => toggleRow(index)} className="mdi mdi-eye fs-4"></i> */}
+                                                                    <i onClick={() => toggleRow(index)} className="mdi mdi-eye fs-4"></i>
                                                                     <UpdateRole show={showUpdateModal} closeModal={closeUpdateModal} data={dataToUpdate} />
                                                                 </td>
                                                             </tr>

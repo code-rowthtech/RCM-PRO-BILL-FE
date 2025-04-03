@@ -34,6 +34,10 @@ function* createClinicsFunction(data) {
                 type: ClinicsActionTypes.CREATE_CLINIC_SUCCESS,
                 payload: { ...decryptedData },
             });
+            yield put({
+                type: ClinicsActionTypes.CREATE_CLINIC_RESET,
+                payload: {},
+            });
         } else {
             yield put({
                 type: ClinicsActionTypes.CREATE_CLINIC_ERROR,
