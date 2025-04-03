@@ -71,6 +71,7 @@ const Topbar = ({ hideLogo, navCssClasses,
         '/settings/jobtitle': 'Job Title',
         '/settings/contractFormat': 'Contract Format',
         '/settings/designation': 'Designation',
+        '/settings/department': 'Department',
         '/settings/code': 'Codes',
 
     };

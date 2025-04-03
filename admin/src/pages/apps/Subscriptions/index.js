@@ -29,6 +29,7 @@ const Subscriptions = () => {
     const [status, setStatus] = useState(true);
     const [count,setCount] = useState(false);
     const subscriptionsResponse = store?.getSubscriptionsReducer?.data;
+    console.log(subscriptionsResponse,'subscriptionsResponse')
     const createSuccess = store?.createSubscriptionsReducer?.data?.status;
     const updateSuccess = store?.updateSubscriptionsReducer?.data?.status;
     const isAddPresent = userPermissions.includes('add subscription') || userPermissions.includes('ADD_A_SUBSCRIPTION');
@@ -46,7 +47,7 @@ const Subscriptions = () => {
         }
         // dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
         else if (!subscriptionsResponse || subscriptionsResponse.length === 0) {
-            dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
+            dispatch(getSubscriptionsAction(payload));
         }
         if (createSuccess === 201 || updateSuccess === 200) {
             dispatch(stateEmptydAction());

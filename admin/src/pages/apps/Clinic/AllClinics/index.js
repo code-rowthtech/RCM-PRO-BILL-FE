@@ -30,6 +30,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
     console.log(clinicsData,'clinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     const createSuccess = store?.createClinicsReducer?.data?.status;
+    console.log(createSuccess,'success')
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const isAddPresent = userPermissions.includes('add clinic') || userPermissions.includes('ADD_A_PRACTICE');
@@ -38,7 +39,6 @@ const OrderList = (): React$Element<React$FragmentType> => {
         register,
         getValues,
     } = useForm();
-
     useEffect(() => {
         const hasFilters = name !== null || skip !== 1 || status !== true || selectedClinicType!=='';
     

@@ -2,9 +2,9 @@ import { ClinicsActionTypes } from './constants';
 
 const initial_state = {
     data: [],
-    message: "",
+    message: '',
     loading: false,
-  };
+};
 
 const CREATE_CLINICS_INITIAL_STATE = {
     data: [],
@@ -83,16 +83,21 @@ export const createClinicsReducer = (state = CREATE_CLINICS_INITIAL_STATE, actio
                 data: action.payload,
                 loading: false,
             };
+        case ClinicsActionTypes.CREATE_CLINIC_RESET:
+            return {
+                data: [],
+                loading: false,
+            };
         case ClinicsActionTypes.CREATE_CLINIC_ERROR:
             return {
                 data: action.payload,
                 loading: false,
             };
-        case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
-            return {
-                data: [],
-                loading: false,
-            };
+        // case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
+        //     return {
+        //         data: [],
+        //         loading: false,
+        //     };
         default:
             return state;
     }
@@ -310,7 +315,7 @@ export const updateClinicsReducer = (state = UPDATE_CLINICS_INITIAL_STATE, actio
                 loading: false,
             };
         default:
-            return  {...state};
+            return { ...state };
     }
 };
 

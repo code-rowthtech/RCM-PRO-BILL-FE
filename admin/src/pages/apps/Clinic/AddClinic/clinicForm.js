@@ -9,8 +9,10 @@ import {
     deleteClinicAction,
     getCities2Action,
     getCitiesAction,
+    getClinicAction,
     getClinicById,
     getClinicByParentAction,
+    stateEmptydAction,
 } from '../../../../redux/clinics/actions';
 import { FiDownloadCloud, FiInfo, FiMinus } from 'react-icons/fi';
 import { handleUpload } from '../../../../helpers/HandleUpload';
@@ -116,6 +118,7 @@ const ClinicForm = ({
     // GET store data
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const createResponse = store?.createClinicsReducer?.data?.status;
+    // console.log(store?.createClinicsReducer?.data,'store?.createClinicsReducer?.datastore?.createClinicsReducer?.data')
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.result;
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
@@ -197,7 +200,7 @@ const ClinicForm = ({
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (createResponse === 200) {
-            // setShowPopup(true); // Show success popup
+            setShowPopup(true); // Show success popup
             reset();
             setConstantContact([]);
             setLogo(null);
@@ -206,7 +209,15 @@ const ClinicForm = ({
             setAddresses([{ type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
             setIdentifierDocumnent(false);
             setPocs([]);
-            setActiveTab('billing');
+            const payload = {
+                name: '',
+                skip: 1,
+                limit: 10,
+                status: true,
+                clinicType: '',
+            };
+            dispatch(getClinicAction({ payload }));
+            // setActiveTab('billing');
             // setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
             // setPosDetails([{ name: '', number: '', url: null, fileName: '' }]);
             // setStateDetails([{ name: '', number: '', url: null, fileName: '' }]);
@@ -231,7 +242,7 @@ const ClinicForm = ({
             };
             dispatch(getClinicByParentAction(payload));
         }
-    }, [createResponse, clinicsList, parentClinicId, counter]);
+    }, [createResponse, clinicsList, parentClinicId, counter, dispatch]);
     const handleClosePopup = () => {
         setShowPopup(false);
         setActiveTab('billing');

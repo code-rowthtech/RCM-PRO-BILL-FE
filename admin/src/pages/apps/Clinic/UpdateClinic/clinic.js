@@ -13,6 +13,7 @@ import {
     generateOtpAction,
     getCities2Action,
     getCitiesAction,
+    getClinicAction,
     stateEmptydAction,
     updateClinicAction,
     verifyOtpAction,
@@ -619,8 +620,16 @@ const Clinic = ({ id }) => {
         if (updateSuccess === 200) {
             // dispatch(stateEmptydAction());
             closeStatusModal();
+            const payload = {
+                name: '',
+                skip: 1,
+                limit: 10,
+                status: true,
+                clinicType: '',
+            };
+            dispatch(getClinicAction({ payload }));
         }
-    }, [updateSuccess]);
+    }, [updateSuccess, dispatch]);
     // new changes
     const defaultIdentifiers = ['NPI', 'TIN', 'Taxonomy'];
     const defaultIssuingAuthority = [
