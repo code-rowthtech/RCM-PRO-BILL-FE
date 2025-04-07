@@ -1913,7 +1913,8 @@ const ClinicForm = ({
                             <Button
                                 variant="primary"
                                 type={!parentClinicId ? 'submit' : 'button'}
-                                className="custom-buttons"
+                                className="custom-buttons "
+                                style={{ width: '80px' }}
                                 // disabled={!formValid || store?.createClinicsReducer?.loading}
                                 onClick={() => {
                                     if (parentClinicId && !isModalRequest) {
