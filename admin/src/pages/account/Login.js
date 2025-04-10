@@ -115,7 +115,7 @@ const Login = (): React$Element<any> => {
                                 <Spinner color="white" className="spinner-border-sm" />
                             ) : (
                                 `${t('Log In')}`
-                            )}
+                            )}  
                         </Button>
                     </div>
                 </VerticalForm>
