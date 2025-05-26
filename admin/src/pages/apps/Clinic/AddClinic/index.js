@@ -5,7 +5,13 @@ import { FormInput } from '../../../../components';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRolesAction } from '../../../../redux/actions';
-import { createClinicAction, generateContractAction, getContractAction, getStatesByCountryAction, stateEmptydAction } from '../../../../redux/clinics/actions';
+import {
+    createClinicAction,
+    generateContractAction,
+    getContractAction,
+    getStatesByCountryAction,
+    stateEmptydAction,
+} from '../../../../redux/clinics/actions';
 import { encryptMessage } from '../../../../cryptoUtils';
 import Spinner from '../../../../constants/Spinner';
 import ToastHandle from '../../../../helpers/ToastMessage';
@@ -25,7 +31,7 @@ const Index = () => {
         reset,
         watch,
         setError,
-        clearErrors
+        clearErrors,
     } = useForm();
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
@@ -35,17 +41,21 @@ const Index = () => {
     const [contractId, setContractId] = useState(null);
     const [multiple, setMultiple] = useState(0);
     const [activeTab, setActiveTab] = useState('clinic');
-    const [allowedTabs, setAllowedTabs] = useState(['clinic'])
+    const [allowedTabs, setAllowedTabs] = useState(['clinic']);
     const [resetEmail, setResetEmail] = useState({
-        name: null, email: null, clinicType: null, flag: 'Clinic'
+        name: null,
+        email: null,
+        clinicType: null,
+        flag: 'Clinic',
     });
+    const [submitAction, setSubmitAction] = useState('next');
     const [searchParams] = useSearchParams();
     const parentClinicId = searchParams.get('clincid');
     const parentUserId = searchParams.get('userId');
     const [isModalRequest, setIsModalRequest] = useState(false); // Track whether the API was triggered by the modal
     const [resetEmailError, setResetEmailError] = useState(null);
     const store = useSelector((state) => state);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const addClinicResponse = store?.createClinicsReducer?.data?.status;
     const [addClinicData, setAddClinicData] = useState(null);
@@ -64,24 +74,27 @@ const Index = () => {
         dispatch(getStatesByCountryAction());
         if (addClinicResponse === 200) {
             reset();
-            setAddClinicData(store?.createClinicsReducer?.data?.data)
+            setAddClinicData(store?.createClinicsReducer?.data?.data);
             // dispatch(stateEmptydAction());
         }
-    }, [dispatch, addClinicResponse])
+    }, [dispatch, addClinicResponse]);
 
     const setMailDataNull = () => {
         setResetEmail({
-            name: null, email: null, role: null, clinicType: null
-        })
-    }
+            name: null,
+            email: null,
+            role: null,
+            clinicType: null,
+        });
+    };
     const handleActiveTab = (data) => {
-        setActiveTab(data)
-    }
+        setActiveTab(data);
+    };
     const [showMailModal, setShowMailModal] = useState(false);
     const closeMailModal = () => {
         setShowMailModal(false);
-        setResetEmailError(null)
-    }
+        setResetEmailError(null);
+    };
     const [buffer, setBuffer] = useState(null);
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
 
@@ -94,10 +107,10 @@ const Index = () => {
             adminName: user?.name,
             adminEmail: user?.email,
             clinicName: addClinicData?.clinicId?.name,
-            clinicEmail: addClinicData?.email
-        }
+            clinicEmail: addClinicData?.email,
+        };
         dispatch(generateContractAction({ key: encryptMessage(data) }));
-    }
+    };
     useEffect(() => {
         if (store?.generateContractReducer?.data?.status === 200) {
             const payload = {
@@ -106,121 +119,193 @@ const Index = () => {
             };
             dispatch(getContractAction({ key: encryptMessage(payload) }));
         }
-    }, [dispatch, store?.generateContractReducer?.data?.status])
+    }, [dispatch, store?.generateContractReducer?.data?.status]);
     const requiredFields = [
-        { key: "name", message: "Name is required." },
-        { key: "email", message: "Email is required." },
+        { key: 'name', message: 'Name is required.' },
+        { key: 'email', message: 'Email is required.' },
         // { key: "phone", message: "Phone number is required." },
-        { key: "clinicType", message: "Clinic Type is required." },
+        { key: 'clinicType', message: 'Clinic Type is required.' },
     ];
 
     // Check for missing fields
-    const missingField = requiredFields.find(field => !resetEmail?.[field.key]);
+    const missingField = requiredFields.find((field) => !resetEmail?.[field.key]);
     return (
         <>
-            <Row className='mt-2'>
+            <Row className="mt-2">
                 <Col xs={12}>
                     <Card>
-                        <Card.Body className='scroll-container' style={{ height: '88vh', }}>
-                            <Row className='mb-1' style={{ height: '7%' }}>
-                                <Col className='d-flex align-items-center gap-3'>
+                        <Card.Body className="scroll-container" style={{ height: '88vh' }}>
+                            <Row className="mb-1" style={{ height: '7%' }}>
+                                <Col className="d-flex align-items-center gap-3">
                                     <span
                                         onClick={() => handleActiveTab('clinic')}
-                                        className={`fw-semibold cursor-pointer ${activeTab === 'clinic' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                        className={`fw-semibold cursor-pointer ${
+                                            activeTab === 'clinic'
+                                                ? 'border-bottom border-2 border-dark text-black fw-bold'
+                                                : ''
+                                        }`}>
                                         Practice Information
                                     </span>
                                     {!parentClinicId && !parentUserId && (
                                         <>
                                             <span
                                                 onClick={() => {
-                                                    handleActiveTab('billing')
+                                                    handleActiveTab('billing');
                                                     // if (createResponse === 200) {
                                                     // } else {
                                                     //     ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
                                                     // }
                                                 }}
-                                                className={`fw-semibold cursor-pointer ${activeTab === 'billing' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                                className={`fw-semibold cursor-pointer ${
+                                                    activeTab === 'billing'
+                                                        ? 'border-bottom border-2 border-dark text-black fw-bold'
+                                                        : ''
+                                                }`}>
                                                 Billing and Subscription Information
                                             </span>
                                             <span
                                                 onClick={() => {
-                                                    handleActiveTab('contract')
+                                                    handleActiveTab('contract');
                                                     // if (createBillingResponse === 200) {
                                                     // } else {
                                                     //     ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
                                                     // }
                                                 }}
-                                                className={`fw-semibold cursor-pointer ${activeTab === 'contract' ? 'border-bottom border-2 border-dark text-black fw-bold' : ''}`}>
+                                                className={`fw-semibold cursor-pointer ${
+                                                    activeTab === 'contract'
+                                                        ? 'border-bottom border-2 border-dark text-black fw-bold'
+                                                        : ''
+                                                }`}>
                                                 Contract
                                             </span>
                                         </>
                                     )}
-
                                 </Col>
-                                <Col className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
+                                <Col
+                                    className={`${
+                                        activeTab === 'clinic' ? 'd-flex' : 'd-none'
+                                    } gap-2 justify-content-end align-items-center`}>
                                     <Button
                                         className={`custom-buttons ${parentClinicId ? 'd-none' : ''}`}
                                         disabled={missingField}
                                         onClick={() => {
                                             if (missingField) {
-                                                ToastHandle('Please fill in all mandatory fields to proceed.', 'danger');
+                                                ToastHandle(
+                                                    'Please fill in all mandatory fields to proceed.',
+                                                    'danger'
+                                                );
                                             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail?.email)) {
-                                                ToastHandle("Please enter a valid email address.", 'danger');
-                                            } else if (resetEmail?.CLIA_Number && !/^[A-Z0-9]{2}D[0-9]{7}$/.test(resetEmail?.CLIA_Number)) {
-                                                ToastHandle("CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits.", 'danger');
-                                            } else if (resetEmail?.medicareNumber && resetEmail?.medicareNumber?.length < 6) {
-                                                ToastHandle("Medicare number must be at least 6 characters long.", 'danger');
-                                            } else if (resetEmail?.medicaidNumber && resetEmail?.medicaidNumber?.length < 10) {
-                                                ToastHandle("Medicaid number must be at least 10 characters long.", 'danger');
-                                            }
-                                            else {
+                                                ToastHandle('Please enter a valid email address.', 'danger');
+                                            } else if (
+                                                resetEmail?.CLIA_Number &&
+                                                !/^[A-Z0-9]{2}D[0-9]{7}$/.test(resetEmail?.CLIA_Number)
+                                            ) {
+                                                ToastHandle(
+                                                    'CLIA number must be in the format XXDXXXXXXX, where X is alphanumeric and the rest are digits.',
+                                                    'danger'
+                                                );
+                                            } else if (
+                                                resetEmail?.medicareNumber &&
+                                                resetEmail?.medicareNumber?.length < 6
+                                            ) {
+                                                ToastHandle(
+                                                    'Medicare number must be at least 6 characters long.',
+                                                    'danger'
+                                                );
+                                            } else if (
+                                                resetEmail?.medicaidNumber &&
+                                                resetEmail?.medicaidNumber?.length < 10
+                                            ) {
+                                                ToastHandle(
+                                                    'Medicaid number must be at least 10 characters long.',
+                                                    'danger'
+                                                );
+                                            } else {
                                                 setResetEmailError(null); // Clear the error when all inputs are valid
                                                 setShowMailModal(true);
                                             }
-                                        }}
-                                    >
+                                        }}>
                                         Email to Practice
                                     </Button>
-                                    <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
-                                    <SendEmailModal setIsModalRequest={setIsModalRequest} show={showMailModal} closeModal={closeMailModal} mailId={resetEmail} setMailDataNull={setMailDataNull} />
-                                </Col>
-                                <Col className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'} gap-2 justify-content-end align-items-center`}>
-                                    <Button onClick={handleContractGeneration} className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
-                                        {store?.generateContractReducer?.loading ?
-                                            <Spinner className='spinner-border-sm' color='white' />
-                                            :
-                                            'Send Email'
-                                        }
+                                    <Button className="custom-buttons" onClick={() => navigate(-1)}>
+                                        Back
                                     </Button>
-                                    <Button className='custom-buttons' onClick={() => navigate(-1)}>Back</Button>
+                                    <SendEmailModal
+                                        setIsModalRequest={setIsModalRequest}
+                                        show={showMailModal}
+                                        closeModal={closeMailModal}
+                                        mailId={resetEmail}
+                                        setMailDataNull={setMailDataNull}
+                                        submitAction={submitAction}
+                                        setSubmitAction={setSubmitAction}
+                                    />
+                                </Col>
+                                <Col
+                                    className={`${
+                                        activeTab !== 'clinic' ? 'd-flex' : 'd-none'
+                                    } gap-2 justify-content-end align-items-center`}>
+                                    <Button
+                                        onClick={handleContractGeneration}
+                                        className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>
+                                        {store?.generateContractReducer?.loading ? (
+                                            <Spinner className="spinner-border-sm" color="white" />
+                                        ) : (
+                                            'Send Email'
+                                        )}
+                                    </Button>
+                                    <Button className="custom-buttons" onClick={() => navigate(-1)}>
+                                        Back
+                                    </Button>
                                 </Col>
                             </Row>
-                            <Row className='scroll-container pt-2 pe-1' style={{ height: '93%', }}>
+                            <Row className="scroll-container pt-2 pe-1" style={{ height: '93%' }}>
                                 <Col>
-                                    {activeTab === 'clinic' ?
+                                    {activeTab === 'clinic' ? (
                                         <ClinicForm
-                                            setIsModalRequest={setIsModalRequest} isModalRequest={isModalRequest}
-                                            setResetEmail={setResetEmail} resetEmailError={resetEmailError}
-                                            resetEmail={resetEmail} showMailModal={showMailModal}
-                                            setActiveTab={setActiveTab} activeTab={activeTab}
-                                            setClinicId={setClinicId} clinicId={clinicId} setBillingId={setBillingId}
-                                            setContractId={setContractId} setMultiple={setMultiple} />
-                                        :
-                                        activeTab === 'billing' ?
-                                            <BillingForm multiple={multiple} setActiveTab={setActiveTab} activeTab={activeTab} userIdForBilling={userIdForBilling} clinicId={clinicId} setBillingId={setBillingId} />
-                                            :
-                                            <Contract
-                                                setQuillBuffer={setQuillBuffer}
-                                                setClinicId={setClinicId} setBillingId={setBillingId}
-                                                setActiveTab={setActiveTab} activeTab={activeTab}
-                                                clinicId={clinicId} addClinicId={addClinicData?.clinicId?._id} billingId={billingId} contractId={contractId} />
-                                    }
+                                            setIsModalRequest={setIsModalRequest}
+                                            isModalRequest={isModalRequest}
+                                            setResetEmail={setResetEmail}
+                                            resetEmailError={resetEmailError}
+                                            resetEmail={resetEmail}
+                                            showMailModal={showMailModal}
+                                            setActiveTab={setActiveTab}
+                                            activeTab={activeTab}
+                                            setClinicId={setClinicId}
+                                            clinicId={clinicId}
+                                            setBillingId={setBillingId}
+                                            setContractId={setContractId}
+                                            setMultiple={setMultiple}
+                                            submitAction={submitAction}
+                                            setSubmitAction={setSubmitAction}
+                                        />
+                                    ) : activeTab === 'billing' ? (
+                                        <BillingForm
+                                            multiple={multiple}
+                                            setActiveTab={setActiveTab}
+                                            activeTab={activeTab}
+                                            userIdForBilling={userIdForBilling}
+                                            clinicId={clinicId}
+                                            setBillingId={setBillingId}
+                                        />
+                                    ) : (
+                                        <Contract
+                                            setQuillBuffer={setQuillBuffer}
+                                            setClinicId={setClinicId}
+                                            setBillingId={setBillingId}
+                                            setActiveTab={setActiveTab}
+                                            activeTab={activeTab}
+                                            clinicId={clinicId}
+                                            addClinicId={addClinicData?.clinicId?._id}
+                                            billingId={billingId}
+                                            contractId={contractId}
+                                        />
+                                    )}
                                 </Col>
                             </Row>
                         </Card.Body>
                     </Card>
                 </Col>
-            </Row >
+            </Row>
         </>
     );
 };

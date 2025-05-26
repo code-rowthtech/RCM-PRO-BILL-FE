@@ -109,13 +109,12 @@ const Login = (): React$Element<any> => {
                         defaultValue="" // Ensures the field is initialized
                     />
 
-                    <div className="mb-3  mb-0 d-flex justify-content-center">
-                        <Button className="custom-buttons w-25 " type="submit" disabled={loading}>
-                            {loading ? (
-                                <Spinner color="white" className="spinner-border-sm" />
-                            ) : (
-                                `${t('Log In')}`
-                            )}
+                     <div className="mb-3 mb-0 d-flex justify-content-center">
+                        <Button
+                            className="custom-buttons w-100 d-flex algin-items-center justify-content-center"
+                            type="submit"
+                            disabled={loading}>
+                            {loading ? <Spinner color="white" className="spinner-border-sm " /> : `${t('Log In')}`}
                         </Button>
                     </div>
                 </VerticalForm>

@@ -1780,7 +1780,9 @@ const Clinic = ({ id }) => {
                         <Button
                             type="submit"
                             disabled={store?.updateClinicsReducer?.loading}
-                            className="mt-3 custom-buttons">
+                            className="mt-3 custom-buttons"
+                            style={{width: '80px'}}
+                            >
                             {store?.updateClinicsReducer?.loading ? (
                                 <Spinner color="white" className="spinner-border-sm" />
                             ) : (

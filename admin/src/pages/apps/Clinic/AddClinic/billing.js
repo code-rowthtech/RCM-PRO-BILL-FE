@@ -445,6 +445,7 @@ const BillingForm = ({ activeTab, setActiveTab, userIdForBilling, clinicId, bill
                     <Button
                         type="submit"
                         className="custom-buttons"
+                        style={{ width: '150px' }}
                         disabled={store?.createSubscriptionPlanReducer?.loading}>
                         {store?.createSubscriptionPlanReducer?.loading ? (
                             <Spinner className="spinner-border-sm" color="white" />
