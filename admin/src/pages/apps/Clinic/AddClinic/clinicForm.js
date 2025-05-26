@@ -34,6 +34,8 @@ const ClinicForm = ({
     setIsModalRequest,
     isModalRequest,
     resetEmail,
+    submitAction,
+    setSubmitAction,
 }) => {
     const dispatch = useDispatch();
     const {
@@ -106,8 +108,7 @@ const ClinicForm = ({
     const [mailingCitySearch, setMailingCitySearch] = useState(null);
     const [logoUploading, setLogoUploading] = useState(false);
     const [accUploading, setAccUploading] = useState(false);
-    const [submitAction, setSubmitAction] = useState('next');
-    const [identifierDocument, setIdentifierDocumnent] = useState(false);
+    const [identifierDocument, setIdentifierDocument] = useState(false);
     const userId = store?.createClinicsReducer?.data?.user?._id;
     // useEffect(() => {
     //     const validCodes = taxonomyCodes.filter((code) => code.trim() !== '');
@@ -210,7 +211,7 @@ const ClinicForm = ({
             setLogoName(null);
             setConstantIdentifiers([]);
             setAddresses([{ type: '', use: '', line: [''], city: '', state: '', postalCode: '', country: 'US' }]);
-            setIdentifierDocumnent(false);
+            setIdentifierDocument(false);
             setPocs([]);
             const payload = {
                 name: '',
@@ -1080,8 +1081,10 @@ const ClinicForm = ({
     const handleIdentifierFileChange = async (e, index) => {
         const selectedFile = e.target.files[0];
         if (!selectedFile) return;
+        setIdentifierDocument((prev) => ({ ...prev, [index]: true })); // Set loading state
+
         try {
-            const url = await handleUpload(selectedFile, setIdentifierDocumnent); // Upload file
+            const url = await handleUpload(selectedFile, setIdentifierDocument); // Upload file
             setConstantIdentifiers((prevDetails) => {
                 const updatedDetails = [...prevDetails];
                 updatedDetails[index] = {
@@ -1357,7 +1360,7 @@ const ClinicForm = ({
                                         className={`custom-file-upload justify-content-between cursor-pointer ${
                                             item.file ? 'form-control' : 'custom-form-fields'
                                         }`}>
-                                        {identifierDocument
+                                        {identifierDocument[index]
                                             ? 'Uploading...'
                                             : item.file?.name
                                             ? item.file.name.length > 30
@@ -1906,7 +1909,9 @@ const ClinicForm = ({
                                     setCounter(2);
                                 }
                             }}>
-                            {store?.createClinicsReducer?.loading && parentClinicId ? (
+                            {store?.createClinicsReducer?.loading &&
+                            submitAction === 'addMultiple' &&
+                            parentClinicId ? (
                                 <Spinner color="white" className="spinner-border-sm" />
                             ) : (
                                 'Add Multiple Practices'
@@ -1925,7 +1930,7 @@ const ClinicForm = ({
                                         setActiveTab('billing');
                                     }
                                 }}>
-                                {store?.createClinicsReducer?.loading && !parentClinicId ? (
+                                {store?.createClinicsReducer?.loading && submitAction === 'next' && !parentClinicId ? (
                                     <Spinner color="white" className="spinner-border-sm" />
                                 ) : (
                                     'Next'
