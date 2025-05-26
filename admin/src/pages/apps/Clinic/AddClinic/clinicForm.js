@@ -106,6 +106,7 @@ const ClinicForm = ({
     const [mailingCitySearch, setMailingCitySearch] = useState(null);
     const [logoUploading, setLogoUploading] = useState(false);
     const [accUploading, setAccUploading] = useState(false);
+    const [submitAction, setSubmitAction] = useState('next');
     const [identifierDocument, setIdentifierDocumnent] = useState(false);
     const userId = store?.createClinicsReducer?.data?.user?._id;
     // useEffect(() => {
@@ -200,7 +201,9 @@ const ClinicForm = ({
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (createResponse === 200) {
-            setShowPopup(true); // Show success popup
+            if (submitAction === 'next') {
+                setShowPopup(true); // Show success popup only for "Next"
+            }
             reset();
             setConstantContact([]);
             setLogo(null);
@@ -1895,8 +1898,8 @@ const ClinicForm = ({
                             variant="primary"
                             type="submit"
                             className="custom-buttons"
-                            // disabled={!formValid || store?.createClinicsReducer?.loading}
                             onClick={() => {
+                                setSubmitAction('addMultiple');
                                 if (!parentClinicId) {
                                     setCounter(1);
                                 } else {
@@ -1915,13 +1918,11 @@ const ClinicForm = ({
                                 type={!parentClinicId ? 'submit' : 'button'}
                                 className="custom-buttons "
                                 style={{ width: '80px' }}
-                                // disabled={!formValid || store?.createClinicsReducer?.loading}
                                 onClick={() => {
+                                    setSubmitAction('next');
                                     if (parentClinicId && !isModalRequest) {
                                         setMultiple(counter);
                                         setActiveTab('billing');
-                                        // setSingleOrMultiple(false);
-                                        // setCounter(0);
                                     }
                                 }}>
                                 {store?.createClinicsReducer?.loading && !parentClinicId ? (
