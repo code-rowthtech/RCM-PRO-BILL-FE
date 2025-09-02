@@ -1,0 +1,1 @@
+{"version":3,"sources":["pages/apps/Settings/location.js"],"names":["Location","_jsx","children"],"mappings":"mHAAA,uBAQeA,UANEA,IAETC,cAAA,OAAAC,SAAK,Y","file":"static/js/67.c638c03e.chunk.js","sourcesContent":["import React from 'react'\r\n\r\nconst Location = () => {\r\n    return (\r\n        <div>Location</div>\r\n    )\r\n}\r\n\r\nexport default Location"],"sourceRoot":""}
