@@ -19,15 +19,17 @@ const Updateclinic = () => {
     const [searchParams] = useSearchParams();
     const id = searchParams.get('updateid');
     const [activeTab, setActiveTab] = useState('clinic');
+    const [billingId,setBillingId]=useState(null)
     const [quillBuffer, setQuillBuffer] = useState(null); // Store Uint8Array buffer
     const store = useSelector((state) => state);
     const clinicData = store?.getClinicByIdReducer?.data?.clinic;
     useEffect(() => {
-        dispatch(getClinicById({ key: encryptMessage({ id }) }));
+        dispatch(getClinicById({ id }));
         const data = {
-            parentClinicId: id,
+            parentOrgId: id,
+            search:'',
         };
-        dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
+        dispatch(getClinicByParentAction(data));
         dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
         dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
         dispatch(getStatesByCountryAction());
@@ -38,11 +40,12 @@ const Updateclinic = () => {
 
     useEffect(() => {
         if (store?.updateClinicsReducer?.data?.status === 200 || billingAddResponse === 200 || updateSuccess === 200 || store?.newEmailReducer?.data?.status === 200) {
-            dispatch(getClinicById({ key: encryptMessage({ id }) }));
+            dispatch(getClinicById({ id }));
             const data = {
-                parentClinicId: id,
+                parentOrgId: id,
+                search :' '
             };
-            dispatch(getClinicByParentAction({ key: encryptMessage(data) }));
+            dispatch(getClinicByParentAction(data));
             dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', limit: '' }));
             dispatch(getRolesAction({ limit: '', skip: '', search: 'clinic', status: '' }));
             dispatch(getStatesByCountryAction());
@@ -124,10 +127,10 @@ const Updateclinic = () => {
                                                 <Spinner />
                                             </div>
                                             :
-                                            <Clinic id={id} />
+                                            <Clinic id={id} setBillingId={setBillingId} />
                                         :
                                         activeTab === 'billing' ?
-                                            <Billing setActiveTab={setActiveTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id} activeTab={activeTab} />
+                                            <Billing setActiveTab={setActiveTab} id={store?.getClinicByIdReducer?.data?.clinic?.userId?._id}  billingId={billingId} activeTab={activeTab} />
                                             :
                                             <Contracttable setQuillBuffer={setQuillBuffer} activeTab={activeTab} id={store?.getClinicByIdReducer?.data?.clinic?._id} />
                                     }

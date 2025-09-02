@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Multiselect from "multiselect-react-dropdown";
+import Multiselect from 'multiselect-react-dropdown';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPermissionAction, updateRolesAction } from '../../../../redux/actions';
@@ -12,7 +12,8 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const {
         register,
         handleSubmit,
-        setValue, setError,
+        setValue,
+        setError,
         formState: { errors },
     } = useForm();
     const store = useSelector((state) => state);
@@ -20,11 +21,11 @@ const UpdateRole = ({ show, closeModal, data }) => {
     const [selectedPermissions, setSelectedPermissions] = useState([]);
     const [initialPermissions, setInitialPermissions] = useState([]);
     const updateSuccess = store?.updateRolesReducer?.data?.status;
-    useEffect(() => {
-        if (show) {
-            dispatch(getPermissionAction({ search: '', limit: '', skip: '' }));
-        }
-    }, [show]);
+    // useEffect(() => {
+    //     if (show) {
+    //         dispatch(getPermissionAction({ search: '', limit: '', skip: '' }));
+    //     }
+    // }, [show]);
 
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
         ...item,
@@ -33,11 +34,10 @@ const UpdateRole = ({ show, closeModal, data }) => {
 
     useEffect(() => {
         if (data) {
-            console.log(data, '===============')
             setValue('name', data.name || '');
             setValue('description', data.description || '');
             setInitialPermissions(data?.permissions || []);
-            setSelectedPermissions(data?.permissions?.map(permission => (permission?.permission)) || []);
+            setSelectedPermissions(data?.permissions || []);
         }
         if (updateSuccess === 200) {
             closeModal();
@@ -61,10 +61,8 @@ const UpdateRole = ({ show, closeModal, data }) => {
         dispatch(updateRolesAction({ key: encryptMessage(payload) }));
     };
 
-
-
     return (
-        <Modal centered show={show} >
+        <Modal centered show={show}>
             <Modal.Body>
                 <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                     <Col sm={1}></Col>
@@ -75,11 +73,13 @@ const UpdateRole = ({ show, closeModal, data }) => {
                         <IoMdClose className="fs-4 cursor-pointer" onClick={closeModal} />
                     </Col>
                 </Row>
-                <Form autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+                <Form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Name <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>
+                                    Name <span className="text-danger">*</span>
+                                </Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Enter role name"
@@ -91,44 +91,60 @@ const UpdateRole = ({ show, closeModal, data }) => {
 
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Description <span className='text-danger'>*</span></Form.Label>
+                                <Form.Label>
+                                    Description <span className="text-danger">*</span>
+                                </Form.Label>
                                 <Form.Control
                                     as="textarea"
                                     rows={3}
                                     placeholder="Enter role description"
                                     {...register('description', { required: 'Description is required' })}
                                 />
-                                {errors.description && <span className="text-danger">{errors.description.message}</span>}
+                                {errors.description && (
+                                    <span className="text-danger">{errors.description.message}</span>
+                                )}
                             </Form.Group>
                         </Col>
 
                         <Col md={12}>
                             <Form.Group className="mb-2">
-                                <Form.Label>Permissions <span className='text-danger'>*</span></Form.Label>
-                                <Multiselect
-                                    options={decryptedPermissionsData}
-                                    displayValue="name"
-                                    className="form-control p-0"
-                                    placeholder="Select Permissions"
-                                    selectedValues={selectedPermissions}
-                                    onSelect={onSelect}
-                                    onRemove={onRemove}
-                                />
+                                <Form.Label>
+                                    Permissions <span className="text-danger">*</span>
+                                </Form.Label>
+                                <div
+                                    style={{
+                                        maxHeight: '200px',
+                                        overflowY: 'auto',
+                                        border: '1px solid #ced4da',
+                                        borderRadius: '4px',
+                                        padding: '5px',
+                                    }}>
+                                    <Multiselect
+                                        options={decryptedPermissionsData}
+                                        displayValue="permission"
+                                        className="form-control p-0"
+                                        placeholder="Select Permissions"
+                                        selectedValues={selectedPermissions}
+                                        onSelect={onSelect}
+                                        onRemove={onRemove}
+                                    />
+                                </div>
                             </Form.Group>
                         </Col>
                     </Row>
                     <Modal.Footer>
-                        <Button type='submit' className='custom-buttons' disabled={store?.updateRolesReducer?.loading}>
-                            {store?.updateRolesReducer?.loading ?
-                                <Spinner className="spinner-border-sm" color='white' /> :
+                        <Button type="submit" className="custom-buttons" disabled={store?.updateRolesReducer?.loading}>
+                            {store?.updateRolesReducer?.loading ? (
+                                <Spinner className="spinner-border-sm" color="white" />
+                            ) : (
                                 'Update'
-                            }
+                            )}
                         </Button>
                     </Modal.Footer>
                 </Form>
             </Modal.Body>
         </Modal>
     );
-}
+};
 
 export default UpdateRole;

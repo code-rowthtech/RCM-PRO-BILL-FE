@@ -19,7 +19,7 @@ import Select from 'react-select/base';
 import { useForm } from 'react-hook-form';
 const OrderList = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
-    const [name, setName] = useState('');
+    const [name, setName] = useState(null);
     const [skip, setSkip] = useState(1);
     const [status, setStatus] = useState(true);
     const [deleteModal, setDeleteModal] = useState(false);
@@ -27,7 +27,10 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
+    console.log(clinicsData,'clinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
+    const createSuccess = store?.createClinicsReducer?.data?.status;
+    console.log(createSuccess,'success')
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const isAddPresent = userPermissions.includes('add clinic') || userPermissions.includes('ADD_A_PRACTICE');
@@ -37,16 +40,28 @@ const OrderList = (): React$Element<React$FragmentType> => {
         getValues,
     } = useForm();
     useEffect(() => {
-        const payload = {
-            name: name,
-            skip: skip,
-            limit: 10,
-            status: status,
-            clinicType: selectedClinicType,
+        const hasFilters = name !== null || skip !== 1 || status !== true || selectedClinicType!=='';
+    
+        if (hasFilters) {
+            const payload = {
+                name,
+                skip,
+                limit: 10,
+                status,
+                clinicType: selectedClinicType,
+            };
+            dispatch(getClinicAction({ payload }));
+        } else if (clinicsData === undefined) {
+            dispatch(getClinicAction({ payload: { name: '', skip: 1, limit: 10, status: true, clinicType: '' } }));
         }
-        dispatch(getClinicAction({ payload }));
-        dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', skip: '', limit: '' }));
-    }, [dispatch, name, skip, status, selectedClinicType])
+    }, [name, skip, status, selectedClinicType, dispatch]); 
+    useEffect(() => {
+        if (clinicTypeData === undefined) {
+            dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', skip: '', limit: '' }));
+        }
+    }, [clinicTypeData, dispatch]);
+    
+    
     useEffect(() => {
         const payload = {
             name: name,
@@ -55,17 +70,17 @@ const OrderList = (): React$Element<React$FragmentType> => {
             status: status,
             clinicType: selectedClinicType,
         }
-        if (updateSuccess === 200) {
+        if (updateSuccess === 200 || createSuccess === 200) {
             dispatch(getClinicAction({ payload }))
             closeDeleteModal();
         }
-    }, [updateSuccess])
+    }, [updateSuccess,createSuccess])
     const handleStatusUpdate = () => {
         const payload = {
             userId: deleteData?.userId?._id,
             clinicId: deleteData?._id,
             id: deleteData?._id,
-            status: !deleteData?.status
+            active: !deleteData?.active
         }
         dispatch(updateClinicAction({ key: encryptMessage(payload) }));
         dispatch(stateEmptydAction());
@@ -118,12 +133,14 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                         <Col xs="auto" className='d-flex gap-2'>
                                             <FormInput type='select'
                                                 {...register('type')}
+                                                className=''
+                                                style={{ width: '10rem' }}
                                                 data-has-value={!!getValues('type')}
                                                 onBlur={(e) => {
                                                     e.target.setAttribute('data-has-value', !!e.target.value);
                                                 }}
                                                 onChange={handleClinicTypeChange}>
-                                                <option value={''} key={''}>All Practices</option>
+                                                <option value={'all'} key={''}>All Practices</option>
                                                 {clinicTypeData?.map((data, index) => (
                                                     <option className='text-capitalize' value={data?.name} key={data?._id}>{data?.name}</option>
                                                 ))}
@@ -154,7 +171,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                     <tr>
                                         <th>S.no</th>
                                         <th >Practice Name</th>
-                                        <th>Location</th>
+                                        <th>Address</th>
                                         <th>Practice Type</th>
                                         <th>End Date&nbsp; <span className=' uil-info-circle allclinics-info mb-0 cursor-pointer' /></th>
                                         <th>Countdown</th>
@@ -186,19 +203,20 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                             <p className='mb-0 text-capitalize'>{data?.name}</p>
                                                         </td>
                                                         <td>
-                                                            {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')}
+                                                            {/* {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')} */}
+                                                            {data?.address?.[0]?.city||'N/A'}
                                                         </td>
-                                                        <td>{data?.clinicType}</td>
+                                                        <td>{data?.orgType}</td>
                                                         <td>
-                                                            {data?.userId?.subscription?.subscriptionRenewalDate
-                                                                ? new Date(data.userId.subscription.subscriptionRenewalDate).toLocaleDateString('en-GB')
+                                                            {data?.userId?.subscriptionId?.subscriptionRenewalDate
+                                                                ? new Date(data?.userId?.subscriptionId?.subscriptionRenewalDate).toLocaleDateString('en-GB')
                                                                 : 'N/A'}
                                                         </td>
                                                         <td>
-                                                            {data?.userId?.subscription?.subscriptionRenewalDate
+                                                            {data?.userId?.subscriptionId?.subscriptionRenewalDate
                                                                 ? (() => {
                                                                     const today = new Date();
-                                                                    const renewalDate = new Date(data.userId.subscription.subscriptionRenewalDate);
+                                                                    const renewalDate = new Date(data?.userId?.subscriptionId?.subscriptionRenewalDate);
                                                                     const diffTime = renewalDate - today; // Difference in milliseconds
                                                                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
                                                                     return diffDays >= 0
@@ -221,7 +239,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         <td>
                                                             <Form.Switch
                                                                 onClick={() => handleOpenDeleteModal(data)}
-                                                                checked={data?.status === true}
+                                                                defaultChecked={data?.active}
                                                             />
                                                         </td>
                                                         <td>

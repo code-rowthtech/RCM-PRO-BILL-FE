@@ -1,6 +1,6 @@
 import { all, fork, put, takeEvery, call, takeLatest } from 'redux-saga/effects';
 import { SettingsActionTypes } from './constants';
-import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi, createContractApi, updateContractApi, getContractApi } from './api';
+import { createMastersDataApi, getMastersDataApi, getTenureApi, updateMastersDataApi, createContractApi, updateContractApi, getContractApi, getCodesApi } from './api';
 import { decryptMessage } from '../../cryptoUtils';
 import ToastHandle from '../../helpers/ToastMessage';
 /**
@@ -204,6 +204,10 @@ function* updateMastersDataFunction(data) {
                 type: SettingsActionTypes.UPDATE_MASTERS_DATA_SUCCESS,
                 payload: { ...decryptedData },
             });
+            yield put({
+                type: SettingsActionTypes.UPDATE_MASTERS_DATA_RESET,
+                payload: {},
+              });   
         } else {
             yield put({
                 type: SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR,
@@ -219,6 +223,34 @@ function* updateMastersDataFunction(data) {
     }
 }
 
+function* getCodesFunction(data) {
+    try {
+        yield put({
+            type: SettingsActionTypes.GET_CODES_LOADING,
+            payload: {},
+        });
+        const response = yield call(getCodesApi, data);
+        const decryptedData = JSON.parse(decryptMessage(response.data.data));
+        if (response.status === 201) {
+            ToastHandle(decryptedData?.message, 'success')
+            yield put({
+                type: SettingsActionTypes.GET_CODES_SUCCESS,
+                payload: { ...decryptedData },
+            });
+        } else {
+            yield put({
+                type: SettingsActionTypes.GET_CODES_ERROR,
+                payload: { ...decryptedData },
+            });
+        }
+    } catch (error) {
+        ToastHandle(error, 'danger')
+        yield put({
+            type: SettingsActionTypes.GET_CODES_ERROR,
+            payload: error,
+        });
+    }
+}
 export function* callStateEmpty() {
     put({
         type: SettingsActionTypes.STATE_EMPTY_INTIAL_STATE,
@@ -251,12 +283,13 @@ export function* watchUpdateMastersData() {
     yield takeEvery(SettingsActionTypes.UPDATE_MASTERS_DATA, updateMastersDataFunction);
 }
 
-
-
 export function* watchresetState() {
     yield takeEvery(SettingsActionTypes.STATE_EMPTY_INTIAL_STATE, callStateEmpty);
 }
 
+export function* watchGetCodesData() {
+    yield takeEvery(SettingsActionTypes.GET_CODES, getCodesFunction);
+}
 function* settingsSaga() {
     yield all([
         fork(watchCreateMastersData),
@@ -266,7 +299,9 @@ function* settingsSaga() {
         fork(watchUpdateContractData),
         fork(watchGetTenureData),
         fork(watchUpdateMastersData),
-        fork(watchresetState)
+        fork(watchGetCodesData),
+        fork(watchresetState),
+
     ]);
 }
 export default settingsSaga;

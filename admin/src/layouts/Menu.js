@@ -143,7 +143,7 @@ const MenuItemLink = ({ item, className }) => {
                                 }}>
                                     Cancel
                                 </Button>
-                                <Button type="button" className="custom-buttons " onClick={handleLogout}>
+                                <Button type="button" className="custom-buttons ms-2" onClick={handleLogout}>
                                     Logout
                                 </Button>
                             </div>

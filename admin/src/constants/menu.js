@@ -32,9 +32,9 @@ const MENU_ITEMS = [
     },
     {
         key: 'rolemanagement',
-        label: 'Role Management',
+        label: 'User Management',
         icon: 'uil-user-circle',
-        url: '/apps/roles/list',
+        url: '/apps/users/list',
     },
     // {
     //     key: 'doctors',
@@ -86,6 +86,7 @@ const MENU_ITEMS = [
                 url: '/settings/planName',
                 parentKey: 'settings',
             },
+          
             {
                 key: 'tenure',
                 label: 'Tenure',
@@ -116,12 +117,12 @@ const MENU_ITEMS = [
             //     url: '/settings/speciality',
             //     parentKey: 'settings',
             // },
-            // {
-            //     key: 'department',
-            //     label: 'Departments',
-            //     url: '/settings/department',
-            //     parentKey: 'settings',
-            // },
+            {
+                key: 'department',
+                label: 'Departments',
+                url: '/settings/department',
+                parentKey: 'settings',
+            },
             {
                 key: 'contractformat',
                 label: 'Contract Format',
@@ -152,6 +153,12 @@ const MENU_ITEMS = [
             //     url: '/settings/location',
             //     parentKey: 'settings',
             // },
+            {
+                key: 'code',
+                label: 'Codes',
+                url: '/settings/code',
+                parentKey: 'settings',
+            },
         ],
 
     },

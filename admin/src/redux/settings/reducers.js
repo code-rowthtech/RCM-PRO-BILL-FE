@@ -1,5 +1,10 @@
 import { SettingsActionTypes } from "./constants"
 
+const initial_state = {
+    data: [],
+    message: "",
+    loading: false,
+  };
 
 const CREATE_MASTERS_DATA_INITIAL_STATE = {
     data: [],
@@ -30,6 +35,11 @@ const GET_TENURE_DATA_INITIAL_STATE = {
     loading: false
 }
 const UPDATE_MASTERS_DATA_INITIAL_STATE = {
+    data: [],
+    loading: false
+}
+
+const GET_CODES_INITIAL_STATE = {
     data: [],
     loading: false
 }
@@ -201,7 +211,34 @@ export const updateMastersDataReducer = (state = UPDATE_MASTERS_DATA_INITIAL_STA
                 data: action.payload,
                 loading: false
             }
+        case SettingsActionTypes.UPDATE_MASTERS_DATA_RESET:
+            return {
+                data: initial_state.data,
+                loading: false,
+              };
         case SettingsActionTypes.UPDATE_MASTERS_DATA_ERROR:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        default: return {...state}
+    }
+}
+
+
+export const getCodesReducer = (state = GET_CODES_INITIAL_STATE, action) => {
+    switch (action.type) {
+        case SettingsActionTypes.GET_CODES_LOADING:
+            return {
+                data: state.data,
+                loading: true
+            }
+        case SettingsActionTypes.GET_CODES_SUCCESS:
+            return {
+                data: action.payload,
+                loading: false
+            }
+        case SettingsActionTypes.GET_CODES_ERROR:
             return {
                 data: action.payload,
                 loading: false
@@ -214,5 +251,3 @@ export const updateMastersDataReducer = (state = UPDATE_MASTERS_DATA_INITIAL_STA
         default: return state
     }
 }
-
-
