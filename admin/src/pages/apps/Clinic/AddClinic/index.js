@@ -45,7 +45,7 @@ const Index = () => {
     const [resetEmail, setResetEmail] = useState({
         name: null,
         email: null,
-        clinicType: null,
+        orgType: null,
         flag: 'Clinic',
     });
     const [submitAction, setSubmitAction] = useState('next');
@@ -84,7 +84,7 @@ const Index = () => {
             name: null,
             email: null,
             role: null,
-            clinicType: null,
+            orgType: null,
         });
     };
     const handleActiveTab = (data) => {
@@ -124,7 +124,7 @@ const Index = () => {
         { key: 'name', message: 'Name is required.' },
         { key: 'email', message: 'Email is required.' },
         // { key: "phone", message: "Phone number is required." },
-        { key: 'clinicType', message: 'Clinic Type is required.' },
+        { key: 'orgType', message: 'Clinic Type is required.' },
     ];
 
     // Check for missing fields
@@ -139,11 +139,10 @@ const Index = () => {
                                 <Col className="d-flex align-items-center gap-3">
                                     <span
                                         onClick={() => handleActiveTab('clinic')}
-                                        className={`fw-semibold cursor-pointer ${
-                                            activeTab === 'clinic'
+                                        className={`fw-semibold cursor-pointer ${activeTab === 'clinic'
                                                 ? 'border-bottom border-2 border-dark text-black fw-bold'
                                                 : ''
-                                        }`}>
+                                            }`}>
                                         Practice Information
                                     </span>
                                     {!parentClinicId && !parentUserId && (
@@ -156,11 +155,10 @@ const Index = () => {
                                                     //     ToastHandle('You must fill in and submit the clinic details to go for billing and supscriptions.', 'danger')
                                                     // }
                                                 }}
-                                                className={`fw-semibold cursor-pointer ${
-                                                    activeTab === 'billing'
+                                                className={`fw-semibold cursor-pointer ${activeTab === 'billing'
                                                         ? 'border-bottom border-2 border-dark text-black fw-bold'
                                                         : ''
-                                                }`}>
+                                                    }`}>
                                                 Billing and Subscription Information
                                             </span>
                                             <span
@@ -171,20 +169,18 @@ const Index = () => {
                                                     //     ToastHandle('You must fill in and submit the billing details to go for contract generation.', 'danger')
                                                     // }
                                                 }}
-                                                className={`fw-semibold cursor-pointer ${
-                                                    activeTab === 'contract'
+                                                className={`fw-semibold cursor-pointer ${activeTab === 'contract'
                                                         ? 'border-bottom border-2 border-dark text-black fw-bold'
                                                         : ''
-                                                }`}>
+                                                    }`}>
                                                 Contract
                                             </span>
                                         </>
                                     )}
                                 </Col>
                                 <Col
-                                    className={`${
-                                        activeTab === 'clinic' ? 'd-flex' : 'd-none'
-                                    } gap-2 justify-content-end align-items-center`}>
+                                    className={`${activeTab === 'clinic' ? 'd-flex' : 'd-none'
+                                        } gap-2 justify-content-end align-items-center`}>
                                     <Button
                                         className={`custom-buttons ${parentClinicId ? 'd-none' : ''}`}
                                         disabled={missingField}
@@ -241,9 +237,8 @@ const Index = () => {
                                     />
                                 </Col>
                                 <Col
-                                    className={`${
-                                        activeTab !== 'clinic' ? 'd-flex' : 'd-none'
-                                    } gap-2 justify-content-end align-items-center`}>
+                                    className={`${activeTab !== 'clinic' ? 'd-flex' : 'd-none'
+                                        } gap-2 justify-content-end align-items-center`}>
                                     <Button
                                         onClick={handleContractGeneration}
                                         className={`custom-buttons ${activeTab === 'contract' ? '' : 'd-none'}`}>

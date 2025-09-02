@@ -621,9 +621,9 @@ const ClinicForm = ({
             const newPayload = {
                 ...(parentClinicId
                     ? {
-                          parentUserId: parentUserId,
-                          parentOrgId: parentClinicId,
-                      }
+                        parentUserId: parentUserId,
+                        parentOrgId: parentClinicId,
+                    }
                     : {}),
                 flag: parentClinicId ? 'subClinic' : 'Clinic',
                 name: data?.clinicname,
@@ -1124,7 +1124,7 @@ const ClinicForm = ({
                                     setResetEmail({ ...resetEmail, name: e.target.value });
                                 }}
                                 placeholder="Practice name"
-                                // onKeyPress={handleFirstSpace}
+                            // onKeyPress={handleFirstSpace}
                             />
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
                         </Form.Group>
@@ -1138,7 +1138,7 @@ const ClinicForm = ({
                                 data-has-value={!!watch('clinicType')}
                                 {...register('clinicType', { required: 'This field is required' })}
                                 className={` ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
-                                onChange={(e) => setResetEmail({ ...resetEmail, clinicType: e.target.value })}>
+                                onChange={(e) => setResetEmail({ ...resetEmail, orgType: e.target.value })}>
                                 <option value="" hidden>
                                     Select practice type
                                 </option>
@@ -1209,14 +1209,13 @@ const ClinicForm = ({
                         <Form.Label className="mb-0">Upload Logo</Form.Label>
                         <div
                             onClick={() => document.getElementById(`logo-file-input`).click()}
-                            className={`custom-file-upload justify-content-between cursor-pointer ${
-                                logoName || logoUploading ? 'form-control' : 'custom-form-fields'
-                            }`}>
+                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName || logoUploading ? 'form-control' : 'custom-form-fields'
+                                }`}>
                             {logoName
                                 ? logoName.split('/').pop().slice(0, 30) + '...'
                                 : logoUploading
-                                ? 'Uploading...'
-                                : 'Upload Logo'}
+                                    ? 'Uploading...'
+                                    : 'Upload Logo'}
                             <p className="mb-0">
                                 <FiDownloadCloud />
                             </p>
@@ -1313,8 +1312,8 @@ const ClinicForm = ({
                                             item.type === 'NPI' || item.type === 'CLIA'
                                                 ? 10
                                                 : item.type === 'NAIC'
-                                                ? 5
-                                                : 10
+                                                    ? 5
+                                                    : 10
                                         }
                                         {...register(`identifiers[${index}].number`, {
                                             // required: defaultIdentifiers.includes(item.type)
@@ -1357,16 +1356,15 @@ const ClinicForm = ({
                                 <Col className="mb-2 position-relative">
                                     <div
                                         onClick={() => document.getElementById(`fileInput-identifier-${index}`).click()}
-                                        className={`custom-file-upload justify-content-between cursor-pointer ${
-                                            item.file ? 'form-control' : 'custom-form-fields'
-                                        }`}>
+                                        className={`custom-file-upload justify-content-between cursor-pointer ${item.file ? 'form-control' : 'custom-form-fields'
+                                            }`}>
                                         {identifierDocument[index]
                                             ? 'Uploading...'
                                             : item.file?.name
-                                            ? item.file.name.length > 30
-                                                ? item.file.name.slice(0, 25) + '...'
-                                                : item.file.name
-                                            : 'Upload Document'}
+                                                ? item.file.name.length > 30
+                                                    ? item.file.name.slice(0, 25) + '...'
+                                                    : item.file.name
+                                                : 'Upload Document'}
                                         <p className="mb-0">
                                             <FiDownloadCloud />
                                         </p>
@@ -1730,7 +1728,7 @@ const ClinicForm = ({
                                     };
                                     setAddresses(updatedAddresses);
                                 }}
-                                // disabled={!selectedState || store?.getCitiesReducer?.loading}
+                            // disabled={!selectedState || store?.getCitiesReducer?.loading}
                             >
                                 <option value="">
                                     {store?.getCitiesReducer?.loading ? 'Loading...' : 'Select City'}
@@ -1910,8 +1908,8 @@ const ClinicForm = ({
                                 }
                             }}>
                             {store?.createClinicsReducer?.loading &&
-                            submitAction === 'addMultiple' &&
-                            parentClinicId ? (
+                                submitAction === 'addMultiple' &&
+                                parentClinicId ? (
                                 <Spinner color="white" className="spinner-border-sm" />
                             ) : (
                                 'Add Multiple Practices'
