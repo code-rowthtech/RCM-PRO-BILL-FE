@@ -73,8 +73,6 @@ const ClinicForm = ({
     const [logoName, setLogoName] = useState(null);
     const [focused, setFocused] = useState(false);
     const [mailingFocused, setMailingFocused] = useState(false);
-    const [singleOrMultiple, setSingleOrMultiple] = useState(false);
-    const [sameAsPrimary, setSameAsPrimary] = useState(false);
     const [longitude, setLongitude] = useState(null);
     const [latitude, setLatitude] = useState(null);
     const [mailingLongitude, setMailingLongitude] = useState(null);
@@ -110,12 +108,6 @@ const ClinicForm = ({
     const [accUploading, setAccUploading] = useState(false);
     const [identifierDocument, setIdentifierDocument] = useState(false);
     const userId = store?.createClinicsReducer?.data?.user?._id;
-    // useEffect(() => {
-    //     const validCodes = taxonomyCodes.filter((code) => code.trim() !== '');
-    //     if (validCodes?.length > 0) {
-    //         setResetEmail({ ...resetEmail, taxonomyCodes: taxonomyCodes });
-    //     }
-    // }, [taxonomyCodes]);
 
     // GET store data
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
@@ -192,6 +184,7 @@ const ClinicForm = ({
         watch('street'),
         watch('zip'),
     ]);
+
     /* eslint-disable-next-line react-hooks/rules-of-hooks */
     useEffect(() => {
         if (decryptedRolesData) {
@@ -221,19 +214,7 @@ const ClinicForm = ({
                 clinicType: '',
             };
             dispatch(getClinicAction({ payload }));
-            // setActiveTab('billing');
-            // setAccreditationDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            // setPosDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            // setStateDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            // setMedicalDetails([{ name: '', number: '', url: null, fileName: '' }]);
-            // setSelectedCity(null);
-            // setSelectedState(null);
-            // setLatitude(null);
-            // setLongitude(null);
-            // setMailingLatitude(null);
-            // setMailingLongitude(null);
-            // setTaxonomyCodes(['']);
-            // setSameAsPrimary(false);
+
             if (!parentClinicId && counter === 0 && !isModalRequest) {
                 setBillingId(store?.createClinicsReducer?.data?.data?._id);
                 setContractId(store?.createClinicsReducer?.data?.data?.clinicId?._id);
@@ -661,6 +642,7 @@ const ClinicForm = ({
                 telecom: constantContact,
                 address: addresses,
                 poc: pocs,
+                timeZone: data?.timeZone,
             };
 
             dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
@@ -1137,13 +1119,13 @@ const ClinicForm = ({
                             <Form.Select
                                 data-has-value={!!watch('clinicType')}
                                 {...register('clinicType', { required: 'This field is required' })}
-                                className={` ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
+                                className={`text-capitalize ${!resetEmail?.email ? 'emptyField' : 'selectedField'}`}
                                 onChange={(e) => setResetEmail({ ...resetEmail, orgType: e.target.value })}>
                                 <option value="" hidden>
                                     Select practice type
                                 </option>
                                 {clinicTypeData?.map((data) => (
-                                    <option key={data?._id} value={data?.name}>
+                                    <option className='text-capitalize' key={data?._id} value={data?.name}>
                                         {data?.name}
                                     </option>
                                 ))}
@@ -1176,35 +1158,30 @@ const ClinicForm = ({
                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
                         </Form.Group>
                     </Col>
-                    {/* <Col sm={3}>
-    <Form.Group className="mb-2">
-        <Form.Label className="mb-0">
-            Email ID<span className="text-danger">*</span>
-        </Form.Label>
-        <Form.Control
-            type="text"
-            value={constantContact[constantContact?.length+1]?.value || ''} // Get value from constantContact array
-            {...register(`email-${constantContact?.length+1}`, {
-                required: 'This field is required',
-                pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Email regex
-                    message: 'Please enter a valid email address',
-                },
-            })}
-            onChange={(e) => {
-                handleContactChange(constantContact?.length+1, 'value', e.target.value); // Update via function
-                setResetEmail({ ...resetEmail, email: e.target.value }); // Optional: still update here?
-                // clearErrors(`email-${index}`); // Clear errors for this field
-            }}
-            placeholder="Email ID"
-        />
-
-        {errors[`email-${constantContact?.length+1}`] && (
-            <span className="text-danger">{errors[`email-${constantContact?.length+1}`].message}</span>
-        )}
-    </Form.Group>
-</Col> */}
-
+                    <Col sm={3}>
+                        <Form.Group className="mb-2">
+                            <Form.Label className="mb-0">
+                                Timezone<span className="text-danger">*</span>
+                            </Form.Label>
+                            <Form.Select
+                                {...register('timeZone', {
+                                    required: 'This field is required'
+                                })}
+                                onChange={(e) => {
+                                    setResetEmail({ ...resetEmail, timeZone: e.target.value });
+                                    clearErrors('timeZone');
+                                }}>
+                                <option value="" hidden>Select timeZone</option>
+                                <option value="America/New_York">Eastern Time (ET)</option>
+                                <option value="America/Chicago">Central Time (CT)</option>
+                                <option value="America/Denver">Mountain Time (MT)</option>
+                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                <option value="America/Anchorage">Alaska Time (AKT)</option>
+                                <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                            </Form.Select>
+                            {errors.timeZone && <span className="text-danger">{errors.timeZone.message}</span>}
+                        </Form.Group>
+                    </Col>
                     <Col sm={3}>
                         <Form.Label className="mb-0">Upload Logo</Form.Label>
                         <div
