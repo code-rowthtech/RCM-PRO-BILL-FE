@@ -38,6 +38,10 @@ export const updateMastersDataAction = (data): AuthAction => ({
     data
 });
 
+export const getCodesAction = (data): AuthAction => ({
+    type: SettingsActionTypes.GET_CODES,
+    data
+});
 export const stateEmptydAction = (): LayoutAction => ({
     type: SettingsActionTypes.STATE_EMPTY_INTIAL_STATE,
 

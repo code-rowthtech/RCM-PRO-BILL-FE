@@ -1,19 +1,25 @@
-import { ClinicsActionTypes } from "./constants"
+import { ClinicsActionTypes } from './constants';
+
+const initial_state = {
+    data: [],
+    message: '',
+    loading: false,
+};
 
 const CREATE_CLINICS_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const GET_CLINICS_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const GET_STATES_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 // const GET_CITIES_INITIAL_STATE = {
 //     data: [],
@@ -28,172 +34,182 @@ const GET_CITIES_INITIAL_STATE = {
     cities2: {
         data: [],
         loading: false,
-    }
+    },
 };
 const UPDATE_CLINICS_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const GET_CLINIC_BY_ID_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const GET_CLINIC_BY_PARENT_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const CREATE_SUBSCRIPTION_PLAN_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const DELETE_CLINIC_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const GET_CONTRACT_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 const GENERATE_CONTRACT_INITIAL_STATE = {
     data: [],
-    loading: false
-}
+    loading: false,
+};
 
 export const createClinicsReducer = (state = CREATE_CLINICS_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.CREATE_CLINIC_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.CREATE_CLINIC_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
+        case ClinicsActionTypes.CREATE_CLINIC_RESET:
+            return {
+                data: [],
+                loading: false,
+            };
         case ClinicsActionTypes.CREATE_CLINIC_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
-        case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
-            return {
-                data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        // case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
+        //     return {
+        //         data: [],
+        //         loading: false,
+        //     };
+        default:
+            return state;
     }
-}
+};
 
 export const getClinicByIdReducer = (state = GET_CLINIC_BY_ID_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_CLINIC_BY_ID_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.GET_CLINIC_BY_ID_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.GET_CLINIC_BY_ID_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 
 export const getClinicsReducer = (state = GET_CLINICS_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_CLINIC_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.GET_CLINIC_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.GET_CLINIC_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 
 export const getClinicsByParentReducer = (state = GET_CLINIC_BY_PARENT_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_CLINIC_BY_PARENT_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.GET_CLINIC_BY_PARENT_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.GET_CLINIC_BY_PARENT_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 
 export const getStatesReducer = (state = GET_STATES_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_STATES_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.GET_STATES_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.GET_STATES_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 
 // export const getCitiesReducer = (state = GET_CITIES_INITIAL_STATE, action) => {
 //     switch (action.type) {
@@ -228,48 +244,48 @@ export const getCitiesReducer = (state = GET_CITIES_INITIAL_STATE, action) => {
                 ...state,
                 cities1: {
                     ...state.cities1,
-                    loading: true
-                }
+                    loading: true,
+                },
             };
         case ClinicsActionTypes.GET_CITIES_SUCCESS:
             return {
                 ...state,
                 cities1: {
                     data: action.payload,
-                    loading: false
-                }
+                    loading: false,
+                },
             };
         case ClinicsActionTypes.GET_CITIES_ERROR:
             return {
                 ...state,
                 cities1: {
                     data: [],
-                    loading: false
-                }
+                    loading: false,
+                },
             };
         case ClinicsActionTypes.GET_CITIES2_LOADING:
             return {
                 ...state,
                 cities2: {
                     ...state.cities2,
-                    loading: true
-                }
+                    loading: true,
+                },
             };
         case ClinicsActionTypes.GET_CITIES2_SUCCESS:
             return {
                 ...state,
                 cities2: {
                     data: action.payload,
-                    loading: false
-                }
+                    loading: false,
+                },
             };
         case ClinicsActionTypes.GET_CITIES2_ERROR:
             return {
                 ...state,
                 cities2: {
                     data: [],
-                    loading: false
-                }
+                    loading: false,
+                },
             };
         default:
             return state;
@@ -281,126 +297,131 @@ export const updateClinicsReducer = (state = UPDATE_CLINICS_INITIAL_STATE, actio
         case ClinicsActionTypes.UPDATE_CLINIC_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.UPDATE_CLINIC_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
+        case ClinicsActionTypes.UPDATE_CLINIC_RESET:
+            return {
+                data: initial_state.data,
+                loading: false,
+            };
         case ClinicsActionTypes.UPDATE_CLINIC_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
-        case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
-            return {
-                data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return { ...state };
     }
-}
+};
 
 export const createSubscriptionPlanReducer = (state = CREATE_SUBSCRIPTION_PLAN_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.CREATE_SUBSCRIPTION_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.CREATE_SUBSCRIPTION_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.CREATE_SUBSCRIPTION_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 export const deleteClinicOnboardingReducer = (state = DELETE_CLINIC_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.DELETE_CLINIC_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.DELETE_CLINIC_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.DELETE_CLINIC_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 
 export const getContractReducer = (state = GET_CONTRACT_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GET_CONTRACT_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.GET_CONTRACT_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.GET_CONTRACT_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};
 
 export const generateContractReducer = (state = GENERATE_CONTRACT_INITIAL_STATE, action) => {
     switch (action.type) {
         case ClinicsActionTypes.GENERATE_CONTRACT_LOADING:
             return {
                 data: state.data,
-                loading: true
-            }
+                loading: true,
+            };
         case ClinicsActionTypes.GENERATE_CONTRACT_SUCCESS:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.GENERATE_CONTRACT_ERROR:
             return {
                 data: action.payload,
-                loading: false
-            }
+                loading: false,
+            };
         case ClinicsActionTypes.STATE_EMPTY_INTIAL_STATE:
             return {
                 data: [],
-                loading: false
-            }
-        default: return state
+                loading: false,
+            };
+        default:
+            return state;
     }
-}
+};

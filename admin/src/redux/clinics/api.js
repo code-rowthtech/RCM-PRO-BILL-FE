@@ -15,12 +15,12 @@ export function updateClinicApi(params: any): any {
 
 export function getClinicByIdApi(params: any): any {
     const { data } = params;
-    return api.create(URL.getClinicById, data);
+    return api.get(URL.getClinicById, data);
 }
 
 export function getStateByCountry(params: any): any {
     const { data } = params;
-    return api.get(URL.getStatedByCountry, data);
+    return api.get(`${URL.getStatedByCountry}?country_code=US`);
 }
 
 export function getCityByStateApi(params: any): any {
@@ -30,7 +30,7 @@ export function getCityByStateApi(params: any): any {
 
 export function getClinicApi(params: any): any {
     const { data } = params;
-    return api.get(`${URL.getClinic}?name=${data?.payload?.name}&page=${data?.payload?.skip}&limit=${data?.payload?.limit}&status=${data?.payload?.status}&clinicType=${data?.payload?.clinicType}`);
+    return api.get(`${URL.getClinic}?search=${data?.payload?.name}&page=${data?.payload?.skip}&limit=${data?.payload?.limit}&status=${data?.payload?.status}&orgType=${data?.payload?.clinicType}`);
 }
 
 export function addSubscriptionPlanApi(params: any): any {
@@ -40,7 +40,7 @@ export function addSubscriptionPlanApi(params: any): any {
 
 export function getClinicsByParentIdApi(params: any): any {
     const { data } = params;
-    return api.create(URL.getClinicsByParentId, data)
+    return api.get(URL.getClinicsByParentId, data)
 }
 
 export function deleteClinicOnboardingApi(params: any): any {

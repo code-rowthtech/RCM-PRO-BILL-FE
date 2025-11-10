@@ -20,7 +20,7 @@ export function updateContractApi(params: any): any {
 
 export function getContractApi(params: any): any {
     const { data } = params;
-    return api.create(URL.getContractapi, data);
+    return api.get(URL.getContractapi, data);
 }
 
 export function getMastersDataApi(params: any): any {
@@ -36,4 +36,9 @@ export function getTenureApi(params: any): any {
 export function updateMastersDataApi(params: any): any {
     const { data } = params;
     return api.update(URL.updateMastersData, data)
+}
+
+export function getCodesApi(params: any): any {
+    const { data } = params;
+    return api.get(`${URL.getCodesApi}?codeType=${data.codeType}&search=${data.search}&status=${data.status}&limit=${data.limit}&page=${data.page}`);
 }

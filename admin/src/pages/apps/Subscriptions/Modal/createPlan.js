@@ -299,12 +299,12 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
                         </Col>
                     </Row>
                     <Modal.Footer className='pb-0 px-0'>
-                        <Button className="custom-buttons" onClick={() => {
+                        {/* <Button className="custom-buttons" onClick={() => {
                             closeModal();
                             reset();
                         }}>
                             Cancel
-                        </Button>
+                        </Button> */}
                         <Button disabled={store?.createSubscriptionsReducer?.loading || store?.updateSubscriptionsReducer?.loading} type="submit" className="custom-buttons">
                             {store?.createSubscriptionsReducer?.loading || store?.updateSubscriptionsReducer?.loading ?
                                 <Spinner color='white' className='spinner-border-sm' />

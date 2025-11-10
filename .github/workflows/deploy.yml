@@ -2,7 +2,7 @@ name: ARC-PRO-BILL-FE cicd
 
 on:
   push:
-    branches: [ main ]
+    branches: [ FHIR-PROD ]
 
 jobs:
   build:

@@ -48,6 +48,8 @@ const RoleManagement = React.lazy(() => import('../pages/apps/Roles/index'));
 const PlanName = React.lazy(() => import('../pages/apps/Settings/planName'))
 const Speciality = React.lazy(() => import('../pages/apps/Settings/speciality'))
 const Departments = React.lazy(() => import('../pages/apps/Settings/departments'))
+const Codes = React.lazy(() => import('../pages/apps/Settings/codes'))
+
 const ContractFormat = React.lazy(() => import('../pages/apps/Settings/contract'))
 const Designation = React.lazy(() => import('../pages/apps/Settings/designation'))
 const ClinicType = React.lazy(() => import('../pages/apps/Settings/clinicType'))
@@ -252,7 +254,7 @@ const AllRoutes = () => {
                             ],
                         },
                         {
-                            path: 'roles',
+                            path: 'users',
                             children: [
                                 {
                                     path: 'list',
@@ -393,6 +395,10 @@ const AllRoutes = () => {
                         {
                             path: 'department',
                             element: <LoadComponent component={Departments} />,
+                        },
+                        {
+                            path: 'code',
+                            element: <LoadComponent component={Codes} />,
                         },
                         {
                             path: 'contractFormat',
