@@ -314,25 +314,6 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
         }
     };
 
-    const handleMedicalChange = async (e, index) => {
-        const selectedFile = e.target.files[0];
-        try {
-            const url = await handleUpload(selectedFile);
-            setMedicalDetails((prevDetails) => {
-                const updatedDetails = [...prevDetails];
-                updatedDetails[index] = {
-                    ...updatedDetails[index],
-                    url: url?.url?.split('?')[0],
-                    fileName: selectedFile.name,
-
-                };
-                return updatedDetails;
-            });
-        } catch (error) {
-            console.error('Error during file upload:', error);
-        }
-    };
-
     const handleAccreditationInputChange = (e, field, index) => {
         const value = e.target.value;
         // if (field === 'number'
@@ -534,7 +515,7 @@ const ClinicForm = ({ setActiveTab, setClinicId, clinicId, setBillingId, setMult
                         ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
                         ...(mailingLongitude ? { longitude: mailingLongitude } : {})
                     },
-                logo: {
+                orgLogo: {
                     url: logo?.url.split('?')[0],
                     fileName: logoName
                 },
