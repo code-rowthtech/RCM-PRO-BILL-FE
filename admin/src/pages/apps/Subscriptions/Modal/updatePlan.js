@@ -8,7 +8,6 @@ import { IoMdClose } from 'react-icons/io';
 import { getMastersDataAction } from '../../../../redux/settings/actions';
 
 const UpdateSubscriptions = ({ show, closeModal, data }) => {
-    console.log(data, '===========')
     const {
         register,
         handleSubmit,

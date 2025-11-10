@@ -18,14 +18,12 @@ const ProjectDashboardPage = (): React$Element<React$FragmentType> => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const analyticsResponse = store?.getAnalyticsReducer;
-    console.log(analyticsResponse,"analyticsResponse")
 
     useEffect(() => {
-        if(analyticsResponse?.data.length < 1){
-            console.log(analyticsResponse?.data.length,"analyticsResponse?.data.length")
+        if (analyticsResponse?.data.length < 1) {
             dispatch(getAnalyticsAction())
         }
-       
+
     }, [dispatch])
     return (
         <div className='scroll-container' style={{ height: '88vh' }}>

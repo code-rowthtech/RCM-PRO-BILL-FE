@@ -27,9 +27,8 @@ const Subscriptions = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [dataToUpdate, setDataToUpdate] = useState(null);
     const [status, setStatus] = useState(true);
-    const [count,setCount] = useState(false);
+    const [count, setCount] = useState(false);
     const subscriptionsResponse = store?.getSubscriptionsReducer?.data;
-    console.log(subscriptionsResponse,'subscriptionsResponse')
     const createSuccess = store?.createSubscriptionsReducer?.data?.status;
     const updateSuccess = store?.updateSubscriptionsReducer?.data?.status;
     const isAddPresent = userPermissions.includes('add subscription') || userPermissions.includes('ADD_A_SUBSCRIPTION');
@@ -56,7 +55,7 @@ const Subscriptions = () => {
     }, [dispatch, createSuccess, updateSuccess, skip, search]);
 
     useEffect(() => {
-        if(count){
+        if (count) {
             dispatch(getSubscriptionsAction({ status: status, search: search, skip: skip }));
         }
     }, [status]);
@@ -104,18 +103,16 @@ const Subscriptions = () => {
                                     <Button
                                         variant={status === false ? 'outlined' : ''}
                                         onClick={() => handleStatusChange(true)}
-                                        className={`${
-                                            status === true ? 'custom-buttons' : 'custom-inactive-buttons'
-                                        } me-2`}>
+                                        className={`${status === true ? 'custom-buttons' : 'custom-inactive-buttons'
+                                            } me-2`}>
                                         Active
                                     </Button>
 
                                     <Button
                                         variant={status === true ? 'outlined' : ''}
                                         onClick={() => handleStatusChange(false)}
-                                        className={`${
-                                            status === false ? 'custom-buttons' : 'custom-inactive-buttons'
-                                        } me-2`}>
+                                        className={`${status === false ? 'custom-buttons' : 'custom-inactive-buttons'
+                                            } me-2`}>
                                         Inactive
                                     </Button>
                                 </Col>
@@ -125,7 +122,7 @@ const Subscriptions = () => {
                                             <FormInput
                                                 type="text"
                                                 onChange={(e) => {
-                                                    setSearch(e.target.value?e.target.value:' ');
+                                                    setSearch(e.target.value ? e.target.value : ' ');
                                                     setSkip(1);
                                                     // dd
                                                 }}

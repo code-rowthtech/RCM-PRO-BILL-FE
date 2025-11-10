@@ -13,7 +13,6 @@ import Paginations from '../../../helpers/Paginations';
 import { IoMdClose } from 'react-icons/io';
 import { getMastersDataAction } from '../../../redux/settings/actions';
 const Permissions = () => {
-    const [showModal, setShowModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [selected, setSelected] = useState(null);
@@ -21,12 +20,9 @@ const Permissions = () => {
     const [skip, setSkip] = useState(1)
     const store = useSelector((state) => state);
     const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data;
-    console.log(store?.getPermissionsDataReducer?.data, 'store?.getPermissionsDataReducer?.data')
     const deleteSuccess = store?.deletePermissionsDataReducer?.data?.success;
     const updateSuccess = store?.updatePermissionsDataReducer?.data?.success;
-    const handleClosemodal = () => {
-        setShowModal(false);
-    };
+
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(getPermissionAction({ search: search, limit: 10, skip: skip }));
@@ -49,10 +45,7 @@ const Permissions = () => {
         setDeleteModal(false);
         setDeleteId(null);
     }
-    const openDeleteModal = (data) => {
-        setDeleteModal(true);
-        setDeleteId(data?._id);
-    }
+
     const handleDelete = () => {
         const payload = {
             id: deleteId
@@ -60,28 +53,11 @@ const Permissions = () => {
         dispatch(deletePermissionAction({ key: encryptMessage(JSON.stringify(payload)) }));
     }
 
-    const handleToggleUpdate = (data) => {
-        if (!data) return;
-
-        const payload = {
-            id: data._id,
-            status: data.status === 'active' ? 'inactive' : 'active',
-        };
-
-        dispatch(updatePermissionAction({ key: `${encryptMessage(payload)}` }));
-    }
-
     const handlePageChange = (pageNumber) => {
         setSkip(pageNumber);
     }
     return (
         <div>
-            {/* <PageTitle
-                breadCrumbItems={[
-                    { label: 'Permissions', path: '/apps/Permissions/list', active: true },
-                ]}
-                title={'Permissions'}
-            /> */}
             <Row className='mt-2'>
                 <Col xs={12}>
                     <Card>
@@ -93,12 +69,9 @@ const Permissions = () => {
                                     <Row className="gy-2 gx-2 align-items-center justify-content-xl-end justify-content-between ">
                                         <Col xs="auto" className='d-flex gap-2'>
                                             <FormInput onChange={(e) => setSearch(e.target.value)} type="text" name="search" placeholder="Search..." />
-
-                                            {/* <Button className='custom-buttons' onClick={() => setShowModal(true)}><span className='uil-plus'></span> Add Permissions</Button> */}
                                         </Col>
                                     </Row>
                                 </Col>
-                                {/* <AddPermissions show={showModal} closeModal={handleClosemodal} /> */}
                             </Row>
                             <Row>
                                 <Col>
@@ -108,9 +81,6 @@ const Permissions = () => {
                                                 <th colSpan={2}>#</th>
                                                 <th colSpan={2}>Permission Name</th>
                                                 <th>Description</th>
-                                                {/* <th>Created By</th>
-                                                <th>Status</th>
-                                                <th>Action</th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -133,24 +103,11 @@ const Permissions = () => {
                                                         <tr key={index}>
                                                             <td colSpan={2}>{index + 1}</td>
                                                             <td className='fw-bold text-body text-capitalize' colSpan={2} onClick={() => setSelected(data?._id)}>
-                                                                {/* <Link to="#" className="text-body fw-bold"> */}
                                                                 {data?.permission}
-                                                                {/* </Link> */}
                                                             </td>
                                                             <td>
                                                                 {data?.description}
                                                             </td>
-                                                            {/* <td>
-                                                                {data?.createdById?.name}
-                                                            </td>
-                                                            <td>
-                                                                <Form.Switch onClick={() => handleToggleUpdate(data)} checked={data?.status === 'active'} />
-                                                            </td>
-                                                            <td>
-                                                                <Link to="#" className="action-icon" onClick={() => openDeleteModal(data)}>
-                                                                    <i className="mdi mdi-delete"></i>
-                                                                </Link>
-                                                            </td> */}
                                                         </tr>
                                                     ))}
                                         </tbody>
@@ -171,11 +128,6 @@ const Permissions = () => {
                 </Col>
             </Row>
             <Modal centered show={deleteModal} onHide={closeDeleteModal}>
-                {/* <Modal.Header
-                    onHide={closeDeleteModal}
-                    closeButton
-                    className={'modal-colored-header pb-0 border-0 text-center'}>
-                </Modal.Header> */}
                 <Modal.Body>
                     <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
                         <Col sm={1}></Col>
@@ -186,7 +138,6 @@ const Permissions = () => {
                             <IoMdClose className="fs-4 cursor-pointer" onClick={closeDeleteModal} />
                         </Col>
                     </Row>
-                    {/* <h4 className="mt-0 text-center">Delete Permission</h4> */}
                     <p>
                         Are you sure you want to remove the selected permissions?
                         This action cannot be undone.
@@ -209,4 +160,4 @@ const Permissions = () => {
     )
 }
 
-export default Permissions
+export default Permissions;

@@ -66,7 +66,6 @@ function* createSubscriptionsFunction(data) {
 }
 function* updateSubscriptionsFunction(data) {
     const requestType = JSON.parse(decryptMessage(data?.data?.key));
-    console.log(JSON.parse(decryptMessage(data?.data?.key)))
     try {
         yield put({
             type: SubscriptionsActionTypes.UPDATE_SUBSCRIPTIONS_LOADING,

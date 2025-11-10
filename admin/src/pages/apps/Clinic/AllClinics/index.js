@@ -27,10 +27,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
     const [selectedClinicType, setSelectedClinicType] = useState('');
     const store = useSelector((state) => state);
     const clinicsData = store?.getClinicsReducer?.data?.data;
-    console.log(clinicsData,'clinicsData')
     const updateSuccess = store?.updateClinicsReducer?.data?.status;
     const createSuccess = store?.createClinicsReducer?.data?.status;
-    console.log(createSuccess,'success')
     // auth checks
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const isAddPresent = userPermissions.includes('add clinic') || userPermissions.includes('ADD_A_PRACTICE');
@@ -40,8 +38,8 @@ const OrderList = (): React$Element<React$FragmentType> => {
         getValues,
     } = useForm();
     useEffect(() => {
-        const hasFilters = name !== null || skip !== 1 || status !== true || selectedClinicType!=='';
-    
+        const hasFilters = name !== null || skip !== 1 || status !== true || selectedClinicType !== '';
+
         if (hasFilters) {
             const payload = {
                 name,
@@ -54,14 +52,14 @@ const OrderList = (): React$Element<React$FragmentType> => {
         } else if (clinicsData === undefined) {
             dispatch(getClinicAction({ payload: { name: '', skip: 1, limit: 10, status: true, clinicType: '' } }));
         }
-    }, [name, skip, status, selectedClinicType, dispatch]); 
+    }, [name, skip, status, selectedClinicType, dispatch]);
     useEffect(() => {
         if (clinicTypeData === undefined) {
             dispatch(getMastersDataAction({ status: true, category: 'clinic_type', search: '', skip: '', limit: '' }));
         }
     }, [clinicTypeData, dispatch]);
-    
-    
+
+
     useEffect(() => {
         const payload = {
             name: name,
@@ -74,7 +72,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
             dispatch(getClinicAction({ payload }))
             closeDeleteModal();
         }
-    }, [updateSuccess,createSuccess])
+    }, [updateSuccess, createSuccess])
     const handleStatusUpdate = () => {
         const payload = {
             userId: deleteData?.userId?._id,
@@ -204,7 +202,7 @@ const OrderList = (): React$Element<React$FragmentType> => {
                                                         </td>
                                                         <td>
                                                             {/* {(data?.userId?.primaryAddress?.city?.state_code || 'N/A') + ' / ' + (data?.userId?.primaryAddress?.city?.name || 'N/A')} */}
-                                                            {data?.address?.[0]?.city||'N/A'}
+                                                            {data?.address?.[0]?.city || 'N/A'}
                                                         </td>
                                                         <td>{data?.orgType}</td>
                                                         <td>

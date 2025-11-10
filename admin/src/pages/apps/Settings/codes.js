@@ -9,7 +9,6 @@ const Codes = () => {
     const dispatch = useDispatch();
     const store = useSelector((state) => state);
     const codesData = store?.getCodesReducer?.data?.data;
-    console.log({ codesData });
     const [search, setSearch] = useState('');
     const [codeType, setCodeType] = useState('icd-cm');
     useEffect(() => {

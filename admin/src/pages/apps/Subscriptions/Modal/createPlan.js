@@ -64,7 +64,6 @@ const SubscriptionModal = ({ show, closeModal, data = null }) => {
     }, [dispatch, show])
     useEffect(() => {
         if (isUpdateMode && data) {
-            console.log(data?.implimentFrom)
             setValue('name', plans && plans.find((plans) => plans?.name === data?.name)?.name);
             setValue('tenure', tenure && tenure.find((tenure) => tenure?.name === data?.billingFrequency)?.name);
             setValue('amount', data?.amount);

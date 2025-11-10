@@ -113,7 +113,6 @@ const AddRoles = ({ show, closeModal }) => {
                 },
             ],
         };
-        console.log(payload, 'jhgfghjk');
         dispatch(createUserRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
@@ -509,9 +508,8 @@ const AddRoles = ({ show, closeModal }) => {
                                                             border: '1px solid #ced4da',
                                                             borderTop: 'none',
                                                         }}
-                                                        className={`scroll-container hover-bg-change ${
-                                                            searchedLocations?.length === 0 || !focused ? 'd-none' : ''
-                                                        }`}>
+                                                        className={`scroll-container hover-bg-change ${searchedLocations?.length === 0 || !focused ? 'd-none' : ''
+                                                            }`}>
                                                         {searchedLocations?.map((data, index) => (
                                                             <p
                                                                 key={index}

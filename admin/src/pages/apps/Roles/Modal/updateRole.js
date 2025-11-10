@@ -25,7 +25,6 @@ import { handleFirstSpace } from '../../../../helpers/noBeginningSpace';
 
 const UpdateRoles = ({ show, closeModal, data }) => {
     const dispatch = useDispatch();
-    console.log(data, 'datadatadatadatadata');
     const {
         register,
         handleSubmit,
@@ -113,11 +112,7 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     const [updateId, setUpdateId] = useState(null);
     useEffect(() => {
         if (show) {
-            // console.log(designation)
-            // if(designation){
             dispatch(getMastersDataAction({ status: true, category: 'designation', search: '', limit: 10 }));
-
-            // }
             dispatch(getStatesByCountryAction());
             dispatch(getRolesAction({ status: true, search: '', limit: 10 }));
         }
@@ -130,12 +125,12 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             name: data?.firstName,
             phone: data?.phone
                 ? data?.phone
-                      .replace(/^\+1/, '') // Remove the "+1" prefix
-                      .replace(/\D/g, '') // Remove all non-numeric characters
-                      .replace(
-                          /(\d{3})(\d{3})(\d{0,4})/,
-                          (match, p1, p2, p3) => (p3 ? `(${p1})${p2}-${p3}` : `(${p1})${p2}`) // Format dynamically as (XXX)XXX-XXXX
-                      )
+                    .replace(/^\+1/, '') // Remove the "+1" prefix
+                    .replace(/\D/g, '') // Remove all non-numeric characters
+                    .replace(
+                        /(\d{3})(\d{3})(\d{0,4})/,
+                        (match, p1, p2, p3) => (p3 ? `(${p1})${p2}-${p3}` : `(${p1})${p2}`) // Format dynamically as (XXX)XXX-XXXX
+                    )
                 : '',
             joiningDate: data?.joiningDate ? new Date(data?.joiningDate).toISOString().split('T')[0] : '',
             role: data?.roleId?._id,
@@ -168,7 +163,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             ],
         };
 
-        console.log(payload, 'formdata');
         dispatch(updateUserRolesAction({ key: `${encryptMessage(payload)}` }));
     };
 
@@ -463,9 +457,8 @@ const UpdateRoles = ({ show, closeModal, data }) => {
                                                             border: '1px solid #ced4da',
                                                             borderTop: 'none',
                                                         }}
-                                                        className={`scroll-container hover-bg-change ${
-                                                            searchedLocations?.length === 0 || !focused ? 'd-none' : ''
-                                                        }`}>
+                                                        className={`scroll-container hover-bg-change ${searchedLocations?.length === 0 || !focused ? 'd-none' : ''
+                                                            }`}>
                                                         {searchedLocations?.map((data, index) => (
                                                             <p
                                                                 key={index}

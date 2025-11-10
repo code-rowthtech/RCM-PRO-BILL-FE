@@ -112,7 +112,6 @@ const ClinicForm = ({
     // GET store data
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const createResponse = store?.createClinicsReducer?.data?.status;
-    // console.log(store?.createClinicsReducer?.data,'store?.createClinicsReducer?.datastore?.createClinicsReducer?.data')
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const clinicsList = store?.getClinicsByParentReducer?.data?.result;
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
@@ -369,27 +368,6 @@ const ClinicForm = ({
         }
     };
 
-<<<<<<< HEAD
-=======
-    const handleMedicalChange = async (e, index) => {
-        const selectedFile = e.target.files[0];
-        try {
-            const url = await handleUpload(selectedFile);
-            setMedicalDetails((prevDetails) => {
-                const updatedDetails = [...prevDetails];
-                updatedDetails[index] = {
-                    ...updatedDetails[index],
-                    url: url?.url?.split('?')[0],
-                    fileName: selectedFile.name,
-                };
-                return updatedDetails;
-            });
-        } catch (error) {
-            console.error('Error during file upload:', error);
-        }
-    };
-
->>>>>>> a2a148c3d325cc27c5da59e935b2cb04da7d9b1b
     const handleAccreditationInputChange = (e, field, index) => {
         const value = e.target.value;
         // if (field === 'number'
@@ -531,72 +509,6 @@ const ClinicForm = ({
         checkForDuplicates(accreditationDetails, stateDetails);
     }, [accreditationDetails, stateDetails]);
 
-    // const onSubmit = (data) => {
-    //     const isDuplicate = checkForDuplicates(accreditationDetails, stateDetails);
-    //     if (!isDuplicate) {
-    //         setIsModalRequest(false);
-    //         const newPayload = {
-    //             ...(parentClinicId
-    //                 ? {
-    //                       parentUserId: parentUserId,
-    //                       parentClinicId: parentClinicId,
-    //                   }
-    //                 : {}),
-    //             flag: parentClinicId ? 'subClinic' : 'Clinic',
-    //             name: data?.clinicname,
-    //             isPrimaryAndMailingAddressSame: sameAsPrimary,
-    //             email: data?.email,
-    //             phone: '+1' + data?.contact?.replace(/\D/g, ''),
-    //             // clinicType: data?.clinicType,
-    //             clinicType: 'Nerology',
-    //             ...(data?.taxId ? { taxIdOrEIN: data.taxId?.replace(/\D/g, '') } : ''),
-    //             ...(data?.npi ? { npiNumber: data?.npi } : ''),
-    //             stateOfLicensing: stateDetails,
-    //             accreditationDetails: accreditationDetails,
-    //             ...(data?.clia ? { CLIA_Number: data?.clia } : {}),
-    //             taxonomyCodes: taxonomyCodes,
-    //             ...(data?.medicaid ? { medicaidNumber: data?.medicaid } : {}),
-    //             ...(data?.medicare ? { medicareNumber: data?.medicare } : {}),
-    //             pos: posDetails,
-    //             primaryAddress: {
-    //                 ...(data?.address ? { address: data?.address } : {}),
-    //                 ...(data?.city ? { city: data?.city } : {}),
-    //                 ...(data?.zip ? { zip: data?.zip } : {}),
-    //                 ...(data?.street ? { street: data?.street } : {}),
-    //                 ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
-    //                 ...(latitude ? { latitude: latitude } : {}),
-    //                 ...(longitude ? { longitude: longitude } : {}),
-    //             },
-    //             mailingAddress: sameAsPrimary
-    //                 ? {
-    //                       ...(data?.address ? { address: data?.address } : {}),
-    //                       ...(data?.city ? { city: data?.city } : {}),
-    //                       ...(data?.zip ? { zip: data?.zip } : {}),
-    //                       ...(data?.street ? { street: data?.street } : {}),
-    //                       ...(stateToSelect?._id ? { state: stateToSelect?._id } : {}),
-    //                       ...(latitude ? { latitude: latitude } : {}),
-    //                       ...(longitude ? { longitude: longitude } : {}),
-    //                   }
-    //                 : {
-    //                       ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
-    //                       ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
-    //                       ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
-    //                       ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
-    //                       ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
-    //                       ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
-    //                       ...(mailingLongitude ? { longitude: mailingLongitude } : {}),
-    //                   },
-    //             logo: {
-    //                 url: logo?.url.split('?')[0],
-    //                 fileName: logoName,
-    //             },
-    //             practiceSpecialty: data?.speciality,
-    //         };
-    //         console.log(newPayload, 'payload')
-    //         // dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
-    //     }
-    // };
-
     const onSubmit = (data) => {
         const isDuplicate = checkForDuplicates(accreditationDetails, stateDetails);
         if (!isDuplicate) {
@@ -608,20 +520,6 @@ const ClinicForm = ({
                         parentUserId: parentUserId,
                         parentOrgId: parentClinicId,
                     }
-<<<<<<< HEAD
-                    : {
-                        ...(data?.mailingAddress ? { address: data?.mailingAddress } : {}),
-                        ...(data?.mailingCity ? { city: data?.mailingCity } : {}),
-                        ...(data?.mailingZip ? { zip: data?.mailingZip } : {}),
-                        ...(data?.mailingStreet ? { street: data?.mailingStreet } : {}),
-                        ...(mailingStateToSelect?._id ? { state: mailingStateToSelect?._id } : {}),
-                        ...(mailingLatitude ? { latitude: mailingLatitude } : {}),
-                        ...(mailingLongitude ? { longitude: mailingLongitude } : {})
-                    },
-                orgLogo: {
-                    url: logo?.url.split('?')[0],
-                    fileName: logoName
-=======
                     : {}),
                 flag: parentClinicId ? 'subClinic' : 'Clinic',
                 name: data?.clinicname,
@@ -632,7 +530,6 @@ const ClinicForm = ({
                 orgLogo: {
                     url: logo?.url.split('?')[0] || '',
                     fileName: logoName || '',
->>>>>>> a2a148c3d325cc27c5da59e935b2cb04da7d9b1b
                 },
 
                 identifier: constantIdentifiers
@@ -664,7 +561,6 @@ const ClinicForm = ({
             };
 
             dispatch(createClinicAction({ key: encryptMessage(newPayload) }));
-            console.log(newPayload, 'payload');
         }
     };
 

@@ -95,96 +95,6 @@ const Clinic = ({ id }) => {
     }, [clinicData]);
 
     const setField = (key, value) => value && setValue(key, value);
-    // useEffect(() => {
-    //     if (!clinicData) return;
-
-    //     if (clinicData?.orgType) {
-    //         setValue('clinicType', clinicData.orgType); // Setting value from API response
-    //     }
-    //     setField('name', clinicData?.name);
-    //     setField('email', clinicData?.userId?.email);
-    //     setField('use', clinicData?.userId?.name?.use);
-    //     setField('family', clinicData?.userId?.name?.family);
-    //     setField('given', clinicData?.userId?.name?.given);
-
-    //     // Handle Address Fields
-    //     setField('address', clinicData?.userId?.primaryAddress?.address || '');
-    //     // setField('mailingAddress', clinicData?.userId?.mailingAddress?.address || '');
-    //     // setField('mailingZip', clinicData?.userId?.mailingAddress?.zip || '');
-    //     // setField('mailingStreet', clinicData?.userId?.mailingAddress?.street || '');
-    //     // setField('street', clinicData?.userId?.primaryAddress?.street || '');
-    //     // setField('zip', clinicData?.userId?.primaryAddress?.zip || '');
-    //     // setField('stateName', clinicData?.userId?.primaryAddress?.state?._id || '');
-    //     // setField('mailingStateName', clinicData?.userId?.mailingAddress?.state?._id || '');
-    //     setSameAsPrimary(clinicData?.userId?.isPrimaryAndMailingAddressSame);
-
-    //     // Format & Set Contact Number
-    //     const formattedPhone = clinicData?.userId?.phone
-    //         ? clinicData.userId.phone
-    //               .replace(/^\+1/, '') // Remove "+1" prefix
-    //               .replace(/\D/g, '') // Remove non-numeric characters
-    //               .replace(/(\d{3})(\d{3})(\d{0,4})/, (match, p1, p2, p3) =>
-    //                   p3 ? `(${p1})${p2}-${p3}` : `(${p1})${p2}`
-    //               )
-    //         : '';
-
-    //     setField('contact', formattedPhone);
-
-    //     // Handle Tax ID (if exists)
-    //     // if (clinicData?.taxIdOrEIN) {
-    //     //     setField('taxId', `${clinicData.taxIdOrEIN.slice(0, 2)}-${clinicData.taxIdOrEIN.slice(2, 9)}`);
-    //     // }
-
-    //     // Handle Specialties
-    //     // setField('speciality', clinicData?.practiceSpecialty || []);
-
-    //     // Handle NPI Number
-    //     // setField('npi', clinicData?.npiNumber || '');
-
-    //     // Handle Taxonomy Codes
-    //     if (clinicData?.taxonomyCodes?.length) {
-    //         setTaxonomyCodes(clinicData.taxonomyCodes);
-    //         clinicData.taxonomyCodes.forEach((code, index) => {
-    //             setValue(`taxonomyCode[${index}]`, code);
-    //         });
-    //     } else {
-    //         setTaxonomyCodes(['']);
-    //     }
-
-    //     // Dispatch city actions if state & city are available
-    //     if (clinicData?.userId?.primaryAddress?.city) {
-    //         dispatch(
-    //             getCitiesAction({
-    //                 state_code: clinicData?.userId?.primaryAddress?.state?.id,
-    //                 name: clinicData?.userId?.primaryAddress?.city?.name,
-    //                 limit: '',
-    //                 skip: '',
-    //             })
-    //         );
-    //     }
-
-    //     if (clinicData?.userId?.mailingAddress?.city) {
-    //         dispatch(
-    //             getCities2Action({
-    //                 state_code: clinicData?.userId?.mailingAddress?.state?.id,
-    //                 name: clinicData?.userId?.mailingAddress?.city?.name,
-    //                 limit: '',
-    //                 skip: '',
-    //             })
-    //         );
-    //     }
-
-    //     // Handle Longitude & Latitude
-    //     setLongitude(clinicData?.userId?.primaryAddress?.longitude || '');
-    //     setLatitude(clinicData?.userId?.primaryAddress?.latitude || '');
-    //     setMailingLongitude(clinicData?.userId?.mailingAddress?.longitude || '');
-    //     setMailingLatitude(clinicData?.userId?.mailingAddress?.latitude || '');
-
-    //     // Handle Organization Logo
-    //     if (clinicData?.orgLogo) {
-    //         setLogoName(clinicData.orgLogo.fileName);
-    //     }
-    // }, [clinicData, dispatch, setValue]);
 
     const handleLogoClick = () => {
         if (logoFileInputRef.current) {
@@ -211,10 +121,6 @@ const Clinic = ({ id }) => {
 
     const handleInputChange = (e, field, type, index) => {
         const value = e.target.value;
-        // if (type === 'accreditationDetails' && /\s/.test(value)
-        // ) {
-        //     return;
-        // }
         setFormDetails((prevDetails) => {
             const updatedDetails = { ...prevDetails };
             updatedDetails[type][index] = {
@@ -224,6 +130,7 @@ const Clinic = ({ id }) => {
             return updatedDetails;
         });
     };
+
     const [accreditationUploading, setAccreditationUploading] = useState(false);
     const [stateUploading, setStateUploading] = useState(false);
     const handleFileUpload = async (e, type, index) => {
@@ -273,7 +180,7 @@ const Clinic = ({ id }) => {
         dispatch(getCities2Action({ state_code: key?.id, name: '', limit: 25, skip: '' }));
     };
 
-    const handleCitySelection = (e) => {};
+    const handleCitySelection = (e) => { };
 
     const onSubmit = (data) => {
         const newPayload = {
@@ -313,32 +220,6 @@ const Clinic = ({ id }) => {
                     sliceName: item.type || '',
                 })),
 
-            // identifier: constantIdentifiers.map((item) => ({
-            //     ...(item.type&&{identifierType: item.type} ),
-            //     ...(item.use&&{use: item.use}),
-            //     ...(item.number&&{number: item.number}),
-            //     ...(item.file&&{documents: item.file}),
-            //     ...(item.expiry&&{expirationDate: item.expiry}),
-            //     ...(item.issuingAuthority&&{issuingAuthority: item.issuingAuthority}),
-            //     ...(item.status&&{status: 'active'}),
-            //     ...(item.system&&{system: 'urn:oid:2.16.840.1.113883.4.7'}),
-            //     ...(item.sliceName&&{sliceName: item.sliceName}),
-
-            // identifierType: item.type || '',
-            // use: item?.use || '',
-            // value: item?.number || '',
-
-            // documents: [{ url: item?.file?.url || '', fileName: item?.file?.name || '' }],
-            // expirationDate:
-            //     item.expiry ||
-            //     clinicData?.identifier?.find((id) => id.identifierType === item.type)?.expirationDate ||
-            //     '',
-            // status: 'active',
-            // system: 'urn:oid:2.16.840.1.113883.4.7',
-            // sliceName: item.type || '',
-            // issuingAuthority: item.issuingAuthority || '',
-            // })),
-
             telecom: constantContact.map((contact) => ({
                 system: contact.system || '',
                 value: contact.value || '',
@@ -349,7 +230,6 @@ const Clinic = ({ id }) => {
 
             poc: pocs.length > 0 ? pocs : clinicData?.poc || [],
         };
-
         dispatch(updateClinicAction({ key: encryptMessage(newPayload) }));
     };
 
@@ -900,9 +780,9 @@ const Clinic = ({ id }) => {
                     number: data?.value || '',
                     file: data?.documents?.[0]?.fileName
                         ? {
-                              url: data.documents[0].url,
-                              name: data.documents[0].fileName,
-                          }
+                            url: data.documents[0].url,
+                            name: data.documents[0].fileName,
+                        }
                         : '',
                     expiry: data?.expirationDate || '',
                     issuingAuthority: data.issuingAuthority || '',
@@ -1055,7 +935,7 @@ const Clinic = ({ id }) => {
                                     // setResetEmail({ ...resetEmail, name: e.target.value });
                                 }}
                                 placeholder="Practice name"
-                                // onKeyPress={handleFirstSpace}
+                            // onKeyPress={handleFirstSpace}
                             />
                             {errors.clinicname && <span className="text-danger">{errors.clinicname.message}</span>}
                         </Form.Group>
@@ -1108,14 +988,13 @@ const Clinic = ({ id }) => {
                         <Form.Label className="mb-0">Upload Logo</Form.Label>
                         <div
                             onClick={() => document.getElementById(`logo-file-input`).click()}
-                            className={`custom-file-upload justify-content-between cursor-pointer ${
-                                logoName || logoUploading ? 'form-control' : 'custom-form-fields'
-                            }`}>
+                            className={`custom-file-upload justify-content-between cursor-pointer ${logoName || logoUploading ? 'form-control' : 'custom-form-fields'
+                                }`}>
                             {logoName
                                 ? logoName.split('/').pop().slice(0, 30) + '...'
                                 : logoUploading
-                                ? 'Uploading...'
-                                : 'Upload Logo'}
+                                    ? 'Uploading...'
+                                    : 'Upload Logo'}
                             <p className="mb-0">
                                 <FiDownloadCloud />
                             </p>
@@ -1207,8 +1086,8 @@ const Clinic = ({ id }) => {
                                             item.type === 'NPI' || item.type === 'CLIA'
                                                 ? 10
                                                 : item.type === 'NAIC'
-                                                ? 5
-                                                : 10
+                                                    ? 5
+                                                    : 10
                                         }
                                         {...register(`identifiers[${index}].number`, {
                                             // required: defaultIdentifiers.includes(item.type)
@@ -1249,16 +1128,15 @@ const Clinic = ({ id }) => {
                                 <Col className="mb-2 position-relative">
                                     <div
                                         onClick={() => document.getElementById(`fileInput-identifier-${index}`).click()}
-                                        className={`custom-file-upload justify-content-between cursor-pointer ${
-                                            item.file || item.uploading ? 'form-control' : 'custom-form-fields'
-                                        }`}>
+                                        className={`custom-file-upload justify-content-between cursor-pointer ${item.file || item.uploading ? 'form-control' : 'custom-form-fields'
+                                            }`}>
                                         {identifierDocument
                                             ? 'Uploading...'
                                             : item.file?.name
-                                            ? item.file.name.length > 30
-                                                ? item.file.name.slice(0, 25) + '...'
-                                                : item.file.name
-                                            : 'Upload Document'}
+                                                ? item.file.name.length > 30
+                                                    ? item.file.name.slice(0, 25) + '...'
+                                                    : item.file.name
+                                                : 'Upload Document'}
                                         <p className="mb-0">
                                             <FiDownloadCloud />
                                         </p>
@@ -1781,8 +1659,8 @@ const Clinic = ({ id }) => {
                             type="submit"
                             disabled={store?.updateClinicsReducer?.loading}
                             className="mt-3 custom-buttons"
-                            style={{width: '80px'}}
-                            >
+                            style={{ width: '80px' }}
+                        >
                             {store?.updateClinicsReducer?.loading ? (
                                 <Spinner color="white" className="spinner-border-sm" />
                             ) : (

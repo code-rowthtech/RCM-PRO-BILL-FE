@@ -11,7 +11,7 @@ export const handleUpload = async (file, setLoading) => {
     setLoading(true); // Start loading
 
     try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}api/v1/admin/users/s3/presigned-url`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/admin/users/s3/presigned-url`, {
             params: {
                 fileName: file.name,
                 fileType: file.type,
