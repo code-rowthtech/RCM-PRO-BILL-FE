@@ -10,6 +10,7 @@ import Spinner from '../../../constants/Spinner';
 import Paginations from '../../../helpers/Paginations';
 import { IoMdClose } from 'react-icons/io';
 import { formatDate } from '../../../helpers/dateFormat';
+import EncounterSummary from '../../../components/EncounterSummary';
 const calculateAge = (dob) => {
     if (!dob) return null; // Handle missing or invalid dates
     const birthDate = new Date(dob);
@@ -33,6 +34,7 @@ const Patients = () => {
     const [search, setSearch] = useState('');
     const [detailsModal, setDetailsModal] = useState(false);
     const [selectedDetails, setSelectedDetails] = useState(null);
+    const [showEncounterSummary, setShowEncounterSummary] = useState(false);
     const decrytedPatientsData = store?.getPatientsReducer?.data?.patients;
     useEffect(() => {
         const payload = {
@@ -121,13 +123,23 @@ const Patients = () => {
                                                                 {data?.status || '---   '}
                                                             </td>
                                                             <td>
-                                                                <Link to="#" className="action-icon">
+                                                                <Link to="#" className="action-icon me-2">
                                                                     <i
                                                                         onClick={() => {
                                                                             setDetailsModal(true);
                                                                             setSelectedDetails(data);
                                                                         }}
-                                                                        className="mdi mdi-eye"></i>
+                                                                        className="mdi mdi-eye"
+                                                                        title="View Details"></i>
+                                                                </Link>
+                                                                <Link to="#" className="action-icon">
+                                                                    <i
+                                                                        onClick={() => {
+                                                                            setShowEncounterSummary(true);
+                                                                            setSelectedDetails(data);
+                                                                        }}
+                                                                        className="mdi mdi-clipboard-text"
+                                                                        title="Encounter Summary"></i>
                                                                 </Link>
                                                             </td>
                                                         </tr>
@@ -150,6 +162,7 @@ const Patients = () => {
                     </Card>
                 </Col>
             </Row>
+            {/* Patient Details Modal */}
             <Modal centered show={detailsModal} onHide={closeDetailsModal}>
                 {/* <Modal.Header
                     onHide={closeDetailsModal}
@@ -282,8 +295,24 @@ const Patients = () => {
 
                 </Modal.Body>
             </Modal>
+
+            {/* Encounter Summary Modal */}
+            <Modal centered size="lg" show={showEncounterSummary} onHide={() => setShowEncounterSummary(false)}>
+                <Modal.Body>
+                    <Row className="border-bottom mb-2 pb-2 d-flex align-items-center">
+                        <Col sm={1}></Col>
+                        <Col sm={10}>
+                            <h4 className="mb-0 text-center">Encounter Summary</h4>
+                        </Col>
+                        <Col sm={1}>
+                            <IoMdClose className="fs-4 cursor-pointer" onClick={() => setShowEncounterSummary(false)} />
+                        </Col>
+                    </Row>
+                    <EncounterSummary patientId={selectedDetails?._id} />
+                </Modal.Body>
+            </Modal>
         </>
     )
 }
 
-export default Patients
+export default Patients;

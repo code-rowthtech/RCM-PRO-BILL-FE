@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,10 +60,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
     const cities1 = store?.getCitiesReducer?.cities1?.data?.cities;
     const clinicDataToUpdate = store?.getClinicByIdReducer?.data?.clinic;
     const createResponse = store?.createUserRolesReducer?.data?.status;
-    const decryptedPermissionsData = store?.getPermissionsDataReducer?.data?.data?.map((item) => ({
-        ...item,
-        name: `${item?.name}`,
-    }));
     const decryptedRolesData = store?.getRolesDataReducer?.data?.roles;
     const clinicTypeData = store?.getMastersDataReducer?.data?.clinicTypes;
     const setField = (key, value) => value && setValue(key, value);
@@ -94,17 +91,6 @@ const UpdateRoles = ({ show, closeModal, data }) => {
             setCountry(data?.address?.[0]?.country || '');
             setField('street', data?.address?.[0]?.street || '');
             setField('zip', data?.address?.[0]?.postalCode || '');
-            // if (data?.address?.[0]?.city) {
-            //             dispatch(
-            //                 getCitiesAction({
-            //                     state_code: data?.address?.[0]?.state?.id,
-            //                     name: data?.address?.[0]?.city?.name,
-            //                     limit: '',
-            //                     skip: '',
-            //                 })
-            //             );
-            //         }
-
             setValue('leavingDate', formattedLeavingDate);
         }
     }, [data, setValue, cities1]);
