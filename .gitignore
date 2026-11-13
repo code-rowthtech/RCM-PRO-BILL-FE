@@ -1,3 +1,65 @@
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat
+
+# Dependencies, generated builds, and test output
+node_modules/
+build/
+dist/
+coverage/
+.eslintcache
+*.tsbuildinfo
+test-results/
+playwright-report/
+
+# Local environment configuration
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Private keys, certificates, and credential files
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa
+id_ed25519
+credentials*.json
+service-account*.json
+serviceAccount*.json
+.npmrc
+.netrc
+.aws/
+.ssh/
+.codex/
+.agents/
+
+# Private integrations, clinic documents, backups, and data exports
+private/
+uploads/
+exports/
+backups/
+dumps/
+*.sql
+*.bson
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+
+# Logs and temporary files
+logs/
+*.log
+tmp/
+temp/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
